@@ -59,10 +59,13 @@ def talk(text: str, name: str):
     # 1. Set up name
     now = datetime.now()
     today = f'{now.month}-{now.day}-{now.year}'
-    file = f'./messages {today}/{name}.mp3'
+    file = f'./messages/{today}/{name}.mp3'
 
-    if not os.path.isdir(f'messages {today}'):  # Make dir if not there
-        os.mkdir(f'messages {today}')
+    if not os.path.isdir(f'messages'):  # Make primary dir if not there
+        os.mkdir(f'messages')
+
+    if not os.path.isdir(f'./messages/{today}'):
+        os.mkdir(f'./messages/{today}')
 
     if os.path.isfile(file):  # Delete file if it's already there
         os.remove(file)
@@ -73,6 +76,17 @@ def talk(text: str, name: str):
 
     # 3. Have playsound play file
     playsound(file)
+
+
+def save_conversation(conversation: str, name):
+    
+    # 1. Setup directory for conversations
+    if not os.path.isdir(f'conversations'):  # Make dir if not there
+        os.mkdir(f'conversations')
+
+    # 2. Save file
+    with open(f'conversations/{name}', 'w') as file:
+        file.write(conversation)
 
 
 class Chatbot():
@@ -88,6 +102,7 @@ class Chatbot():
                 "clever, and very friendly.\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
                 " can I help you today?")
     turns = 0
+    conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
 
     def __init__(self, api_key: str):
         self.api_key = api_key
@@ -140,8 +155,12 @@ class Chatbot():
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             talk(get_AI_response(reply), f'{self.turns}')
+
+            # Keep track of conversation
             self.turns += 1
             self.conversation += reply
+            save_conversation(self.conversation, self.conversation_name)
+
             return reply
 
         else:
