@@ -19,3 +19,12 @@ Press 'q' to exit.
 
 The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope to prevent the use of GPT-3 that is outside of OpenAI's useage policy.
 This is not an infaliable method though, so please exercise caution with what you give GPT-3.
+
+
+# Planned Features
+
+- Make a setting where the bot can remember speaking with you between sessions, recalling only important bits of info.
+
+- Make bot multilingual (it denys speaking other languages unless guided for a bit) at startup.
+
+- Make interface run more smoothly
