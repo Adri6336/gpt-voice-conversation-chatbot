@@ -116,7 +116,7 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
         os.remove(file + '.mpeg')
     
     elif os.path.isfile(file + '.mp3'):
-        os.remove(file + '.mpeg')
+        os.remove(file + '.mp3')
 
     # 2. Have gtts create file
     try:
