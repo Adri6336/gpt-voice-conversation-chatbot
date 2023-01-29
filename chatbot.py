@@ -90,6 +90,10 @@ def hostile_or_personal(text: str) -> bool:
     else:
         return False
 
+def google_tts(text: str, path: str):
+    tts = gTTS(text)
+    tts.save(path)
+
 def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
     """
     This will provide a sound file for what ever you enter, then 
@@ -120,18 +124,19 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
 
     # 2. Have gtts create file
     try:
-
         if use11 and tts11AI(key11, text, f'{file}.mpeg'):  
             playsound(file + '.mpeg')
-            tts11_okay = True
+            return True
+
+        else:
+            google_tts(text, f'{file}.mp3')
+            playsound(file + '.mp3')
+            return tts11_okay
 
     except:
-        tts = gTTS(text)
-        tts.save(f'{file}.mp3')
+        google_tts(text, f'{file}.mp3')
         playsound(file + '.mp3')
         return tts11_okay
-
-    return tts11_okay
 
 def save_conversation(conversation: str, name):
     
