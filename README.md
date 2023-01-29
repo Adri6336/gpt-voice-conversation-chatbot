@@ -30,6 +30,4 @@ OpenAI is having issues, please edit the chatbot.py file to exclude the "not sel
 
 - Make a setting where the bot can remember speaking with you between sessions, recalling only important bits of info.
 
-- Make bot multilingual (it denys speaking other languages unless guided for a bit) at startup.
-
 - Make interface run more smoothly
