@@ -12,12 +12,21 @@ def change_color(display, color: tuple):
     pygame.display.flip()
  
 # Determine if we have a token
-if len(sys.argv) < 2:
+num_args = len(sys.argv) 
+key = ''
+key_11 = ''
+
+if num_args < 2:
     print('[X] Please enter OpenAI key as argument')
     print('Example: python main.py <key>')
     sys.exit()
-else:
+
+elif num_args == 2:
     key = argv[1]
+
+elif num_args > 2:
+    key = argv[1]
+    key_11 = argv[2]
 
 # Setup pygame display
 pygame.init()
@@ -29,7 +38,7 @@ r = sr.Recognizer()
 mic = sr.Microphone()
 
 # Setup chatbot
-chatbot = Chatbot(key)
+chatbot = Chatbot(key, key_11)
  
 # Run  main loop
 while True:
@@ -59,11 +68,11 @@ while True:
                     print('Not listening')
 
                     # 2. Interpret audio
+                    change_color(display, (51, 187, 255))  # Blue to show processing reply
                     try:
                         speech = r.recognize_google(audio)
                         print(f'TYPE: {type(speech)}\nCONTENT: {speech}') 
 
-                        change_color(display, (51, 187, 255))  # Blue to show processing reply
                         reply = chatbot.say_to_chatbot(speech)
                         print(f'REPLY: {reply}')
 

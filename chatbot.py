@@ -11,6 +11,49 @@ from nltk.tokenize import word_tokenize
 from datetime import datetime
 
 
+def tts11AI(key: str, text: str, path: str) -> bool:
+    """
+    This uses ElevenLab's AI to generate text to speech.
+
+    :param key: This is your 11.ai key
+    :param text: What you want spoken
+    :param path: Where you want your file saved
+    """
+
+    # create a session object 
+    s = requests.Session()
+
+    # set the headers
+    headers = {
+        "accept": "audio/mpeg",
+        "xi-api-key": key,
+        "Content-Type": "application/json",
+    }
+
+    # set the payload
+    payload = {
+        "text": text
+    }
+
+    # make the post request
+    url = "https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL"
+    try:
+        r = s.post(url, data=json.dumps(payload), headers=headers, timeout=60)
+        if r.status_code != 200:
+            return False
+
+        # save the response content
+        with open(path, 'wb') as f:
+            f.write(r.content)
+    except requests.exceptions.Timeout:
+        return False
+
+    except Exception as e:
+        print(f'[X] Unexpected error: {e}')
+        return False
+    
+    return True
+
 def get_AI_response(text: str) -> str:
     """
     This returns all the text following the first 
@@ -47,7 +90,7 @@ def hostile_or_personal(text: str) -> bool:
     else:
         return False
 
-def talk(text: str, name: str):
+def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
     """
     This will provide a sound file for what ever you enter, then 
     play it using playsound. Saves an mp3 file.
@@ -56,10 +99,12 @@ def talk(text: str, name: str):
     :param name: This is what you want the mp3 file to be called 
     """
 
+    tts11_okay = False
+
     # 1. Set up name
     now = datetime.now()
     today = f'{now.month}-{now.day}-{now.year}'
-    file = f'./messages/{today}/{name}.mp3'
+    file = f'./messages/{today}/{name}'
 
     if not os.path.isdir(f'messages'):  # Make primary dir if not there
         os.mkdir(f'messages')
@@ -67,15 +112,26 @@ def talk(text: str, name: str):
     if not os.path.isdir(f'./messages/{today}'):
         os.mkdir(f'./messages/{today}')
 
-    if os.path.isfile(file):  # Delete file if it's already there
-        os.remove(file)
+    if os.path.isfile(file + '.mpeg'):  # Delete file if it's already there
+        os.remove(file + '.mpeg')
+    
+    elif os.path.isfile(file + '.mp3'):
+        os.remove(file + '.mpeg')
 
     # 2. Have gtts create file
-    tts = gTTS(text)
-    tts.save(file)
+    try:
 
-    # 3. Have playsound play file
-    playsound(file)
+        if use11 and tts11AI(key11, text, f'{file}.mpeg'):  
+            playsound(file + '.mpeg')
+            tts11_okay = True
+
+    except:
+        tts = gTTS(text)
+        tts.save(f'{file}.mp3')
+        playsound(file + '.mp3')
+        return tts11_okay
+
+    return tts11_okay
 
 def save_conversation(conversation: str, name):
     
@@ -96,14 +152,24 @@ class Chatbot():
     nltk.download('maxent_ne_chunker')
     nltk.download('words')
     api_key = None
+    api_key_11 = ''
+    use11 = False
     conversation = ''
     memories = 'nothing'
     turns = 0
     conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, api_key_11: str = ''):
+        
+        # 1. Set up apis
         self.api_key = api_key
         openai.api_key = api_key
+
+        if not api_key_11 == '':
+            self.api_key_11 = api_key_11
+            self.use11 = True
+
+        # 2. Set up bot memories and init prompt
         self.remember()  # This will collect memories
         self.conversation = ("The following is a conversation with an AI assistant. The assistant is helpful, creative," + 
                 "clever, and very friendly. The assistant is able to understand numerous languages and will reply" +
@@ -144,20 +210,29 @@ class Chatbot():
             restart_sequence = "\nHuman: "
             self.conversation += f'\nHuman: {text}'
 
-            response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=self.conversation,
-            temperature=0.9,
-            max_tokens=150,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0.6,
-            stop=[" Human:", " AI:"]
-            )
+            try:
+                response = openai.Completion.create(
+                model="text-davinci-003",
+                prompt=self.conversation,
+                temperature=0.9,
+                max_tokens=150,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0.6,
+                stop=[" Human:", " AI:"]
+                )
+            except Exception as e:
+                print(f'Error communicating with GPT-3: {e}')
 
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
-            if outloud: talk(get_AI_response(reply), f'{self.turns}')  # Speak if setting turned on
+            try:
+                if outloud: 
+                    self.use11 = talk(get_AI_response(reply), f'{self.turns}',
+                                    self.use11, self.api_key_11)  # Speak if setting turned on
+            except Exception as e:
+                print('Error trying to speak: {e}')
+                self.use11 = False
 
             # Keep track of conversation
             self.turns += 1
