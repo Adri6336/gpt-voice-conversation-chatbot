@@ -17,5 +17,5 @@ Press 'q' to exit.
 
 # Content Moderation
 
-The moderation uses both OpenAI's moderation tool and NTLK. Combined, they hope to prevent the use of GPT-3 that is outside of OpenAI's useage policy.
+The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope to prevent the use of GPT-3 that is outside of OpenAI's useage policy.
 This is not an infaliable method though, so please exercise caution with what you give GPT-3.
