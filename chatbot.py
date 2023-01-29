@@ -77,7 +77,6 @@ def talk(text: str, name: str):
     # 3. Have playsound play file
     playsound(file)
 
-
 def save_conversation(conversation: str, name):
     
     # 1. Setup directory for conversations
@@ -87,7 +86,6 @@ def save_conversation(conversation: str, name):
     # 2. Save file
     with open(f'conversations/{name}', 'w') as file:
         file.write(conversation)
-
 
 class Chatbot():
     """
@@ -166,3 +164,29 @@ class Chatbot():
         else:
             print('[X] Text flagged, no request sent.')
             return '[X] Text flagged, no request sent.'
+
+class GPT3(Chatbot):
+    """
+    This is a barebones tool to request something from 
+    GPT-3. It's made into a separate class so as to not
+    interfere with the chatbot.
+    """
+
+    def request(self, text:str, tokens: int = 150):
+        if not hostile_or_personal(text) and not self.flagged_by_openai(text):
+
+            # 1. Get response
+            response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=text,
+            temperature=0.9,
+            max_tokens=tokens,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0.6,
+            )
+
+            # Cut response and play it
+            reply = json.loads(str(response))['choices'][0]['text']
+            return reply
+            
