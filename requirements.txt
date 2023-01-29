@@ -3,3 +3,6 @@ gTTS==2.3.1
 SpeechRecognition==3.9.0
 pygame==2.1.2
 pyaudio==0.2.13
+gTTS==2.3.1
+nltk==3.8.1
+requests==2.28.1
