@@ -15,7 +15,7 @@ def change_color(display, color: tuple):
 # Determine if we have a token
 if len(sys.argv) < 2:
     print('[X] Please enter OpenAI key as argument')
-    print('Example: chat.py <key>')
+    print('Example: python main.py <key>')
     sys.exit()
 else:
     key = argv[1]
