@@ -89,7 +89,7 @@ class Chatbot():
                 " can I help you today?")
     turns = 0
 
-    def __init__(self, api_key: str, wakeword: str):
+    def __init__(self, api_key: str):
         self.api_key = api_key
         openai.api_key = api_key
 

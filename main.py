@@ -1,4 +1,3 @@
-# importing pygame module
 import pygame
 import speech_recognition as sr
 import sys
@@ -30,7 +29,7 @@ r = sr.Recognizer()
 mic = sr.Microphone()
 
 # Setup chatbot
-chatbot = Chatbot(key, '')
+chatbot = Chatbot(key)
  
 # Run  main loop
 while True:
