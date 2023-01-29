@@ -17,6 +17,8 @@ be recorded, converted to text, then fed to GPT-3 if it is in compliance with Op
 
 Press 'q' to exit.
 
+If you would like to use [ElevenLabs TTS](https://beta.elevenlabs.io/speech-synthesis), you must enter your personal ElevenLabs api key following your OpenAI api key. If you don't want to use the fancy TTS, this bot will use Google's TTS.
+
 # Content Moderation
 
 The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope to prevent the use of GPT-3 that is outside of OpenAI's useage policy.
