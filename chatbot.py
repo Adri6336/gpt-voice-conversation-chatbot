@@ -96,15 +96,20 @@ class Chatbot():
     nltk.download('maxent_ne_chunker')
     nltk.download('words')
     api_key = None
-    conversation = ("The following is a conversation with an AI assistant. The assistant is helpful, creative," + 
-                "clever, and very friendly.\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
-                " can I help you today?")
+    conversation = ''
+    memories = 'nothing'
     turns = 0
     conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
 
     def __init__(self, api_key: str):
         self.api_key = api_key
         openai.api_key = api_key
+        self.remember()  # This will collect memories
+        self.conversation = ("The following is a conversation with an AI assistant. The assistant is helpful, creative," + 
+                "clever, and very friendly. The assistant is able to understand numerous languages and will reply" +
+                f" to any messsage by the human in the language it was provided in. It has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
+                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
+                " can I help you today?")
 
     def flagged_by_openai(self, text: str) -> bool:
         """
@@ -165,6 +170,12 @@ class Chatbot():
             print('[X] Text flagged, no request sent.')
             return '[X] Text flagged, no request sent.'
 
+    def remember(self):
+        """
+        Placeholder function. This see if a memories file exists. If it does, it will return its contents.
+        """
+        pass
+
 class GPT3(Chatbot):
     """
     This is a barebones tool to request something from 
@@ -189,4 +200,3 @@ class GPT3(Chatbot):
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             return reply
-            
