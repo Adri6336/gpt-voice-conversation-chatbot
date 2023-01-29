@@ -5,7 +5,7 @@ This is a bot that allows you to speak with GPT-3 using your microphone. The too
 # Using GPT-3 STTC
 
 To use this STTC, you'll need to clone the repository, install the requirements, then navigate to the repository's folder using a terminal or powershell.
-Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing <key> with your api key):
+Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing \<key\> with your api key):
 
     python main.py <key>
     
