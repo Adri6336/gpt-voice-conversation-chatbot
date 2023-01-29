@@ -1,3 +1,4 @@
+import gtts
 from gtts import gTTS
 from playsound import playsound
 import os
@@ -9,7 +10,8 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import ne_chunk, pos_tag
 from nltk.tokenize import word_tokenize
 from datetime import datetime
-
+from langdetect import detect
+gtts_languages = set(gtts.lang.tts_langs().keys())
 
 def tts11AI(key: str, text: str, path: str) -> bool:
     """
@@ -91,8 +93,16 @@ def hostile_or_personal(text: str) -> bool:
         return False
 
 def google_tts(text: str, path: str):
-    tts = gTTS(text)
-    tts.save(path)
+
+    language = detect(text)
+    
+    if language in gtts_languages:  # Pronounce correctly if possible
+        tts = gTTS(text, lang=language)
+        tts.save(path)
+
+    else:  # Otherwise just use English pronounciation
+        tts = gTTS(text)
+        tts.save(path)
 
 def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
     """
