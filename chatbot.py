@@ -172,7 +172,7 @@ class Chatbot():
 
     def remember(self):
         """
-        Placeholder function. This see if a memories file exists. If it does, it will return its contents.
+        Placeholder function. This sees if a memories file exists. If it does, it will return its contents.
         """
         pass
 
