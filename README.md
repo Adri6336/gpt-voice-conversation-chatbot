@@ -17,7 +17,11 @@ be recorded, converted to text, then fed to GPT-3 if it is in compliance with Op
 
 Press 'q' to exit.
 
-If you would like to use [ElevenLabs TTS](https://beta.elevenlabs.io/speech-synthesis), you must enter your personal ElevenLabs api key following your OpenAI api key. If you don't want to use the fancy TTS, this bot will use Google's TTS.
+If you would like to use [ElevenLabs TTS](https://beta.elevenlabs.io/speech-synthesis), you must enter your personal ElevenLabs api key following your OpenAI api key as follows:
+
+        python main.py <OpenAI key> <ElevenLabs TTS key>
+
+If you don't want to use the fancy TTS, this bot will use Google's TTS.
 
 # Content Moderation
 
