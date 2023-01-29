@@ -128,7 +128,7 @@ class Chatbot():
             print(f'[X] Failed to test with OpenAI. Key might be invalid.')
             return True
 
-    def say_to_chatbot(self, text) -> str:
+    def say_to_chatbot(self, text: str, outloud: bool = True) -> str:
         """
         This translates text into Latin
         :param text: Whatever text you want translated into Latin
@@ -154,7 +154,7 @@ class Chatbot():
 
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
-            talk(get_AI_response(reply), f'{self.turns}')
+            if outloud: talk(get_AI_response(reply), f'{self.turns}')  # Speak if setting turned on
 
             # Keep track of conversation
             self.turns += 1
