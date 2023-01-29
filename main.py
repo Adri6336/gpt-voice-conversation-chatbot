@@ -65,7 +65,7 @@ while True:
 
                         change_color(display, (51, 187, 255))  # Blue to show processing reply
                         reply = chatbot.say_to_chatbot(speech)
-                        print(f'REPLY: f{reply}')
+                        print(f'REPLY: {reply}')
 
                     except Exception as e:
                         print(f'Error: {e}')
