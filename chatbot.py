@@ -231,7 +231,7 @@ class Chatbot():
                     self.use11 = talk(get_AI_response(reply), f'{self.turns}',
                                     self.use11, self.api_key_11)  # Speak if setting turned on
             except Exception as e:
-                print('Error trying to speak: {e}')
+                print(f'Error trying to speak: {e}')
                 self.use11 = False
 
             # Keep track of conversation
