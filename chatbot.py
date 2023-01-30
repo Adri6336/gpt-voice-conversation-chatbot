@@ -256,7 +256,7 @@ class Chatbot():
                                     self.use11, self.api_key_11)  # Speak if setting turned on
                 
                 elif outloud and self.robospeak:
-                    robospeak(reply)
+                    robospeak(get_AI_response(reply))
 
             except Exception as e:
                 print(f'Error trying to speak: {e}')
