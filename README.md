@@ -12,7 +12,7 @@ To use this STTC, you'll need to clone the repository, install the requirements,
     
 A Pygame gui will pop up; its colors represent the state of the bot. The color red indicates that the bot is not listening. To make the bot listen to you, press space. The color will then turn to yellow when its loading, then green when it's listening. Speak freely when the color is green, your speech will be recorded, converted to text, then fed to GPT-3 if it is in compliance with OpenAI's policies. When GPT-3 is ready to reply, the screen will turn blue.
 
-Press 'q' to exit.
+Press 'q' to exit and have bot remember the conversation. Simply close the window to have the bot exit without remembering what you disucssed.
 
 If you would like to use [ElevenLabs TTS](https://beta.elevenlabs.io/speech-synthesis), you must enter your personal ElevenLabs api key following your OpenAI api key as follows:
 
@@ -35,12 +35,11 @@ Please not that outages or latency problems with the moderation api will prevent
 
 - Speak with GPT-3 outloud using Google's speech recognition tech  
 
+- Bot will remember things about you if you close with the 'q' key
+
 - See text GPT-3's replies as text in the terminal window (doesn't work for non-utf-8 characters)
 
 
 # Planned Features
 
-- Make a setting where the bot can remember speaking with you between sessions, recalling only important bits of info.
-
 - Make interface run more smoothly
-
