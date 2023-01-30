@@ -77,6 +77,10 @@ while True:
                             chatbot.robospeak = True
                             robospeak('I will now speak like a robot!')
                             continue
+                        elif 'stop speaking like a robot' in speech:
+                            robospeak('I will stop speaking like a robot going forward')
+                            chatbot.robospeak = False
+                            continue
 
                         reply = chatbot.say_to_chatbot(speech)
                         print(f'REPLY: {reply}')
