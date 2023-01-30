@@ -194,7 +194,7 @@ class Chatbot():
             self.use11 = True
 
         # 2. Set up bot memories and init prompt
-        self.remember()  # This will collect memories
+        self.memories = self.remember()  # This will collect memories
         self.conversation = ("The following is a conversation with an AI assistant. The assistant is helpful, creative," + 
                 "clever, and very friendly. The assistant is able to understand numerous languages and will reply" +
                 f" to any messsage by the human in the language it was provided in. It has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
@@ -275,9 +275,37 @@ class Chatbot():
 
     def remember(self):
         """
-        Placeholder function. This sees if a memories file exists. If it does, it will return its contents.
+        Placeholder function. This sees if a memories file exists. 
+        If it does, it will return its contents. Otherwise, it
+        will return 'nothing'.
         """
-        pass
+        if os.path.isfile('memories.txt'):
+            with open('memories.txt', 'r') as file:
+                memories =  file.read()
+
+            memories = memories.replace(' ', '')
+            memories = memories.replace('\n', '')
+            return memories
+
+        return 'nothing'
+
+    def save_memories(self):
+        gpt = GPT3(self.api_key)
+        prompt = ("Please create a list of concepts separated by commas that represent" + 
+                " the most important things you've learned about me during our conversation." + 
+                " Format it like this, replace parenthesis content with 'unknown' if you don't know: " +
+                "job:[], likes:[], dislikes:[], personality:[], facts_about_user:[], things_discussed:[]" + 
+                " For each concept, please use as few words as possible but make it so that you can immediately understand" +
+                "what they mean. Refer to previous memories and preserve them.\nConversation:\n" + 
+                f"{self.conversation}")
+        memories = gpt.request(prompt)
+
+        memories = memories.replace(' ', '')  # Remove spaces
+        memories = memories.replace('\n', '')  # Remove newlines
+
+        with open('memories.txt', 'w') as file:
+            file.write(f'|{memories}|')
+
 
 class GPT3(Chatbot):
     """
@@ -286,7 +314,7 @@ class GPT3(Chatbot):
     interfere with the chatbot.
     """
 
-    def request(self, text:str, tokens: int = 150):
+    def request(self, text:str, tokens: int = 1000):
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
             # 1. Get response

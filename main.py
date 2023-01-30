@@ -89,5 +89,6 @@ while True:
                         print(f'Error: {e}')
 
             if event.key == pygame.K_q:
+                chatbot.save_memories()
                 pygame.quit()
                 sys.exit() 
