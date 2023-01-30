@@ -4,91 +4,115 @@ import sys
 from sys import argv
 import re
 from chatbot import *
-
+import threading
 
 # Functions
 def change_color(display, color: tuple): 
     display.fill(color)
     pygame.display.flip()
  
-# Determine if we have a token
-num_args = len(sys.argv) 
-key = ''
-key_11 = ''
+class GUI:
+    color = (255, 25, 25)
+    working = False
 
-if num_args < 2:
-    print('[X] Please enter OpenAI key as argument')
-    print('Example: python main.py <key>')
-    sys.exit()
+    def __init__(self):
+        # Determine if we have a token
+        num_args = len(sys.argv) 
+        self.key = ''
+        self.key_11 = ''
 
-elif num_args == 2:
-    key = argv[1]
-
-elif num_args > 2:
-    key = argv[1]
-    key_11 = argv[2]
-
-# Setup pygame display
-pygame.init()
-display = pygame.display.set_mode((500, 500))
-pygame.display.set_caption('Chat With GPT-3')
-
-# Setup recorder
-r = sr.Recognizer()
-mic = sr.Microphone()
-
-# Setup chatbot
-chatbot = Chatbot(key, key_11)
- 
-# Run  main loop
-while True:
-    change_color(display, (255, 25, 25))  # Red indicates not listening
-
-    # Creating a loop to check events that
-    # are occurring
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
+        if num_args < 2:
+            print('[X] Please enter OpenAI key as argument')
+            print('Example: python main.py <key>')
             sys.exit()
-         
-        # Checking if keydown event happened or not
-        if event.type == pygame.KEYDOWN:
-           
-            if event.key == pygame.K_SPACE:  # Space bar pressed
-                with mic as source:
-                    # 1. Listen for audio
-                    change_color(display, (255, 255, 77))  # Yellow to show loading
-                    r.adjust_for_ambient_noise(source)
 
-                    change_color(display, (43, 255, 0))  # Green to show listening
-                    print('Listening!')
-                    audio = r.listen(source)
+        elif num_args == 2:
+            self.key = argv[1]
 
-                    change_color(display, (255, 25, 25))  # Red to show no longer listening
-                    print('Not listening')
+        elif num_args > 2:
+            self.key = argv[1]
+            self.key_11 = argv[2]
 
-                    # 2. Interpret audio
-                    change_color(display, (51, 187, 255))  # Blue to show processing reply
-                    try:
-                        speech = r.recognize_google(audio)
-                        print(f'TYPE: {type(speech)}\nCONTENT: {speech}') 
+        self.chatbot = Chatbot(self.key, self.key_11)
+        self.running = True
+        self.main_thread = threading.Thread(target=self.main_loop)
+        self.main_thread.start()
+    
+    def main_loop(self):
 
-                        if 'speak like a robot' in speech:  # Set to robospeak if user wants
-                            chatbot.robospeak = True
-                            robospeak('I will now speak like a robot!')
-                            continue
-                        elif 'stop speaking like a robot' in speech:
-                            robospeak('I will stop speaking like a robot going forward')
-                            chatbot.robospeak = False
-                            continue
+        pygame.init()
+        self.display = pygame.display.set_mode((500, 500))
+        pygame.display.set_caption('Chat With GPT-3')
+        change_color(self.display, (255, 25, 25))  # Red indicates not listening
 
-                        reply = chatbot.say_to_chatbot(speech)
-                        print(f'REPLY: {reply}')
+        self.r = sr.Recognizer()
+        self.mic = sr.Microphone()
+        while self.running:
+            change_color(self.display, self.color)  
+            # Creating a loop to check events that
+            # are occurring
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    pygame.quit()
+                    sys.exit()
+                 
+                # Checking if keydown event happened or not
+                if event.type == pygame.KEYDOWN:
+                   
+                    if event.key == pygame.K_SPACE and not self.working:  # Space bar pressed
+                        audio = self.listen_thread = threading.Thread(target=self.listen_for_audio)
+                        self.listen_thread.start()
 
-                    except Exception as e:
-                        print(f'Error: {e}')
+                    if event.key == pygame.K_q and not self.working:
+                        self.chatbot.save_memories()
+                        self.running = False
+                        pygame.quit()
+                        sys.exit()
+                    
+    def listen_for_audio(self):
+        self.working = True
+        with self.mic as source:
+            # 1. Listen for audio
+            self.color = (255, 255, 77)  # Yellow to show loading
+            self.r.adjust_for_ambient_noise(source)
 
-            if event.key == pygame.K_q:
-                chatbot.save_memories()
-                pygame.quit()
-                sys.exit() 
+            self.color = (43, 255, 0)  # Green to show listening
+            print('Listening!')
+            audio = self.r.listen(source)
+
+            self.color = (255, 25, 25)  # Red to show no longer listening
+            print('Not listening')
+
+            # 2. Interpret audio
+            self.color = (51, 187, 255)  # Blue to show processing reply
+            try:
+                speech = self.r.recognize_google(audio)
+                print(f'TYPE: {type(speech)}\nCONTENT: {speech}') 
+
+                if 'speak like a robot' in speech:  # Set to robospeak if user wants
+                    self.chatbot.robospeak = True
+                    robospeak('I will now speak like a robot!')
+                    self.working = False
+                    self.color = (255, 25, 25)  # Red indicates not listening
+                    return
+                elif 'stop speaking like a robot' in speech:
+                    robospeak('I will stop speaking like a robot going forward')
+                    self.chatbot.robospeak = False
+                    self.working = False
+                    self.color = (255, 25, 25)  # Red indicates not listening
+                    return
+
+                reply = self.chatbot.say_to_chatbot(speech)
+                print(f'REPLY: {reply}')
+                self.color = (255, 25, 25)  # Red indicates not listening
+
+            except Exception as e:
+                print(f'Error: {e}')
+
+            self.working = False
+            self.color = (255, 25, 25)  # Red indicates not listening
+
+# Run  main loop
+gui = GUI()
+gui.main_thread.join()
