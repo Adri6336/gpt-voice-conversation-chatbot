@@ -95,6 +95,7 @@ def hostile_or_personal(text: str) -> bool:
 def google_tts(text: str, path: str):
 
     language = detect(text)
+    print(f'LANGUAGE: {language}')
     
     if language in gtts_languages:  # Pronounce correctly if possible
         tts = gTTS(text, lang=language)
