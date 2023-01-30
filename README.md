@@ -38,8 +38,3 @@ Please not that outages or latency problems with the moderation api will prevent
 - Bot will remember things about you if you close with the 'q' key
 
 - See text GPT-3's replies as text in the terminal window (doesn't work for non-utf-8 characters)
-
-
-# Planned Features
-
-- Make interface run more smoothly
