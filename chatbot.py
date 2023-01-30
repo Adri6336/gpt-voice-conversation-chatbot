@@ -275,7 +275,7 @@ class Chatbot():
 
     def remember(self):
         """
-        Placeholder function. This sees if a memories file exists. 
+        This sees if a memories file exists. 
         If it does, it will return its contents. Otherwise, it
         will return 'nothing'.
         """
@@ -294,7 +294,7 @@ class Chatbot():
         prompt = ("Please create a list of concepts separated by commas that represent" + 
                 " the most important things you've learned about me during our conversation." + 
                 " Format it like this, replace parenthesis content with 'unknown' if you don't know: " +
-                "job:[], likes:[], dislikes:[], personality:[], facts_about_user:[], things_discussed:[]" + 
+                "job:[], likes:[], dislikes:[], personality:[], facts_about_user:[], things_discussed:[], interests:[], things_to_remember:[]" + 
                 " For each concept, please use as few words as possible but make it so that you can immediately understand" +
                 "what they mean. Refer to previous memories and preserve them.\nConversation:\n" + 
                 f"{self.conversation}")
