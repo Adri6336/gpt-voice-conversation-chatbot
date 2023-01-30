@@ -6,14 +6,11 @@ The bot requires OpenAI's moderation and GPT-3 apis to be working properly witho
 
 # Using GPT-3 STTC
 
-To use this STTC, you'll need to clone the repository, install the requirements, then navigate to the repository's folder using a terminal or powershell.
-Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing \<key\> with your api key):
+To use this STTC, you'll need to clone the repository, install the requirements, then navigate to the repository's folder using a terminal or powershell. Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing \<key\> with your api key):
 
     python main.py <key>
     
-A Pygame gui will pop up; its colors represent the state of the bot. The color red indicates that the bot is not listening. To make the bot listen to you,
-press space. The color will then turn to yellow when its loading, then green when it's listening. Speak freely when the color is green, your speech will
-be recorded, converted to text, then fed to GPT-3 if it is in compliance with OpenAI's policies. When GPT-3 is ready to reply, the screen will turn blue.
+A Pygame gui will pop up; its colors represent the state of the bot. The color red indicates that the bot is not listening. To make the bot listen to you, press space. The color will then turn to yellow when its loading, then green when it's listening. Speak freely when the color is green, your speech will be recorded, converted to text, then fed to GPT-3 if it is in compliance with OpenAI's policies. When GPT-3 is ready to reply, the screen will turn blue.
 
 Press 'q' to exit.
 
@@ -25,11 +22,20 @@ If you don't want to use the fancy TTS, this bot will use Google's TTS.
 
 # Content Moderation
 
-The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope to prevent the use of GPT-3 that is outside of OpenAI's useage policy.
-This is not an infaliable method though, so please exercise caution with what you give GPT-3.
+The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope to prevent the use of GPT-3 that is outside of OpenAI's useage policy. This is not an infaliable method though, so please exercise caution with what you give GPT-3.
 
-Please not that outages or latency problems with the moderation api will prevent you from using this chatbot. If you must talk with the bot while
-OpenAI is having issues, please edit the chatbot.py file to exclude the "not self.flagged_by_openai(text)" condition. I do not recommend this though.
+Please not that outages or latency problems with the moderation api will prevent you from using this chatbot. If you must talk with the bot while OpenAI is having issues, please edit the chatbot.py file to exclude the "not self.flagged_by_openai(text)" condition. I do not recommend this though.
+
+
+# Features
+
+- Have a convcersation with GPT-3 as if it was ChatGPT
+
+- Hear GPT-3 talk to you with Google's TTS tool (will pronounce accents accurately if it can), in ElevenLab's life-like TTS (if you have a valid api key), or as a robot (say "speak like a robot" to activate)
+
+- Speak with GPT-3 outloud using Google's speech recognition tech  
+
+- See text GPT-3's replies as text in the terminal window (doesn't work for non-utf-8 characters)
 
 
 # Planned Features
@@ -37,3 +43,4 @@ OpenAI is having issues, please edit the chatbot.py file to exclude the "not sel
 - Make a setting where the bot can remember speaking with you between sessions, recalling only important bits of info.
 
 - Make interface run more smoothly
+
