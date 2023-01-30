@@ -11,7 +11,14 @@ from nltk import ne_chunk, pos_tag
 from nltk.tokenize import word_tokenize
 from datetime import datetime
 from langdetect import detect
+import pyttsx3
 gtts_languages = set(gtts.lang.tts_langs().keys())
+
+
+def robospeak(text: str):
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 def tts11AI(key: str, text: str, path: str) -> bool:
     """
@@ -174,6 +181,7 @@ class Chatbot():
     memories = 'nothing'
     turns = 0
     conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
+    robospeak = False
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -243,9 +251,13 @@ class Chatbot():
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             try:
-                if outloud: 
+                if outloud and not self.robospeak: 
                     self.use11 = talk(get_AI_response(reply), f'{self.turns}',
                                     self.use11, self.api_key_11)  # Speak if setting turned on
+                
+                elif outloud and self.robospeak:
+                    robospeak(reply)
+
             except Exception as e:
                 print(f'Error trying to speak: {e}')
                 self.use11 = False

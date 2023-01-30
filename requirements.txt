@@ -8,3 +8,4 @@ nltk==3.8.1
 requests==2.28.1
 openai==0.26.2
 langdetect==1.0.9
+pyttsx3==2.90

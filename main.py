@@ -73,6 +73,11 @@ while True:
                         speech = r.recognize_google(audio)
                         print(f'TYPE: {type(speech)}\nCONTENT: {speech}') 
 
+                        if 'speak like a robot' in speech:  # Set to robospeak if user wants
+                            chatbot.robospeak = True
+                            robospeak('I will now speak like a robot!')
+                            continue
+
                         reply = chatbot.say_to_chatbot(speech)
                         print(f'REPLY: {reply}')
 
