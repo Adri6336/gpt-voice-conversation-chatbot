@@ -29,7 +29,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 # Features
 
-- Have a convcersation with GPT-3 as if it was ChatGPT
+- Have a conversation with GPT-3 as if it was ChatGPT
 
 - Hear GPT-3 talk to you with Google's TTS tool (will pronounce accents accurately if it can), in ElevenLab's life-like TTS (if you have a valid api key), or as a robot (say "speak like a robot" to activate)
 
