@@ -195,9 +195,9 @@ class Chatbot():
 
         # 2. Set up bot memories and init prompt
         self.memories = self.remember()  # This will collect memories
-        self.conversation = ("The following is a conversation with an AI assistant. The assistant is helpful, creative," + 
-                "clever, and very friendly. The assistant is able to understand numerous languages and will reply" +
-                f" to any messsage by the human in the language it was provided in. It has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
+        self.conversation = ("The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
+                "clever, and very friendly. The AI assistant is able to understand numerous languages and will reply" +
+                f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
                 "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
                 " can I help you today?")
 
@@ -291,18 +291,35 @@ class Chatbot():
 
     def save_memories(self):
         gpt = GPT3(self.api_key)
-        prompt = ("Please create a list of concepts separated by commas that represent" + 
-                " the most important things you've learned about me during our conversation." + 
-                " Format it like this, replace parenthesis content with 'unknown' if you don't know: " +
-                "job:[], likes:[], dislikes:[], users_personality:[], facts_about_user:[], things_discussed:[], interests:[], things_to_remember:[]" + 
-                " For each concept, please use as few words as possible but make it so that you can immediately understand" +
-                "what they mean. Refer to previous memories and preserve them.\nConversation:\n" + 
-                f"{self.conversation}")
+
+        # 1. Get the information to remember
+        conversation = self.conversation.split('\n')[4:]
+        conversation_string = ''
+        for line in conversation:
+            conversation_string += f'{line}\n'
+
+        if conversation_string == '':
+            conversation_string = 'nothing.'
+        print(f'MEMORIES: {self.memories}\nCONVERSATION: {conversation_string}\n')
+
+        prompt = ("Create a memory text file with the following format:\n\n" +
+                    "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
+                    "Fill the text file in with information you obtain from your previous memories and the conversation. If the conversation is empty, update none of your memories. If you " + 
+                    "have no memories and the conversation is empty, create a placeholder text with 'nothing' in each key's list. If the conversation is not empty, fill in the memory text " + 
+                    "with as much info as is relevant, using as few words as possible, using natural language processing. Please make as few assumptions as possible when recording memories, " + 
+                    "sticking only to the facts avaliable. Please ignore the name \"AI:\", as this is the bot.\n\n" + 
+                    f"PREVIOUS_MEMORIES: {self.memories}.\n\n" + 
+                    f"CONVERSATION:\n{conversation_string}")
+
+        print(prompt)
+
+        # 2. Remember the info        
         memories = gpt.request(prompt)
 
         memories = memories.replace(' ', '')  # Remove spaces
         memories = memories.replace('\n', '')  # Remove newlines
 
+        print(f'NEW_MEMORIES: {memories}')
         with open('memories.txt', 'w') as file:
             file.write(f'|{memories}|')
 
