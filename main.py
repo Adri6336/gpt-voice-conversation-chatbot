@@ -105,15 +105,22 @@ class GUI:
                     return
 
                 elif 'please set tokens to' in speech: # Revise tokens
-                    words = speech.split(' ')
+                    words = speech.replace(',', '')
+                    words = words.split(' ')
+                    words.reverse()
+
                     for word in words:
-                        if word.isdigit():
+                        if word.lstrip('-').isdigit():
                             num = int(word)
                             if num > 0 and num < 4000:
                                 old = self.chatbot.reply_tokens
                                 self.chatbot.reply_tokens = num
                                 robospeak(f'I have changed reply tokens to {num} from {old}')
-                                break  # Exit for loop
+                            
+                            else:
+                                robospeak(f'I cannot set tokens to {num}. I can only set it between 1 and 3999.')
+
+                            break  # Exit for loop
 
                     self.working = False
                     self.color = (255, 25, 25)  # Red indicates not listening
