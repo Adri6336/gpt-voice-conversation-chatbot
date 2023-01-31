@@ -101,7 +101,7 @@ class GUI:
 
             self.color = (51, 187, 255)  # Blue to show processing reply
             try:
-                speech = self.r.recognize_google(audio)
+                speech = self.r.recognize_google(audio) + '\n'  # The added \n should help prevent hallucination of user statement
                 print(f'TYPE: {type(speech)}\nCONTENT: {speech}')
 
                 if self.cancel:  # Second chance for user to cancel
@@ -145,8 +145,8 @@ class GUI:
                     return
 
 
-                reply = self.chatbot.say_to_chatbot(speech)
-                print(f'REPLY: {reply}')
+                reply = self.chatbot.say_to_chatbot(speech)  
+                print(f'{reply}')
                 self.color = (255, 25, 25)  # Red indicates not listening
 
             except Exception as e:
