@@ -27,6 +27,19 @@ The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope 
 Please note that outages or latency problems with the moderation api will prevent you from using this chatbot. If you must talk with the bot while OpenAI is having issues, please edit the chatbot.py file to exclude the "not self.flagged_by_openai(text)" condition. I do not recommend this though.
 
 
+# Controls
+
+- SPACEBAR: This starts recording you. Whatever you say will be then transcribed and sent to GPT-3 (if it passes filters).
+
+- Q: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt; close window to exit without remembering).
+
+- P: This attempts to cancel a request to GPT-3. It will either prevent transcribing of message or will avoid sending it to GPT-3.
+
+- Say 'please set tokens to #': When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
+
+- Say 'talk like a robot': This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
+
+
 # Features
 
 - Have a conversation with GPT-3 as if it was ChatGPT
