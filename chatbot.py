@@ -69,7 +69,14 @@ def get_AI_response(text: str) -> str:
     instance of a colon
     """
     sections = text.split('AI:')
-    return sections[1]
+    try:
+        target = sections[1]
+
+    except Exception as e:
+        print(f'Error occurred while trying to separate "AI:" from response: {e}')
+        target = text
+
+    return target
 
 def hostile_or_personal(text: str) -> bool:
     """
