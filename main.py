@@ -128,17 +128,24 @@ class GUI:
                     words.reverse()
 
                     for word in words:
-                        if word.lstrip('-').isdigit():
+                        try:
                             num = int(word)
+
                             if num > 0 and num < 4000:
                                 old = self.chatbot.reply_tokens
                                 self.chatbot.reply_tokens = num
+                                print(f'Tokens set to {num}')
                                 robospeak(f'I have changed reply tokens to {num} from {old}')
                             
                             else:
                                 robospeak(f'I cannot set tokens to {num}. I can only set it between 1 and 3999.')
 
                             break  # Exit for loop
+
+                        except:
+                            continue
+                        
+                        
 
                     self.working = False
                     self.color = (255, 25, 25)  # Red indicates not listening
