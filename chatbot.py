@@ -189,6 +189,7 @@ class Chatbot():
     turns = 0
     conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
     robospeak = False
+    reply_tokens = 150
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -246,7 +247,7 @@ class Chatbot():
                 model="text-davinci-003",
                 prompt=self.conversation,
                 temperature=0.9,
-                max_tokens=150,
+                max_tokens=self.reply_tokens,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0.6,

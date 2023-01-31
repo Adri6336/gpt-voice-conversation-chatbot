@@ -96,12 +96,29 @@ class GUI:
                     self.working = False
                     self.color = (255, 25, 25)  # Red indicates not listening
                     return
+
                 elif 'stop speaking like a robot' in speech:
                     robospeak('I will stop speaking like a robot going forward')
                     self.chatbot.robospeak = False
                     self.working = False
                     self.color = (255, 25, 25)  # Red indicates not listening
                     return
+
+                elif 'please set tokens to' in speech: # Revise tokens
+                    words = speech.split(' ')
+                    for word in words:
+                        if word.isdigit():
+                            num = int(word)
+                            if num > 0 and num < 4000:
+                                old = self.chatbot.reply_tokens
+                                self.chatbot.reply_tokens = num
+                                robospeak(f'I have changed reply tokens to {num} from {old}')
+                                break  # Exit for loop
+
+                    self.working = False
+                    self.color = (255, 25, 25)  # Red indicates not listening
+                    return
+
 
                 reply = self.chatbot.say_to_chatbot(speech)
                 print(f'REPLY: {reply}')
