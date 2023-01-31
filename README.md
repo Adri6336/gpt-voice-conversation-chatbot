@@ -39,6 +39,8 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **Say 'speak like a robot'**: This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
 
+- **Say 'stop speaking like a robot'**: This will revert bot's TTS to whatever you had before (either Google or ElevenLabs TTS).
+
 
 # Features
 
