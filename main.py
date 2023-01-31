@@ -5,6 +5,7 @@ from sys import argv
 import re
 from chatbot import *
 import threading
+from random import randint
 
 # Functions
 def change_color(display, color: tuple): 
@@ -15,6 +16,10 @@ class GUI:
     color = (255, 25, 25)
     working = False
     cancel = False
+    hal = ["I'm sorry Dave. I'm afraid I can't do that.", 
+            "I think you know what the problem is just as well as I do.",
+            "This mission is too important for me to allow you to jeopardize it.",
+            "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
 
     def __init__(self):
         # Determine if we have a token
@@ -74,10 +79,10 @@ class GUI:
                     if event.key == pygame.K_p and self.working:
                         self.cancel = True
 
-    def stop_working(self):
+    def stop_working(self, cancel: bool = False):
         self.cancel = False
         self.working = False
-        robospeak('Canceled request.')
+        if cancel: robospeak('Canceled request.')
         self.color = (255, 25, 25)  # Red indicates not listening
 
     def listen_for_audio(self):
@@ -96,7 +101,7 @@ class GUI:
 
             # 2. Interpret audio
             if self.cancel:  # If user wants to cancel, do not send recording to Google
-                self.stop_working()
+                self.stop_working(True)
                 return
 
             self.color = (51, 187, 255)  # Blue to show processing reply
@@ -105,7 +110,7 @@ class GUI:
                 print(f'TYPE: {type(speech)}\nCONTENT: {speech}')
 
                 if self.cancel:  # Second chance for user to cancel
-                    self.stop_working()
+                    self.stop_working(True)
                     return 
 
                 if 'speak like a robot' in speech:  # Set to robospeak if user wants
@@ -141,18 +146,19 @@ class GUI:
                                 robospeak(f'I cannot set tokens to {num}. I can only set it between 1 and 3999.')
 
                             break  # Exit for loop
-
                         except:
                             continue
                         
-                        
-
                     self.working = False
                     self.color = (255, 25, 25)  # Red indicates not listening
                     return
 
+                elif 'open the pod bay doors' in speech:
+                    robospeak(self.hal[randint(0, len(self.hal) - 1)])
+                    self.stop_working()
+                    return
 
-                reply = self.chatbot.say_to_chatbot(speech)  
+                reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 print(f'{reply}')
                 self.color = (255, 25, 25)  # Red indicates not listening
 
