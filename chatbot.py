@@ -12,6 +12,9 @@ from nltk.tokenize import word_tokenize
 from datetime import datetime
 from langdetect import detect
 import pyttsx3
+import torch
+from transformers import AutoTokenizer, BloomForCausalLM
+import psutil
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
 
@@ -68,15 +71,24 @@ def get_AI_response(text: str) -> str:
     This returns all the text following the first 
     instance of a colon
     """
-    sections = text.split('AI:')
-    try:
-        target = sections[1]
 
-    except Exception as e:
-        print(f'Error occurred while trying to separate "AI:" from response: {e}')
-        target = text
+    # 1. Determine if we have a valid text
+    if 'AI:' in text:
+        sections = text.split('AI:')
+        size = len(sections)
+    
+    elif 'Human:' in text:
+        sections = text.split('Human:')  # If using bloom, this will happen :/
+        size = len(sections)
 
-    return target
+    else:
+        return text  # Invalid
+
+    # 2. Determine if long enough
+    if size == 2:
+        return sections[1]
+    else:
+        return text
 
 def hostile_or_personal(text: str) -> bool:
     """
@@ -281,14 +293,14 @@ class Chatbot():
             print('[X] Text flagged, no request sent.')
             return '[X] Text flagged, no request sent.'
 
-    def remember(self):
+    def remember(self, file_name:str = 'memories.txt'):
         """
         This sees if a memories file exists. 
         If it does, it will return its contents. Otherwise, it
         will return 'nothing'.
         """
-        if os.path.isfile('memories.txt'):
-            with open('memories.txt', 'r') as file:
+        if os.path.isfile(file_name):
+            with open(file_name, 'r') as file:
                 memories =  file.read()
 
             memories = memories.replace(' ', '')
@@ -297,8 +309,8 @@ class Chatbot():
 
         return 'nothing'
 
-    def save_memories(self):
-        gpt = GPT3(self.api_key)
+    def save_memories(self, file_name: str = 'memories.txt', tool:str = 'gpt'):
+        
 
         # 1. Get the information to remember
         conversation = self.conversation.split('\n')[4:]
@@ -321,16 +333,21 @@ class Chatbot():
 
         print(prompt)
 
-        # 2. Remember the info        
-        memories = gpt.request(prompt)
-
+        # 2. Remember the info  
+        if tool == 'bloom':  # If I can figure out how to get this working right, this could make bot cheaper to use
+            bloom = Bloom()  # As this will only be called when shutting down, should be memory safe. 
+            memories = bloom.request(prompt)  # Currently does nothing
+        
+        else: 
+            gpt = GPT3(self.api_key)     
+            memories = gpt.request(prompt)
+        
         memories = memories.replace(' ', '')  # Remove spaces
         memories = memories.replace('\n', '')  # Remove newlines
 
         print(f'NEW_MEMORIES: {memories}')
-        with open('memories.txt', 'w') as file:
+        with open(file_name, 'w') as file:
             file.write(f'|{memories}|')
-
 
 class GPT3(Chatbot):
     """
@@ -356,3 +373,97 @@ class GPT3(Chatbot):
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             return reply
+
+class Bloom(Chatbot):
+    """
+    This uses Bloom's transformer. Because of the size, this model is unpredicable
+    and does not compare to GPT-3.
+    """
+    model = None
+    tokenizer = None
+    active = False
+    robospeak = True
+    model_type = ''
+
+    def __init__(self, model=''):
+        
+        # Determine if there's enough memory to run bot
+        free_gigs = psutil.virtual_memory()[1] / 1_073_741_824
+        
+        if (free_gigs >= 5 and free_gigs < 7.5) or model == '560m':
+            self.tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-560m")
+            self.model = BloomForCausalLM.from_pretrained("bigscience/bloom-560m")
+            self.active = True
+            self.model_type = 'bloom-560m'
+
+        elif (free_gigs >= 7.8 and free_gigs < 9.5) or model == '1b1':
+            self.tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-1b1")
+            self.model = BloomForCausalLM.from_pretrained("bigscience/bloom-1b1")
+            self.active = True
+            self.model_type = 'bloom-1b1'
+
+        elif free_gigs > 9.7 or model == '1b7':
+            self.tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-1b7")
+            self.model = BloomForCausalLM.from_pretrained("bigscience/bloom-1b7")
+            self.active = True
+            self.model_type = 'bloom-1b7'
+        
+        else:
+            print('[X] Failed to load model: not enough free memory')
+            return
+        
+        print(f'[OK] {self.model_type} model loaded!')
+        robospeak('Warning! You are using bloom as my mind. My capabilities are reduced and I may be unpredictable or inappropriate.')
+
+
+        # Set up memories (not that it will work with such a weak model)
+        self.memories = self.remember()  # This will collect memories
+        self.conversation = ("The following is a conversation with an AI assistant. The AI assistant is " + 
+          "helpful, creative,clever, and very friendly. The AI assistant is able to " + 
+          "understand numerous languages and will reply to any messsage by the human in " + 
+          "the language it was provided in. The AI has the ability to remember important " + 
+          f"concepts about the user; it currently remembers: |{self.memories}|.\n\n" + 
+          "Human: Hello, who are you?\n" + 
+          "AI: I am an AI created by BigScience. How can I help you today?\n"+ 
+          "Human: what number did I ask you to remember?\n" + 
+          "AI: You asked me to remember the number 6,555.\n")
+
+
+    def getReply(self, model, tokenizer, prompt, max_tokens=150):
+        lines = prompt.split('\n')
+        numLines = len(lines) - 1
+
+        inputs = tokenizer(prompt, return_tensors="pt")
+        tokens = len(inputs[0]) + max_tokens
+
+        output = tokenizer.decode(model.generate(inputs['input_ids'], 
+                                                max_length=tokens,
+                                                do_sample=True,
+                                                top_k=70,
+                                                top_p=0.9,
+                                                )[0])
+        print(f'=====OUTPUT=====\n{output}\n===============')
+        return (output, output.split('\n')[numLines])
+
+    def say_to_chatbot(self, text: str, outloud: bool = True) -> str:
+        statement = f'\nHuman: {text}?\n'
+        prompt = self.conversation + statement
+        reply = self.getReply(self.model, self.tokenizer, prompt)
+        self.conversation += f'{statement}{reply[1]}'
+
+        try:
+            clean_reply = get_AI_response(reply[1])
+            robospeak(clean_reply)
+
+        except Exception as e:
+            robospeak(reply[1]) 
+            print(f'Error: {e}')
+            
+
+        return reply[1]
+
+    def request(self, text:str):
+        pass
+
+    def save_memories(self, file_name: str = 'memories.txt', tool: str = 'gpt'):
+        pass

@@ -20,6 +20,7 @@ class GUI:
             "I think you know what the problem is just as well as I do.",
             "This mission is too important for me to allow you to jeopardize it.",
             "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
+    name = ''
 
     def __init__(self):
         # Determine if we have a token
@@ -33,13 +34,20 @@ class GUI:
             sys.exit()
 
         elif num_args == 2:
-            self.key = argv[1]
+            if not argv[1] == 'bloom':
+                self.key = argv[1]
+                self.chatbot = Chatbot(self.key, self.key_11)
+                self.name = 'GPT-3'
+            else:
+                self.chatbot = Bloom()
+                self.name = self.chatbot.model_type
 
         elif num_args > 2:
             self.key = argv[1]
             self.key_11 = argv[2]
 
-        self.chatbot = Chatbot(self.key, self.key_11)
+        
+
         self.running = True
         self.main_thread = threading.Thread(target=self.main_loop)
         self.main_thread.start()
@@ -48,7 +56,7 @@ class GUI:
 
         pygame.init()
         self.display = pygame.display.set_mode((500, 500))
-        pygame.display.set_caption('Chat With GPT-3')
+        pygame.display.set_caption(f'Chat With {self.name}')
         change_color(self.display, (255, 25, 25))  # Red indicates not listening
 
         self.r = sr.Recognizer()
