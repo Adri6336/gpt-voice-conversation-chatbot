@@ -14,6 +14,7 @@ def change_color(display, color: tuple):
 class GUI:
     color = (255, 25, 25)
     working = False
+    cancel = False
 
     def __init__(self):
         # Determine if we have a token
@@ -69,7 +70,16 @@ class GUI:
                         self.running = False
                         pygame.quit()
                         sys.exit()
-                    
+
+                    if event.key == pygame.K_p and self.working:
+                        self.cancel = True
+
+    def stop_working(self):
+        self.cancel = False
+        self.working = False
+        robospeak('Canceled request.')
+        self.color = (255, 25, 25)  # Red indicates not listening
+
     def listen_for_audio(self):
         self.working = True
         with self.mic as source:
@@ -85,10 +95,18 @@ class GUI:
             print('Not listening')
 
             # 2. Interpret audio
+            if self.cancel:  # If user wants to cancel, do not send recording to Google
+                self.stop_working()
+                return
+
             self.color = (51, 187, 255)  # Blue to show processing reply
             try:
                 speech = self.r.recognize_google(audio)
-                print(f'TYPE: {type(speech)}\nCONTENT: {speech}') 
+                print(f'TYPE: {type(speech)}\nCONTENT: {speech}')
+
+                if self.cancel:  # Second chance for user to cancel
+                    self.stop_working()
+                    return 
 
                 if 'speak like a robot' in speech:  # Set to robospeak if user wants
                     self.chatbot.robospeak = True
