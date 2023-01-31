@@ -37,7 +37,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
-- **Say 'talk like a robot'**: This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
+- **Say 'speak like a robot'**: This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
 
 
 # Features
