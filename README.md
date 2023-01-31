@@ -29,15 +29,15 @@ Please note that outages or latency problems with the moderation api will preven
 
 # Controls
 
-- SPACEBAR: This starts recording you. Whatever you say will be then transcribed and sent to GPT-3 (if it passes filters).
+- **SPACEBAR**: This starts a recording. Whatever you say will be then transcribed and sent to GPT-3 (if it passes filters).
 
-- Q: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt; close window to exit without remembering).
+- **Q**: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt; close window to exit without remembering).
 
-- P: This attempts to cancel a request to GPT-3. It will either prevent transcribing of message or will avoid sending it to GPT-3.
+- **P**: This attempts to cancel a request to GPT-3. It will either prevent transcribing of message or will avoid sending it to GPT-3.
 
-- Say 'please set tokens to #': When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
+- **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
-- Say 'talk like a robot': This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
+- **Say 'talk like a robot'**: This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
 
 
 # Features
