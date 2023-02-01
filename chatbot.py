@@ -15,6 +15,7 @@ import pyttsx3
 import torch
 from transformers import AutoTokenizer, BloomForCausalLM
 import psutil
+from sys import exit
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
 
@@ -410,9 +411,10 @@ class Bloom(Chatbot):
         
         else:
             print('[X] Failed to load model: not enough free memory')
-            return
+            exit(1)
         
         print(f'[OK] {self.model_type} model loaded!')
+        print('[!] Warning: You are using bloom as chat model. The bot\'s capabilities are reduced and it may be unpredictable or inappropriate. This is not GPT-3.')
         robospeak('Warning! You are using bloom as my mind. My capabilities are reduced and I may be unpredictable or inappropriate.')
 
 
