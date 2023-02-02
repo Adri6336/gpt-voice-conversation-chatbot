@@ -86,6 +86,7 @@ class GUI:
                         self.cancel = True
 
                     if event.key == pygame.K_ESCAPE:  # Exiting without saving
+                        info('Exiting (Sounds may continue to play until finished)')
                         self.running = False
                         pygame.quit()
                         sys.exit()
