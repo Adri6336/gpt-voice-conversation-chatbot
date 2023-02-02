@@ -4,6 +4,8 @@ This is a bot that allows you to have a spoken conversation with GPT-3 using you
 
 The bot requires OpenAI's moderation and GPT-3 apis to be working properly without too much latency. You can find the status here: https://status.openai.com/
 
+![_image_](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/blob/main/bot.jpeg)
+
 # Using GPT-3 STTC
 
 To use this STTC, you'll need to clone the repository, install the requirements, then navigate to the repository's folder using a terminal or powershell. Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing \<key\> with your api key):
