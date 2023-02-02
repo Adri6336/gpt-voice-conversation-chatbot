@@ -194,6 +194,13 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
+                elif 'please display conversation' in speech:
+                    info('Conversation So Far', 'topic')
+                    info(f'\n{self.chatbot.conversation}', 'plain')
+                    robospeak('Conversation displayed.')
+                    self.stop_working(tag=True)
+                    return
+
                 reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 self.color = (255, 25, 25)  # Red indicates not listening
 
