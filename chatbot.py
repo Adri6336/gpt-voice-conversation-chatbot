@@ -200,8 +200,15 @@ def save_conversation(conversation: str, name):
         os.mkdir(f'conversations')
 
     # 2. Save file
-    with open(f'conversations/{name}', 'w') as file:
-        file.write(conversation)
+    try:
+        with open(f'conversations/{name}', 'w') as file:
+            file.write(conversation)
+    except:
+        try:
+            with open(f'conversations/{name}', 'w') as file:
+                file.write(info(conversation, 'plain'))
+        except Exception as e:
+            info(f'Failed to save conversation to disk: {e}', 'bad')
 
 class Chatbot():
     """
