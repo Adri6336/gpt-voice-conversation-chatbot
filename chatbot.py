@@ -215,10 +215,6 @@ class Chatbot():
     """
     Chatbot that uses GPT-3
     """
-    nltk.download('punkt')
-    nltk.download('averaged_perceptron_tagger')
-    nltk.download('maxent_ne_chunker')
-    nltk.download('words')
     api_key = None
     api_key_11 = ''
     use11 = False
@@ -397,3 +393,28 @@ class GPT3(Chatbot):
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             return reply
+
+# Ensure that nltk is downloaded
+try:
+    nltk.download('punkt', quiet=True, raise_on_error=True)
+    nltk.download('averaged_perceptron_tagger', quiet=True, raise_on_error=True)
+    nltk.download('maxent_ne_chunker', quiet=True, raise_on_error=True)
+    nltk.download('words', quiet=True, raise_on_error=True)
+    info('NLTK Loaded', 'good')
+
+except Exception as e:
+    if 'getaddrinfo failed' in str(e):  # Notify that you have a connection issue
+        info('Failed to download NLTK data', 'bad')
+        info('Testing if NLTK requirements met ... ')
+    
+    else:  # If some other issue presents, exit
+        info(f'Unexpected error while downloading NLTK data: {e}')
+        exit(2)
+
+    # Test to see if NLTK requirements met
+    try:
+        hostile_or_personal('Thats pretty wack yo')
+        info('NLTK Requirements Met', 'good')
+    
+    except Exception as e:
+        info('NLTK requirements not met', 'bad')

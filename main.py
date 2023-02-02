@@ -1,14 +1,3 @@
-import sys, os
-
-# Disable
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
-
-# Restore
-def enablePrint():
-    sys.stdout = sys.__stdout__
-
-blockPrint()
 import pygame
 import speech_recognition as sr
 import sys
@@ -17,7 +6,6 @@ import re
 from chatbot import *
 import threading
 from random import randint
-enablePrint()
 
 
 def change_color(display, color: tuple): 
