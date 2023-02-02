@@ -72,18 +72,23 @@ class GUI:
                 # Checking if keydown event happened or not
                 if event.type == pygame.KEYDOWN:
                    
-                    if event.key == pygame.K_SPACE and not self.working:  # Space bar pressed
+                    if event.key == pygame.K_SPACE and not self.working:  # Start listening
                         self.listen_thread = threading.Thread(target=self.listen_for_audio)
                         self.listen_thread.start()
 
-                    if event.key == pygame.K_q and not self.working:
+                    if event.key == pygame.K_q and not self.working:  # Exit and save memories
                         self.chatbot.save_memories()
                         self.running = False
                         pygame.quit()
                         sys.exit()
 
-                    if event.key == pygame.K_p and self.working:
+                    if event.key == pygame.K_p and self.working:  # Cancel recording
                         self.cancel = True
+
+                    if event.key == pygame.K_ESCAPE:  # Exiting without saving
+                        self.running = False
+                        pygame.quit()
+                        sys.exit()
 
     def stop_working(self, cancel: bool = False, tag=False):
         self.cancel = False
