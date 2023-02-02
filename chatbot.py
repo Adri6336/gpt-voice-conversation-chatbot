@@ -12,8 +12,34 @@ from nltk.tokenize import word_tokenize
 from datetime import datetime
 from langdetect import detect
 import pyttsx3
+from rich import print as color
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
+def info(content, kind='info'):
+    """
+    This prints info to the terminal in a fancy way
+    :param content: This is the string you want to display
+    :param kind: bad, info, question; changes color
+    :return: None
+    """
+
+    if kind == 'info':
+        color(f'[bold blue]\[[/bold blue][bold white]i[/bold white][bold blue]][/bold blue]: [white]{content}[/white]')
+
+    elif kind == 'bad':
+        color(f'[bold red][X][/bold red] [white]{content}[/white]')
+
+    elif kind == 'question':
+        color(f'[bold yellow]\[?][/bold yellow] [white]{content}[/white]')
+    
+    elif kind == 'good':
+        color(f'[bold green][OK][/bold green] [white]{content}[/white]')
+
+    elif kind == 'topic':
+        color(f'[bold blue]\[[/bold blue][bold white]{content}[/bold white][bold blue]][/bold blue]: ', end='')
+
+    elif kind == 'plain':
+        color(f'[white]{content}[/white]')
 
 def robospeak(text: str):
     engine = pyttsx3.init()
@@ -58,7 +84,7 @@ def tts11AI(key: str, text: str, path: str) -> bool:
         return False
 
     except Exception as e:
-        print(f'[X] Unexpected error: {e}')
+        info(f'Unexpected error: {e}', 'bad')
         return False
     
     return True
@@ -73,7 +99,7 @@ def get_AI_response(text: str) -> str:
         target = sections[1]
 
     except Exception as e:
-        print(f'Error occurred while trying to separate "AI:" from response: {e}')
+        info(f'Error occurred while trying to separate "AI:" from response: {e}', 'bad')
         target = text
 
     return target
@@ -109,7 +135,7 @@ def hostile_or_personal(text: str) -> bool:
 def google_tts(text: str, path: str):
 
     language = detect(text)
-    print(f'LANGUAGE: {language}')
+    info(f'DETECTED LANGUAGE: {language}')
     
     if language in gtts_languages:  # Pronounce correctly if possible
         tts = gTTS(text, lang=language)
@@ -226,7 +252,7 @@ class Chatbot():
             return json.loads(response.text)['results'][0]['flagged']  # This is a bool
 
         except Exception as e:
-            print(f'[X] Failed to test with OpenAI. Key might be invalid.')
+            info(f'Failed to test with OpenAI. Key might be invalid.', 'bad')
             return True
 
     def say_to_chatbot(self, text: str, outloud: bool = True) -> str:
@@ -254,10 +280,13 @@ class Chatbot():
                 stop=[" Human:", " AI:"]
                 )
             except Exception as e:
-                print(f'Error communicating with GPT-3: {e}')
+                info(f'Error communicating with GPT-3: {e}', 'bad')
 
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
+            #color(f'[bold blue]\[AI Response][/bold blue]: [white]{get_AI_response(reply)}[white]')
+            info('AI Response', 'topic')
+            info(get_AI_response(reply), 'plain')
             try:
                 if outloud and not self.robospeak: 
                     self.use11 = talk(get_AI_response(reply), f'{self.turns}',
@@ -267,7 +296,7 @@ class Chatbot():
                     robospeak(get_AI_response(reply))
 
             except Exception as e:
-                print(f'Error trying to speak: {e}')
+                info(f'Error trying to speak: {e}', 'bad')
                 self.use11 = False
 
             # Keep track of conversation
@@ -278,7 +307,7 @@ class Chatbot():
             return reply
 
         else:
-            print('[X] Text flagged, no request sent.')
+            info('Text flagged, no request sent.', 'bad')
             return '[X] Text flagged, no request sent.'
 
     def remember(self):
@@ -308,7 +337,7 @@ class Chatbot():
 
         if conversation_string == '':
             conversation_string = 'nothing.'
-        print(f'MEMORIES: {self.memories}\nCONVERSATION: {conversation_string}\n')
+        info(f'MEMORIES: {self.memories}\nCONVERSATION: {conversation_string}\n')
 
         prompt = ("Create a memory text file with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
@@ -327,7 +356,7 @@ class Chatbot():
         memories = memories.replace(' ', '')  # Remove spaces
         memories = memories.replace('\n', '')  # Remove newlines
 
-        print(f'NEW_MEMORIES: {memories}')
+        info(f'NEW_MEMORIES: {memories}')
         with open('memories.txt', 'w') as file:
             file.write(f'|{memories}|')
 
