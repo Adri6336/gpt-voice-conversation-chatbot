@@ -31,6 +31,8 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **SPACEBAR**: This starts a recording. Whatever you say will be then transcribed and sent to GPT-3 (if it passes filters).
 
+- **ESCAPE**: This exits without memorizing.
+
 - **Q**: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt; close window to exit without remembering).
 
 - **P**: This attempts to cancel a request to GPT-3. It will either prevent transcribing of message or will avoid sending it to GPT-3.
@@ -40,6 +42,8 @@ Please note that outages or latency problems with the moderation api will preven
 - **Say 'speak like a robot'**: This will set all responses from GPT-3 to be spoken with a robotic TTS program that works offline.
 
 - **Say 'stop speaking like a robot'**: This will revert bot's TTS to whatever you had before (either Google or ElevenLabs TTS).
+
+- **Say 'please display conversation'**: This will output your entire conversation to the terminal window.
 
 
 # Features
@@ -52,4 +56,6 @@ Please note that outages or latency problems with the moderation api will preven
 
 - Bot will remember things about you if you close with the 'q' key
 
-- See text GPT-3's replies as text in the terminal window (doesn't work for non-utf-8 characters)
+- See text GPT-3's replies as text in the terminal window. Most UTF-32 characters (like Chinese and Arabic text) will also be printed
+
+- Automatically save conversations to a file on your disk to help you keep track of what you've talked about 
