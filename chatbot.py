@@ -205,8 +205,9 @@ def save_conversation(conversation: str, name):
             file.write(conversation)
     except:
         try:
-            with open(f'conversations/{name}', 'w') as file:
-                file.write(info(conversation, 'plain'))
+            with open(f'conversations/{name}', 'w', encoding='utf-32') as file:
+                file.write(conversation)
+
         except Exception as e:
             info(f'Failed to save conversation to disk: {e}', 'bad')
 
