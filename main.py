@@ -231,7 +231,7 @@ class GUI:
                     robospeak(f'I have {num_memories} memories stored in my neocortex.')
                     for x, memory_path in enumerate(memory_files):
                         with open(memory_path, 'r') as file:
-                            info(f'Selected Memory {x}', 'topic')
+                            info(f'Memory {x}', 'topic')
                             print(f'{file.read()}\n')
                     
                     self.stop_working(tag=True)
