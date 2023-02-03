@@ -373,7 +373,12 @@ class Chatbot():
 
         if conversation_string == '':
             conversation_string = 'nothing.'
-        info(f'MEMORIES: {self.memories}\nCONVERSATION: {conversation_string}\n')
+
+        info('Memories', 'topic')
+        print(f'{self.memories}\n')
+
+        info('Conversation', 'topic')
+        info(conversation_string, 'plain')
 
         prompt = ("Create a memory text file with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
@@ -396,7 +401,8 @@ class Chatbot():
         memories = memories.replace(' ', '')  # Remove spaces
         memories = memories.replace('\n', '')  # Remove newlines
 
-        info(f'NEW_MEMORIES: {memories}')
+        info(f'New Memories', 'topic')
+        print(memories)
         with open('memories.txt', 'w') as file:
             file.write(f'|{memories}|')
 
@@ -474,7 +480,7 @@ class Chatbot():
             file.write(f'|{self.memories}|')
 
         info('Compiled Memory', 'topic')
-        info(self.memories, 'plain')
+        print(self.memories)
         # 3. Recreate conversation with new memories
         new_conversation = ("The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
                 "clever, and very friendly. The AI assistant is able to understand numerous languages and will reply" +

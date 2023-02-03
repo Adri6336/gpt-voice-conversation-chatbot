@@ -226,7 +226,7 @@ class GUI:
                     memory_files = get_files_in_dir('neocortex')
                     num_memories = len(memory_files)
 
-                    robospeak(f'I have {num_memories} in my neocortex.')
+                    robospeak(f'I have {num_memories} memories stored in my neocortex.')
                     for x, memory_path in enumerate(memory_files):
                         with open(memory_path, 'r') as file:
                             info(f'Selected Memory {x}', 'topic')
