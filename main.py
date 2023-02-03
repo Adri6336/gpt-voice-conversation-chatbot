@@ -54,7 +54,7 @@ class GUI:
     def main_loop(self):
 
         pygame.init()
-        self.display = pygame.display.set_mode((500, 500))
+        self.display = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
         pygame.display.set_caption('Chat With GPT-3')
         change_color(self.display, (255, 25, 25))  # Red indicates not listening
 
