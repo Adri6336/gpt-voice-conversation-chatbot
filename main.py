@@ -208,6 +208,13 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
+                elif 'please restore your memory' in speech:
+                    info('Attempting to restore memory')
+                    robospeak('Attempting to restore memory. Please wait a moment.')
+                    self.chatbot.restore_memory()
+                    self.stop_working(tag=True)
+                    return
+
                 reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 self.color = (255, 25, 25)  # Red indicates not listening
 

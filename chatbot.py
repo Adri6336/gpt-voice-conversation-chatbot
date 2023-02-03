@@ -13,13 +13,14 @@ from datetime import datetime
 from langdetect import detect
 import pyttsx3
 from rich import print as color
+from random import shuffle
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
 def info(content, kind='info'):
     """
     This prints info to the terminal in a fancy way
     :param content: This is the string you want to display
-    :param kind: bad, info, question; changes color
+    :param kind: bad, info, question, good, topic, plain; changes color
     :return: None
     """
 
@@ -40,6 +41,22 @@ def info(content, kind='info'):
 
     elif kind == 'plain':
         color(f'[white]{content}[/white]')
+
+
+def get_files_in_dir(directory: str) -> None:
+    # This looks inside a directory and gives you a path to all
+    # of the files inside it
+
+    filePaths = []
+
+    for fileName in os.listdir(directory):
+        filePath = os.path.join(directory, fileName)
+
+        if os.path.isfile(filePath):
+            filePaths.append(filePath)
+
+    return filePaths
+
 
 def robospeak(text: str):
     engine = pyttsx3.init()
@@ -224,6 +241,7 @@ class Chatbot():
     conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
     robospeak = False
     reply_tokens = 150
+    back_and_forth = []  # This will contain human messages and AI replies
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -275,6 +293,7 @@ class Chatbot():
             start_sequence = "\nAI:"
             restart_sequence = "\nHuman: "
             self.conversation += f'\nHuman: {text}'
+            self.back_and_forth.append(f'\nHuman: {text}')
 
             try:
                 response = openai.Completion.create(
@@ -310,6 +329,7 @@ class Chatbot():
             # Keep track of conversation
             self.turns += 1
             self.conversation += reply
+            self.back_and_forth.append(reply)
             save_conversation(self.conversation, self.conversation_name)
 
             return reply
@@ -337,6 +357,14 @@ class Chatbot():
     def save_memories(self):
         gpt = GPT3(self.api_key)
 
+        # 0. Create directory for long-term memory storage
+        if not os.path.exists('neocortex'): 
+            os.mkdir('neocortex')
+            memory_name = '1.txt'
+
+        else:
+            memory_name = f'{(len(get_files_in_dir("neocortex")) + 1)}.txt'
+
         # 1. Get the information to remember
         conversation = self.conversation.split('\n')[4:]
         conversation_string = ''
@@ -358,8 +386,12 @@ class Chatbot():
 
         print(prompt)
 
-        # 2. Remember the info        
+        # 2. Remember the info as short term    
         memories = gpt.request(prompt)
+        ct = 0
+
+        while memories == '' or memories == '||' and ct > 3:
+            memories = gpt.request(prompt)
 
         memories = memories.replace(' ', '')  # Remove spaces
         memories = memories.replace('\n', '')  # Remove newlines
@@ -368,6 +400,94 @@ class Chatbot():
         with open('memories.txt', 'w') as file:
             file.write(f'|{memories}|')
 
+        # 3. Remember the info as long term
+        with open(f'neocortex/{memory_name}', 'w') as file:
+            file.write(f'|{memories}|')
+
+    def restore_memory(self, max_memories=30):
+        """
+        This will compile the memories stored in the neocortex
+        folder into a new memories.txt file, then save the file
+        to current memory.
+        """
+        gpt = GPT3(self.api_key)
+        info(f'Max memories to compile: {max_memories}')
+
+        # 0. Ensure neocortex exists
+        if not os.path.exists('neocortex'):  # No memories exist 
+            info('Failed to restore memory: neocortex folder does not exist', 'bad')
+            return 
+
+        # 2. Try to obtain memories from neocortex
+        memory_files = get_files_in_dir('neocortex')
+        num_memories = len(memory_files)
+        selected_memories = ''
+        one_memory = False
+
+        if num_memories == 0:  # No memories exist
+            info('Failed to restore memory: neocortex folder is empty', 'bad')
+            return
+        
+        elif num_memories == 1:  # Load the only memory you have
+            with open(memory_files[0], 'r') as file:
+                self.memories = file.read()
+            one_memory = True
+            info('1 memory located in neocortex')
+
+        else:  # Grab a number of memories and have GPT-3 compile them into a new memory
+            info(f'{num_memories} memories located in neocortex')
+            shuffle(memory_files)
+            for x, memory_path in enumerate(memory_files):
+                if x > max_memories:
+                    break
+
+                with open(memory_path, 'r') as file:
+                    selected_memory = file.read()
+                    selected_memories += f'{selected_memory}\n'
+                    info('Selected Memory', 'topic')
+                    info(f'{selected_memory}\n', 'plain')
+
+
+        # 2. Create new memory text
+        prompt = ("Create a new single memory text file with the following format:\n\n" +
+                    "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
+                    "Fill the text file in with information you compile from your previous memories. Each old memory text is encased in '|' characters. If you " + 
+                    "have no memories, create a placeholder text with 'nothing' in each key's list. If the conversation is not empty, fill in the memory text " + 
+                    "with as much info as is relevant, using as few words as possible, using natural language processing. Please make as few assumptions as possible when recording memories, " + 
+                    "sticking only to the facts avaliable.\n\n" + 
+                    f"PREVIOUS_MEMORIES:\n{selected_memories}.\n")
+        ct = 0
+
+        if not one_memory:  # If one_memory, the memory will already be loaded
+            restored_memories = gpt.request(prompt)
+
+            while restored_memories == '' or restored_memories == '||' and not ct > 3:  # Prevent AI from not making memory
+                restored_memories = gpt.request(prompt)
+                ct += 1  # Prevent infinite loop, which could be costly
+
+            restored_memories = restored_memories.replace(' ', '')  # Remove spaces
+            restored_memories = restored_memories.replace('\n', '')  # Remove newlines
+            
+            self.memories = restored_memories
+
+        with open('memories.txt', 'w') as file:
+            file.write(f'|{self.memories}|')
+
+        info('Compiled Memory', 'topic')
+        info(self.memories, 'plain')
+        # 3. Recreate conversation with new memories
+        new_conversation = ("The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
+                "clever, and very friendly. The AI assistant is able to understand numerous languages and will reply" +
+                f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
+                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
+                " can I help you today?")
+        
+        for message in self.back_and_forth:
+            new_conversation += message
+
+        self.conversation = new_conversation
+
+        info('Memories Successfully Restored', 'good')
 
 class GPT3(Chatbot):
     """
