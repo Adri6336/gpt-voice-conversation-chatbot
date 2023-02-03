@@ -33,7 +33,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 # Controls
 
-## Keyboard
+#### Keyboard
 
 - **SPACEBAR**: This starts a recording. Whatever you say will be then transcribed and sent to GPT-3 (if it passes filters).
 
@@ -43,7 +43,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **P**: This attempts to cancel a request to GPT-3. It will either prevent transcribing of message or will avoid sending it to GPT-3.
 
-## Voice Commands
+#### Voice Commands
 
 - **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
