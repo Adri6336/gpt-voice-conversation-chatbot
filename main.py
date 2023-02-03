@@ -103,6 +103,8 @@ class GUI:
             info('='*20, 'plain')
             print('\n')
 
+        self.color = (255, 25, 25)
+
     def listen_for_audio(self, load_run=False):
         self.working = True
 
@@ -234,6 +236,34 @@ class GUI:
                     
                     self.stop_working(tag=True)
                     return
+
+                elif 'please set preset to' in speech:
+                    robospeak('I will now attempt to set a preset.')
+                    preset = speech.split('please set preset to')[1]
+                    success = self.chatbot.set_self(preset, 'preset')
+
+                    if success:
+                        robospeak(f'I have successfully set preset to {preset}.')
+
+                    else:
+                        robospeak(f'I could not set preset to {preset}')
+                    
+                    self.stop_working(tag=True)
+                    return
+
+                elif 'please reset preset' in speech:
+                    robospeak('Resetting preset. Please wait.')
+                    if not os.path.exists('neocortex/self_concept/preset.txt'):
+                        robospeak('No preset currently exists, reset unneeded.')
+                    else:
+                        os.remove('neocortex/self_concept/preset.txt')
+                        self.chatbot.restore_self()
+                        self.chatbot.restore_conversation()
+                        robospeak('Preset reset successfully.')
+                    
+                    self.stop_working(tag=True)
+                    return
+
 
                 reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 self.color = (255, 25, 25)  # Red indicates not listening

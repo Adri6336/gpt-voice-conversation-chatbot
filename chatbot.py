@@ -257,7 +257,7 @@ class Chatbot():
 
         # 2. Set up bot memories and init prompt
         self.memories = self.remember()  # This will collect memories
-        self.conversation = ("The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
+        self.conversation = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
                 "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
                 f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
                 "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
@@ -549,13 +549,13 @@ class Chatbot():
                 preset = file.read()
 
         # 2.2 Test name and preset
-        if not hostile_or_personal(name) and not self.flagged_by_openai(name):  # Disallow policy violation names
+        if not name == 'AI' and hostile_or_personal(name) and self.flagged_by_openai(name):  # Disallow policy violation names
             with open('neocortex/self_concept/name.txt', 'w') as file:
                 file.write('AI')
             name = 'AI'
             info('Name rejected for potential use policy violation', 'bad')
 
-        if not preset == 'nothing' and not hostile_or_personal(name) and not self.flagged_by_openai(name):
+        if not preset == 'nothing' and hostile_or_personal(name) and self.flagged_by_openai(name):
             with open('neocortex/self_concept/preset.txt', 'w'):
                 file.write('nothing')
 
@@ -568,6 +568,59 @@ class Chatbot():
         init_str = f'Today is {today}\n{self.name}\'s preset is {self.preset}.\n'
 
         return init_str
+
+    def restore_conversation(self):
+        """
+        This will reload the conversation with the bot's info 
+        formatted into it. Useful for situations that alter memory or
+        presets.
+        """
+        
+        base = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
+                "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
+                f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
+                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
+                " can I help you today?")
+
+        for message in self.back_and_forth:
+                base += message
+
+        self.conversation = base
+
+
+    def set_self(self, data: str, data_type: str) -> bool:
+        """
+        This will create or modify files in the neocortex file.
+
+        :param data: This is the text you want to set
+        :param data_type: This is what kind of data you want to set (name or preset)
+        :return: None
+        """
+        # 1. Ensure pathways exist
+        self.restore_self()  # This will create the necesary paths.
+            
+        # 2. Create / modify files
+        data = data.replace('\n', '')
+        
+        if hostile_or_personal(data) and self.flagged_by_openai(data):
+            info('Update may be in violation of OpenAI\'s usage policy and has been rejected', 'bad')
+            return False
+
+        if data_type == 'name':
+            with open('neocortex/self_concept/name.txt', 'w') as file:
+                file.write(data)
+            self.name = data
+
+        elif data_type == 'preset':
+            with open('neocortex/self_concept/preset.txt', 'w') as file:
+                file.write(data)  
+            self.preset = data
+
+        # 3. Recreate conversation
+        self.restore_conversation()
+
+        return True
+
 
 class GPT3(Chatbot):
     """
