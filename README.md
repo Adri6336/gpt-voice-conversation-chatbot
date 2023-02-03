@@ -1,6 +1,6 @@
 # gpt3-speech-to-text-chatbot (GPT-3 STTC)
 
-This is a bot that allows you to have a spoken conversation with GPT-3 using your microphone. The tool uses GPT-3's chat preset and handles keeping track of the conversation. You can tell GPT-3 something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. In order to use this tool, you need a valid OpenAI API key.
+This is a bot that allows you to have a spoken conversation with GPT-3 using your microphone. The tool uses a modified GPT-3 chat preset and handles keeping track of the conversation. You can tell GPT-3 something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. In order to use this tool, you need a valid OpenAI API key.
 
 The bot requires OpenAI's moderation and GPT-3 apis to be working properly without too much latency. You can find the status here: https://status.openai.com/
 
