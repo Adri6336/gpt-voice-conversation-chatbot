@@ -242,6 +242,8 @@ class Chatbot():
     robospeak = False
     reply_tokens = 150
     back_and_forth = []  # This will contain human messages and AI replies
+    name = 'AI'
+    preset = 'nothing'
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -494,6 +496,78 @@ class Chatbot():
         self.conversation = new_conversation
 
         info('Memories Successfully Restored', 'good')
+
+    def restore_self(self) -> str:
+        """
+        This will search for data about self and return a string
+        containing what it knows.
+        """
+        
+        # Get date
+        now = datetime.now()
+        today = f'(MM-dd-YY) {now.month}-{now.day}-{now.year}'
+
+        # Get name and preset
+        # 1. Ensure valid dirs
+        if not os.path.exists('neocortex'):  # Memory folder does not exist
+            os.mkdir('neocortex')
+            os.mkdir('neocortex/self_concept')
+            
+            with open('neocortex/self_concept/name.txt', 'w') as file:
+                file.write('AI')  # Default name is AI
+
+            with open('neocortex/self_concept/preset.txt', 'w') as file:
+                file.write('nothing')  # Default preset is nothing
+
+        elif not os.path.exists('neocortex/self_concept'):  # Self concept does not exist; make it
+            os.mkdir('neocortex/self_concept')
+            
+            with open('neocortex/self_concept/name.txt', 'w') as file:
+                file.write('AI')  # Default name is AI
+
+            with open('neocortex/self_concept/preset.txt', 'w') as file:
+                file.write('nothing')  # Default preset is nothing
+
+        # 2. Ensure data in dirs; get data
+        name = ''
+        preset = ''
+
+        if not os.path.exists('neocortex/self_concept/name.txt'):  # Name does not exist
+            with open('neocortex/self_concept/name.txt', 'w') as file:
+                file.write('AI')  # Default name is AI
+
+        else:
+            with open('neocortex/self_concept/name.txt', 'r') as file:
+                name = file.read()
+
+        if not os.path.exists('neocortex/self_concept/preset.txt'):
+            with open('neocortex/self_concept/preset.txt', 'w') as file:
+                file.write('nothing')  # Default preset is nothing
+
+        else:
+            with open('neocortex/self_concept/preset.txt', 'r') as file:
+                preset = file.read()
+
+        # 2.2 Test name and preset
+        if not hostile_or_personal(name) and not self.flagged_by_openai(name):  # Disallow policy violation names
+            with open('neocortex/self_concept/name.txt', 'w') as file:
+                file.write('AI')
+            name = 'AI'
+            info('Name rejected for potential use policy violation', 'bad')
+
+        if not preset == 'nothing' and not hostile_or_personal(name) and not self.flagged_by_openai(name):
+            with open('neocortex/self_concept/preset.txt', 'w'):
+                file.write('nothing')
+
+            preset = 'nothing'
+            info('Preset rejected for potential use policy violation', 'bad')
+                
+        self.preset = preset
+        self.name = name
+        # 3. Create initialization string
+        init_str = f'Today is {today}\n{self.name}\'s preset is {self.preset}.\n'
+
+        return init_str
 
 class GPT3(Chatbot):
     """
