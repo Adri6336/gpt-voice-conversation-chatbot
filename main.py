@@ -91,7 +91,7 @@ class GUI:
                         pygame.quit()
                         sys.exit()
 
-    def stop_working(self, cancel: bool = False, tag=False):
+    def stop_working(self, cancel: bool = False, tag=True):
         self.cancel = False
         self.working = False
         if cancel: 
