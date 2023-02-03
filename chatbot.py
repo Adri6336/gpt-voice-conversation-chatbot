@@ -249,7 +249,7 @@ class Chatbot():
         
         # 1. Set up apis
         self.api_key = api_key
-        openai.api_key = api_key
+        openai.api_key = api_key 
 
         if not api_key_11 == '':
             self.api_key_11 = api_key_11
