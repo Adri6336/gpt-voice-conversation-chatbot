@@ -258,7 +258,7 @@ class Chatbot():
         self.conversation = ("The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
                 "clever, and very friendly. The AI assistant is able to understand numerous languages and will reply" +
                 f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
-                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
+                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
                 " can I help you today?")
 
     def flagged_by_openai(self, text: str) -> bool:
