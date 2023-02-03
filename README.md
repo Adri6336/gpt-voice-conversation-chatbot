@@ -1,8 +1,10 @@
 # gpt3-speech-to-text-chatbot (GPT-3 STTC)
 
-This is a bot that allows you to have a spoken conversation with GPT-3 using your microphone. The tool uses GPT-3's chat preset and handles keeping track of the conversation. You can tell GPT-3 something and it will remember what you said for the session. In order to use this tool, you need a valid OpenAI API key.
+This is a bot that allows you to have a spoken conversation with GPT-3 using your microphone. The tool uses GPT-3's chat preset and handles keeping track of the conversation. You can tell GPT-3 something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. In order to use this tool, you need a valid OpenAI API key.
 
 The bot requires OpenAI's moderation and GPT-3 apis to be working properly without too much latency. You can find the status here: https://status.openai.com/
+
+The releases (such as v0.9) are stable, as far as previous testing goes, but will not have all of the newest features. If you would like to have all the features as listed here, clone the repository and run 'git pull' every now and then. This will get you the newest features and bug fixes as they come, but it could be unstable. 
 
 ![_image_](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/blob/main/bot.jpeg)
 
@@ -31,13 +33,17 @@ Please note that outages or latency problems with the moderation api will preven
 
 # Controls
 
+## Keyboard
+
 - **SPACEBAR**: This starts a recording. Whatever you say will be then transcribed and sent to GPT-3 (if it passes filters).
 
 - **ESCAPE**: This exits without memorizing.
 
-- **Q**: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt; close window to exit without remembering).
+- **Q**: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt)
 
 - **P**: This attempts to cancel a request to GPT-3. It will either prevent transcribing of message or will avoid sending it to GPT-3.
+
+## Voice Commands
 
 - **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
@@ -46,6 +52,10 @@ Please note that outages or latency problems with the moderation api will preven
 - **Say 'stop speaking like a robot'**: This will revert bot's TTS to whatever you had before (either Google or ElevenLabs TTS).
 
 - **Say 'please display conversation'**: This will output your entire conversation to the terminal window.
+
+- **Say 'please display memories'**: This will provide an output of all memories saved into long term storage.
+
+- **Say 'please restore memory'**: This will attempt to repair the working memory of the bot by consolidating a certain number of memories from the long term storage .
 
 
 # Features
