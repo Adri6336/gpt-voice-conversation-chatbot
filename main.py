@@ -208,10 +208,30 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'please restore your memory' in speech:
+                elif 'please restore memory' in speech:
                     info('Attempting to restore memory')
                     robospeak('Attempting to restore memory. Please wait a moment.')
                     self.chatbot.restore_memory()
+                    self.stop_working(tag=True)
+                    return
+
+                elif 'please display memories' in speech:
+                    # 0. Identify how many memories exist
+                    if not os.path.exists('neocortex'):
+                        robospeak('I do not currently have any memories in my neocortex.')
+                        self.stop_working(tag=True)
+                        return
+
+                    # 1. Display the memories that exist
+                    memory_files = get_files_in_dir('neocortex')
+                    num_memories = len(memory_files)
+
+                    robospeak(f'I have {num_memories} in my neocortex.')
+                    for x, memory_path in enumerate(memory_files):
+                        with open(memory_path, 'r') as file:
+                            info(f'Selected Memory {x}', 'topic')
+                            print(f'{file.read()}\n')
+                    
                     self.stop_working(tag=True)
                     return
 

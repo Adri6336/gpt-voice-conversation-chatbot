@@ -444,14 +444,14 @@ class Chatbot():
                 with open(memory_path, 'r') as file:
                     selected_memory = file.read()
                     selected_memories += f'{selected_memory}\n'
-                    info('Selected Memory', 'topic')
-                    info(f'{selected_memory}\n', 'plain')
+                    info(f'Selected Memory {x}', 'topic')
+                    print(f'{selected_memory}\n')
 
 
         # 2. Create new memory text
         prompt = ("Create a new single memory text file with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
-                    "Fill the text file in with information you compile from your previous memories. Each old memory text is encased in '|' characters. If you " + 
+                    "Fill the text file in with information you compile from your previous memories; preserve as much info as is efficient. Each old memory text is encased in '|' characters. If you " + 
                     "have no memories, create a placeholder text with 'nothing' in each key's list. If the conversation is not empty, fill in the memory text " + 
                     "with as much info as is relevant, using as few words as possible, using natural language processing. Please make as few assumptions as possible when recording memories, " + 
                     "sticking only to the facts avaliable.\n\n" + 
