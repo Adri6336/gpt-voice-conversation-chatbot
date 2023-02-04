@@ -627,7 +627,7 @@ class Chatbot():
             target = sections[1]
 
         except Exception as e:
-            info(f'Error occurred while trying to separate "{self.name}:" from response {text}: {e}', 'bad')
+            info(f'\nError occurred while trying to separate "{self.name}:" from response {e}', 'bad')
             target = text
 
         return target
