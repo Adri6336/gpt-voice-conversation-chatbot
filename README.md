@@ -72,10 +72,12 @@ Please note that outages or latency problems with the moderation api will preven
 
 - Speak with GPT-3 outloud using Google's speech recognition tech  
 
-- Bot will remember things about you if you close with the 'q' key
+- Bot will remember things about you if you close with the 'Q' key
 
 - See text GPT-3's replies as text in the terminal window. Most UTF-32 characters (like Chinese and Arabic text) will also be printed
 
 - Automatically save conversations to a file on your disk to help you keep track of what you've talked about 
 
 - Save a custom preset to have an experience better suited for you and your needs
+
+- Customize the bot's name and behavioral preset
