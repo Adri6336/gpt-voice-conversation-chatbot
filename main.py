@@ -3,6 +3,7 @@ import speech_recognition as sr
 import sys
 from sys import argv
 import re
+import os
 from chatbot import *
 import threading
 from random import randint
@@ -11,6 +12,49 @@ from random import randint
 def change_color(display, color: tuple): 
     display.fill(color)
     pygame.display.flip()
+
+def load_keys_from_file() -> tuple:
+    """
+    This checks to see if a key file exists. If so,
+    loads the keys found in file. If not, makes it.
+    :returns: tuple as follows (keys exist bool, openai key, 11.ai key)
+    """
+    
+    openai_key = ''
+    eleven_ai_key = ''
+    key_file_data = ''
+    loaded = False
+
+    # 1. See if keyfile exists 
+    if os.path.exists('keys.txt'):
+        with open('keys.txt', 'r') as file:
+            key_file_data = file.read()
+    
+    else:
+        with open('keys.txt', 'w') as file:
+            file.write('OpenAI_Key=\nElevenLabs_Key(optional)=')
+        return (loaded, openai_key, eleven_ai_key)
+
+    # 2. Parse keyfile
+    try:
+        openai = re.search('OpenAI_Key=.*', key_file_data)
+        if not openai is None:
+            openai_key = openai.group().split('=')[1]  # Get the text after the =
+        else:
+            info('Please add a key for OpenAI in key file', 'bad')
+            return (loaded, openai_key, eleven_ai_key)
+
+        eleven = re.search('ElevenLabs_Key(optional)=.*', key_file_data)
+        if not eleven is None:  # This is optional. If we don't have it, it's not a deal breaker
+            eleven_ai_key = eleven.group().split('=')[1]
+    
+    except Exception as e:
+        info(f'Key file formatted incorrectly: {e}', 'bad')
+        return (loaded, openai_key, eleven_ai_key)
+
+    loaded = True
+    print((loaded, openai_key, eleven_ai_key))
+    return (loaded, openai_key, eleven_ai_key)
  
 class GUI:
     color = (255, 25, 25)
@@ -28,9 +72,25 @@ class GUI:
         self.key_11 = ''
 
         if num_args < 2:
-            info('Please enter OpenAI key as argument', 'bad')
-            info('Example: python main.py <key>')
-            sys.exit()
+            keys = load_keys_from_file()
+            if not keys[0]:
+                info('Please enter OpenAI key as argument or fill info into keys.txt file', 'bad')
+                info('Example argument: python main.py <key>')
+                sys.exit()
+
+            else:
+                # Load OpenAI key if you can
+                if not keys[1] == '':
+                    self.key = keys[1]
+                
+                else:  # OpenAI key is not optional. Close system if we don't have it
+                    info('Please enter OpenAI key as argument or fill info into keys.txt file', 'bad')
+                    info('Example argument: python main.py <key>')
+                    sys.exit()
+
+                # Load 11.ai key if you can
+                if not keys[2] == '':
+                    self.key_11 = keys[2]
 
         elif num_args == 2:
             self.key = argv[1]
