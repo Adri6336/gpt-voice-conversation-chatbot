@@ -39,21 +39,20 @@ def load_keys_from_file() -> tuple:
     try:
         openai = re.search('OpenAI_Key=.*', key_file_data)
         if not openai is None:
-            openai_key = openai.group().split('=')[1]  # Get the text after the =
+            openai_key = openai.group().split('=')[1].replace(' ', '')  # Get the text after the =
         else:
             info('Please add a key for OpenAI in key file', 'bad')
             return (loaded, openai_key, eleven_ai_key)
 
         eleven = re.search('ElevenLabs_Key(optional)=.*', key_file_data)
         if not eleven is None:  # This is optional. If we don't have it, it's not a deal breaker
-            eleven_ai_key = eleven.group().split('=')[1]
+            eleven_ai_key = eleven.group().split('=')[1].replace(' ', '')
     
     except Exception as e:
         info(f'Key file formatted incorrectly: {e}', 'bad')
         return (loaded, openai_key, eleven_ai_key)
 
     loaded = True
-    print((loaded, openai_key, eleven_ai_key))
     return (loaded, openai_key, eleven_ai_key)
  
 class GUI:
