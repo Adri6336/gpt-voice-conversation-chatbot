@@ -8,6 +8,8 @@ The releases (such as v0.9) are stable, as far as previous testing goes, but wil
 
 ![_image_](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/blob/main/bot.jpeg)
 
+<sup>(Note: wiseTech is the name my bot instance chose for itself)</sup>
+
 # Using GPT-3 STTC
 
 To use this STTC, you'll need to clone the repository, install the requirements, then navigate to the repository's folder using a terminal or powershell. Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing \<key\> with your api key):
