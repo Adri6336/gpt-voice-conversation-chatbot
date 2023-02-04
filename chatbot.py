@@ -143,8 +143,12 @@ def google_tts(text: str, path: str):
         tts = gTTS(text, lang=language)
         tts.save(path)
 
-    elif language == 'zh-cn' or language == 'zh-tw':
+    elif language == 'zh-cn':
         tts = gTTS(text, lang='zh-CN')
+        tts.save(path)
+
+    elif language == 'zh-tw':
+        tts = gTTS(text, lang='zh-TW')
         tts.save(path)
 
     else:  # Otherwise just use English pronounciation
