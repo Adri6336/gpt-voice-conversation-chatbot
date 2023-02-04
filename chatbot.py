@@ -106,21 +106,6 @@ def tts11AI(key: str, text: str, path: str) -> bool:
     
     return True
 
-def get_AI_response(text: str) -> str:
-    """
-    This returns all the text following the first 
-    instance of a colon
-    """
-    sections = text.split('AI:')
-    try:
-        target = sections[1]
-
-    except Exception as e:
-        info(f'Error occurred while trying to separate "AI:" from response: {e}', 'bad')
-        target = text
-
-    return target
-
 def hostile_or_personal(text: str) -> bool:
     """
     This tests the text to see if it is hostile
@@ -259,8 +244,9 @@ class Chatbot():
         self.memories = self.remember()  # This will collect memories
         self.conversation = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
                 "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
-                f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
-                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
+                f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
+                f"The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
+                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
                 " can I help you today?")
 
     def flagged_by_openai(self, text: str) -> bool:
@@ -292,7 +278,7 @@ class Chatbot():
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
             # 1. Get response
-            start_sequence = "\nAI:"
+            start_sequence = "\n{self.name}:"
             restart_sequence = "\nHuman: "
             self.conversation += f'\nHuman: {text}'
             self.back_and_forth.append(f'\nHuman: {text}')
@@ -306,7 +292,7 @@ class Chatbot():
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0.6,
-                stop=[" Human:", " AI:"]
+                stop=[" Human:", f" {self.name}:"]
                 )
             except Exception as e:
                 info(f'Error communicating with GPT-3: {e}', 'bad')
@@ -314,15 +300,15 @@ class Chatbot():
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             #color(f'[bold blue]\[AI Response][/bold blue]: [white]{get_AI_response(reply)}[white]')
-            info('AI Response', 'topic')
-            info(get_AI_response(reply), 'plain')
+            info(f'{self.name}\'s Response', 'topic')
+            info(self.get_AI_response(reply), 'plain')
             try:
                 if outloud and not self.robospeak: 
-                    self.use11 = talk(get_AI_response(reply), f'{self.turns}',
+                    self.use11 = talk(self.get_AI_response(reply), f'{self.turns}',
                                     self.use11, self.api_key_11)  # Speak if setting turned on
                 
                 elif outloud and self.robospeak:
-                    robospeak(get_AI_response(reply))
+                    robospeak(self.get_AI_response(reply))
 
             except Exception as e:
                 info(f'Error trying to speak: {e}', 'bad')
@@ -484,16 +470,7 @@ class Chatbot():
         info('Compiled Memory', 'topic')
         print(self.memories)
         # 3. Recreate conversation with new memories
-        new_conversation = ("The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
-                "clever, and very friendly. The AI assistant is able to understand numerous languages and will reply" +
-                f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
-                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How" + 
-                " can I help you today?")
-        
-        for message in self.back_and_forth:
-            new_conversation += message
-
-        self.conversation = new_conversation
+        self.restore_conversation()
 
         info('Memories Successfully Restored', 'good')
 
@@ -535,6 +512,7 @@ class Chatbot():
         if not os.path.exists('neocortex/self_concept/name.txt'):  # Name does not exist
             with open('neocortex/self_concept/name.txt', 'w') as file:
                 file.write('AI')  # Default name is AI
+            name = 'AI'
 
         else:
             with open('neocortex/self_concept/name.txt', 'r') as file:
@@ -543,6 +521,7 @@ class Chatbot():
         if not os.path.exists('neocortex/self_concept/preset.txt'):
             with open('neocortex/self_concept/preset.txt', 'w') as file:
                 file.write('nothing')  # Default preset is nothing
+            preset = 'nothing'
 
         else:
             with open('neocortex/self_concept/preset.txt', 'r') as file:
@@ -565,11 +544,11 @@ class Chatbot():
         self.preset = preset
         self.name = name
         # 3. Create initialization string
-        init_str = f'Today is {today}\n{self.name}\'s preset is {self.preset}.\n'
+        init_str = f'Today is {today}\nAI\'s preset is {self.preset}.\n'
 
         return init_str
 
-    def restore_conversation(self):
+    def restore_conversation(self, rename=False, old_name=''):
         """
         This will reload the conversation with the bot's info 
         formatted into it. Useful for situations that alter memory or
@@ -578,15 +557,32 @@ class Chatbot():
         
         base = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
                 "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
-                f" to any messsage by the human in the language it was provided in. The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
-                "\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
+                f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
+                f"The AI has the ability to remember important concepts about the user; it currently remembers: {self.memories}." + 
+                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
                 " can I help you today?")
 
-        for message in self.back_and_forth:
-                base += message
+        conversation = ''
+        new_messages = []
+
+        if not rename:
+            for message in self.back_and_forth:
+                    conversation += message
+
+        else:
+            for message in self.back_and_forth:
+                new_message = message.replace(old_name, self.name)
+                new_messages.append(new_message)
+                conversation += new_message
+
+        base += conversation
+
+        if rename: 
+            self.back_and_forth = new_messages  # Save edited list of messages 
+
+        info(base)
 
         self.conversation = base
-
 
     def set_self(self, data: str, data_type: str) -> bool:
         """
@@ -620,6 +616,39 @@ class Chatbot():
         self.restore_conversation()
 
         return True
+
+    def get_AI_response(self, text: str) -> str:
+        """
+        This returns all the text following the first 
+        instance of a colon
+        """
+        sections = text.split(f'{self.name}:')
+        try:
+            target = sections[1]
+
+        except Exception as e:
+            info(f'Error occurred while trying to separate "{self.name}:" from response {text}: {e}', 'bad')
+            target = text
+
+        return target
+
+    def change_name(self, new_name:str):
+        self.restore_self()
+        clean_name = new_name.replace(' ', '')
+        clean_name = clean_name.replace('\n', '')
+
+        if not hostile_or_personal(new_name) and not self.flagged_by_openai(new_name):
+            with open('neocortex/self_concept/name.txt', 'w') as file:
+                file.write(clean_name)
+
+            old_name = self.name
+            self.name = clean_name
+            self.restore_conversation(True, old_name)
+            return True
+
+        else:
+            return False
+        
 
 
 class GPT3(Chatbot):

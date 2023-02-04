@@ -44,7 +44,7 @@ class GUI:
         self.mic = sr.Microphone()
 
         self.chatbot = Chatbot(self.key, self.key_11)
-
+        
         self.listen_for_audio(load_run=True)
 
         self.running = True
@@ -59,6 +59,7 @@ class GUI:
         change_color(self.display, (255, 25, 25))  # Red indicates not listening
 
         info('Main Loop Running', 'good')
+        info(f'Session Created With {self.chatbot.name}', 'good')
         while self.running:
             change_color(self.display, self.color)  
             # Creating a loop to check events that
@@ -260,6 +261,21 @@ class GUI:
                         self.chatbot.restore_self()
                         self.chatbot.restore_conversation()
                         robospeak('Preset reset successfully.')
+                    
+                    self.stop_working(tag=True)
+                    return
+
+                elif 'please set name to' in speech:
+                    name = speech.split('please set name to')[1]
+                    robospeak(f'I will now attempt to set name to {name}.')
+                    self.chatbot.restore_self()
+                    success = self.chatbot.change_name(name)
+
+                    if success:
+                        robospeak(f'I have successfully set name to {name}.')
+
+                    else:
+                        robospeak(f'I could not set name to {name}')
                     
                     self.stop_working(tag=True)
                     return
