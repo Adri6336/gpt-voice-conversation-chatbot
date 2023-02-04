@@ -482,7 +482,10 @@ class Chatbot():
         
         # Get date
         now = datetime.now()
-        today = f'(MM-dd-YY) {now.month}-{now.day}-{now.year}'
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        week_day = datetime.today().weekday()
+        day_name = days[week_day]
+        today = f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}'
 
         # Get name and preset
         # 1. Ensure valid dirs
