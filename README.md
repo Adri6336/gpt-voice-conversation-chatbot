@@ -61,6 +61,8 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **Say 'please reset preset'**: This will delete the preset you made.
 
+- **Say 'please set name to'**: This will set the name of the bot to whatever you specify, so long as it is in accordance with OpenAI's usage policies. After setting name, the bot will refer to itself by the name you set.
+
 
 # Features
 
