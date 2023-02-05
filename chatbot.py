@@ -275,9 +275,12 @@ class Chatbot():
 
     def say_to_chatbot(self, text: str, outloud: bool = True) -> str:
         """
-        This translates text into Latin
-        :param text: Whatever text you want translated into Latin
-        :return: Latin text if accepted or an error message
+        This sends a message to GPT-3 if it passes tests, then returns a
+        response. Manages advancing the conversation. 
+        
+        :param text: What you want to say to the bot
+        :param outloud: A switch that enables / disables spoken replies.
+        :returns: A string containing the response
         """
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
