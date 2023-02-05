@@ -12,6 +12,8 @@ The releases (such as v0.9) are stable, as far as previous testing goes, but wil
 
 # Installing
 
+First off, you'll need an OpenAI API key. You can create an account to get an API here: https://openai.com/api/ .
+
 ### Windows
 
 1. Download Python at https://www.python.org/
