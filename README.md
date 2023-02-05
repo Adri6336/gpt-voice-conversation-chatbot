@@ -25,7 +25,7 @@ The releases (such as v0.9) are stable, as far as previous testing goes, but wil
 5. Follow the steps listed in Using GPT-3 STTC
 
 
-### Linux
+### Linux (Debian / Ubuntu based)
 
 1. Install pip3
 
