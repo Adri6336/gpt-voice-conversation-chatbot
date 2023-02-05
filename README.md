@@ -10,9 +10,49 @@ The releases (such as v0.9) are stable, as far as previous testing goes, but wil
 
 <sup>(Note: wiseTech is the name my bot instance chose for itself)</sup>
 
+# Installing
+
+### Windows
+
+1. Download Python at https://www.python.org/
+
+2. Download this repo either via the releases like [v0.9.9.1](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/archive/refs/tags/v0.9.9.1.zip), git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
+
+3. Extract contents, then move into folder with the files.
+
+4. If you have Windows Terminal installed, right click the empty part of the folder and select 'Open in Terminal'. Otherwise, use Win + R and enter powershell. Once you're in a terminal window and at the proper directory, use "pip install -r requirements.txt". If this is done successfully, you should be ready to go as soon as you get yourself an OpenAI API key.
+
+5. Follow the steps listed in Using GPT-3 STTC
+
+
+### Linux
+
+1. Install pip3
+
+        sudo apt install python3-pip
+        
+2. Download this repo either via the releases like [v0.9.9.1](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/archive/refs/tags/v0.9.9.1.zip), git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
+
+3. Extract files, move into directory, open requirements.txt, and delete pyaudio==0.2.13 from file. Make it look like it was never there, preserving the original formatting.
+
+4. Download pyaudio with apt as follows:
+
+        sudo apt install python3-pyaudio
+        
+5. Download espeak with apt as follows (needed for interface communication):
+
+        sudo apt install espeak
+        
+6. Download other requirements with pip as follows:
+
+        pip3 install -r requirements.txt
+        
+7. Follow the steps listed in Using GPT-3 STTC
+
+
 # Using GPT-3 STTC
 
-To use this STTC, you'll need to clone the repository, install the requirements, then navigate to the repository's folder using a terminal or powershell. Be sure to have a working mic connected. Once in the repository's folder, use the following command (replacing \<key\> with your api key):
+To use this chatbpt, enter the following command once you've navigated to the bot's folder (replacing \<key\> with your api key):
 
     python main.py <key>
     
