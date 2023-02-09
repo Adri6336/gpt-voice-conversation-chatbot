@@ -134,10 +134,10 @@ def hostile_or_personal(text: str) -> bool:
     else:
         return False
 
-def google_tts(text: str, path: str):
+def google_tts(text: str, path: str, show_text:bool = True):
 
     language = detect(text)
-    info(f'DETECTED LANGUAGE: {language}')
+    if show_text: info(f'DETECTED LANGUAGE: {language}')
     
     if language in gtts_languages:  # Pronounce correctly if possible
         tts = gTTS(text, lang=language)
@@ -155,7 +155,7 @@ def google_tts(text: str, path: str):
         tts = gTTS(text)
         tts.save(path)
 
-def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
+def talk(text: str, name: str, use11: bool = False, key11: str = '', show_text:bool = True) -> bool:
     """
     This will provide a sound file for what ever you enter, then 
     play it using playsound. Saves an mp3 file.
@@ -190,12 +190,12 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '') -> bool:
             return True
 
         else:
-            google_tts(text, f'{file}.mp3')
+            google_tts(text, f'{file}.mp3', show_text=show_text)
             playsound(file + '.mp3')
             return tts11_okay
 
     except:
-        google_tts(text, f'{file}.mp3')
+        google_tts(text, f'{file}.mp3', show_text=show_text)
         playsound(file + '.mp3')
         return tts11_okay
 
@@ -273,7 +273,7 @@ class Chatbot():
             info(f'Failed to test with OpenAI. Key might be invalid.', 'bad')
             return True
 
-    def say_to_chatbot(self, text: str, outloud: bool = True) -> str:
+    def say_to_chatbot(self, text: str, outloud: bool = True, show_text:bool = True) -> str:
         """
         This sends a message to GPT-3 if it passes tests, then returns a
         response. Manages advancing the conversation. 
@@ -301,18 +301,40 @@ class Chatbot():
                 presence_penalty=0.6,
                 stop=[" Human:", f" {self.name}:"]
                 )
+
             except Exception as e:
-                info(f'Error communicating with GPT-3: {e}', 'bad')
+                if 'server had an error while processing' in str(e):  # If connection issue, try again once more
+                    try:
+                        response = openai.Completion.create(
+                            model="text-davinci-003",
+                            prompt=self.conversation,
+                            temperature=0.9,
+                            max_tokens=self.reply_tokens,
+                            top_p=1,
+                            frequency_penalty=0,
+                            presence_penalty=0.6,
+                            stop=[" Human:", f" {self.name}:"]
+                            )
+
+                    except Exception as e:
+                        info(f'Error communicating with GPT-3: {e}', 'bad')
+                        return ''
+                
+                else:  # If we don't know what happened, don't immediately try again
+                    info(f'Error communicating with GPT-3: {e}', 'bad')
+                    return ''
 
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
-            #color(f'[bold blue]\[AI Response][/bold blue]: [white]{get_AI_response(reply)}[white]')
-            info(f'{self.name}\'s Response', 'topic')
-            info(self.get_AI_response(reply), 'plain')
+
+            if show_text:
+                info(f'{self.name}\'s Response', 'topic')
+                info(self.get_AI_response(reply), 'plain')
+
             try:
                 if outloud and not self.robospeak: 
                     self.use11 = talk(self.get_AI_response(reply), f'{self.turns}',
-                                    self.use11, self.api_key_11)  # Speak if setting turned on
+                                    self.use11, self.api_key_11, show_text=show_text)  # Speak if setting turned on
                 
                 elif outloud and self.robospeak:
                     robospeak(self.get_AI_response(reply))
