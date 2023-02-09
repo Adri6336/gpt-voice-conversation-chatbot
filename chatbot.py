@@ -409,7 +409,7 @@ class Chatbot():
         print(prompt)
 
         # 2. Remember the info as short term    
-        memories = gpt.request(prompt)
+        memories = gpt.request(prompt, 500)
         ct = 0
 
         while memories == '' or memories == '||' and ct > 3:
