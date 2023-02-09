@@ -351,6 +351,7 @@ class GUI:
             self.working = False
             self.color = (255, 25, 25)  # Red indicates not listening
 
-# Run  main loop
-gui = GUI()
-gui.main_thread.join()
+# Run main loop 
+if __name__ == '__main__':
+    gui = GUI()
+    gui.main_thread.join()
