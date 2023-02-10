@@ -427,7 +427,7 @@ class Chatbot():
         with open(f'neocortex/{memory_name}', 'w') as file:
             file.write(f'|{memories}|')
 
-    def restore_memory(self, max_memories=30):
+    def restore_memory(self, max_memories=5):
         """
         This will compile the memories stored in the neocortex
         folder into a new memories.txt file, then save the file
