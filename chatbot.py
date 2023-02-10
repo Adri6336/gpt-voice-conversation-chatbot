@@ -482,10 +482,10 @@ class Chatbot():
         ct = 0
 
         if not one_memory:  # If one_memory, the memory will already be loaded
-            restored_memories = gpt.request(prompt)
+            restored_memories = gpt.request(prompt, 500)
 
             while restored_memories == '' or restored_memories == '||' and not ct > 3:  # Prevent AI from not making memory
-                restored_memories = gpt.request(prompt)
+                restored_memories = gpt.request(prompt, 500)
                 ct += 1  # Prevent infinite loop, which could be costly
 
             restored_memories = restored_memories.replace(' ', '')  # Remove spaces
