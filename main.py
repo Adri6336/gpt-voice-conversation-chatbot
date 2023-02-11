@@ -32,7 +32,7 @@ def load_keys_from_file() -> tuple:
     
     else:
         with open('keys.txt', 'w') as file:
-            file.write('OpenAI_Key=\nElevenLabs_Key(optional)=')
+            file.write('OpenAI_Key=\nElevenLabs_Key=')
         return (loaded, openai_key, eleven_ai_key)
 
     # 2. Parse keyfile
@@ -44,7 +44,7 @@ def load_keys_from_file() -> tuple:
             info('Please add a key for OpenAI in key file', 'bad')
             return (loaded, openai_key, eleven_ai_key)
 
-        eleven = re.search('ElevenLabs_Key(optional)=.*', key_file_data)
+        eleven = re.search('ElevenLabs_Key=.*', key_file_data)
         if not eleven is None:  # This is optional. If we don't have it, it's not a deal breaker
             eleven_ai_key = eleven.group().split('=')[1].replace(' ', '')
     
