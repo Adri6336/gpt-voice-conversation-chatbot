@@ -14,7 +14,51 @@ from langdetect import detect
 import pyttsx3
 from rich import print as color
 from random import shuffle
+import re
 gtts_languages = set(gtts.lang.tts_langs().keys())
+
+
+def chunk_list(list1, chunk_by: int):
+    """
+    Creates a new list (list2) that is composed of all the elements
+    of list1, chunked by chunk_by for as long as it can.
+    """
+    list2 = []
+    while list1:
+        if len(list1) >= chunk_by:
+            list2.append(list1[:chunk_by])
+            list1 = list1[chunk_by:]
+
+        else:
+            list2.append(list1)
+            list1 = []
+
+    return list2
+
+def get_conversation_summary(conversation_section: str, openai_key: str, quiet: bool = True, gpt_model: str = 'curie') -> tuple:
+    """
+    Each conversation section should be a single string with the AI and Human messages appended.
+
+    :returns: tuple of (success boolean, a 200 max token string summary made with Curie, token ct) ex: (False, '', 0)
+    """
+
+    # 1. Set up model
+    gpt = GPT3(openai_key)
+    gpt.set_model('curie')
+
+    # 2. Set up prompt
+    prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
+
+    try:
+        response = gpt.raw_request(prompt, 200)
+        tokens = int(json.loads(str(response))['usage']['total_tokens'])
+        summary = json.loads(str(response))['choices'][0]['text']
+
+        return (True, summary, tokens)
+
+    except Exception as e:
+        if not quiet: info(f'Failed to get summary: {str(e)}', 'bad')
+        return (False, '', 0)
 
 def info(content, kind='info'):
     """
@@ -42,7 +86,6 @@ def info(content, kind='info'):
     elif kind == 'plain':
         color(f'[white]{content}[/white]')
 
-
 def get_files_in_dir(directory: str) -> None:
     # This looks inside a directory and gives you a path to all
     # of the files inside it
@@ -56,7 +99,6 @@ def get_files_in_dir(directory: str) -> None:
             filePaths.append(filePath)
 
     return filePaths
-
 
 def robospeak(text: str):
     engine = pyttsx3.init()
@@ -199,7 +241,7 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '', show_text:b
         playsound(file + '.mp3')
         return tts11_okay
 
-def save_conversation(conversation: str, name):
+def save_conversation(conversation: str, name:str):
     
     # 1. Setup directory for conversations
     if not os.path.isdir(f'conversations'):  # Make dir if not there
@@ -233,6 +275,12 @@ class Chatbot():
     back_and_forth = []  # This will contain human messages and AI replies
     name = 'AI'
     preset = 'nothing'
+    recycled = False  # If the conversation has ever gone above 4000 tokens, this becomes true
+    conversation_memories = ''
+    total_back_and_forth = []  # This will contain the entire conversation, preserved through recycling 
+    gpt_model = 'text-davinci-003'  # This determines the model you're using for completion. Edit with self.set_model()
+    max_tokens = 4000
+    full_conversation = ''
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -253,6 +301,7 @@ class Chatbot():
                 f" discussion at hand); it currently remembers: {self.memories}." + 
                 f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
                 " can I help you today?")
+        self.full_conversation = self.conversation
 
     def flagged_by_openai(self, text: str) -> bool:
         """
@@ -289,11 +338,12 @@ class Chatbot():
             start_sequence = "\n{self.name}:"
             restart_sequence = "\nHuman: "
             self.conversation += f'\nHuman: {text}'
+            self.full_conversation += f'\nHuman: {text}'
             self.back_and_forth.append(f'\nHuman: {text}')
 
             try:
                 response = openai.Completion.create(
-                model="text-davinci-003",
+                model=self.gpt_model,
                 prompt=self.conversation,
                 temperature=0.9,
                 max_tokens=self.reply_tokens,
@@ -320,17 +370,32 @@ class Chatbot():
                     except Exception as e:
                         info(f'Error communicating with GPT-3: {e}', 'bad')
                         return ''
+
+                elif 'Please reduce your prompt; or completion length' in str(e):  # Too many tokens. 
+                    info('Max tokens reached. Conversation will continue on with a superficial '+ 
+                        'memory of what was previously discussed', 'bad')
+                    self.recycle_tokens()
+                    settings = (text, outloud, show_text)  # This will allow me to easily pass arguments down to recursive function
+                    return self.say_to_chatbot(text=settings[0], outloud=settings[1], show_text=settings[2])
+
                 
                 else:  # If we don't know what happened, don't immediately try again
                     info(f'Error communicating with GPT-3: {e}', 'bad')
                     return ''
 
+            # Get token count
+            response = json.loads(str(response))
+            self.tokens = response['usage']['total_tokens']
+            
             # Cut response and play it
-            reply = json.loads(str(response))['choices'][0]['text']
+            reply = response['choices'][0]['text']
 
             if show_text:
                 info(f'{self.name}\'s Response', 'topic')
                 info(self.get_AI_response(reply), 'plain')
+
+                info('Token Count', 'topic')
+                info(f'{self.tokens} tokens used. {self.max_tokens - self.tokens} tokens until next recycling.', 'plain')
 
             try:
                 if outloud and not self.robospeak: 
@@ -347,14 +412,100 @@ class Chatbot():
             # Keep track of conversation
             self.turns += 1
             self.conversation += reply
+            self.full_conversation += reply
             self.back_and_forth.append(reply)
-            save_conversation(self.conversation, self.conversation_name)
+
+            save_conversation(self.full_conversation, self.conversation_name)
 
             return reply
 
         else:
             info('Text flagged, no request sent.', 'bad')
             return '[X] Text flagged, no request sent.'
+
+    def recycle_tokens(self, chunk_by: int = 2, gpt_model = 'curie', quiet=True):
+        info('Recycling tokens ...')
+        tokens_in_chunks = 0
+        summaries = []
+        threshold = self.max_tokens / 2  # 50% of max to safely generate summaries
+        chunks = chunk_list(self.back_and_forth, chunk_by=chunk_by)
+        ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
+        terminate_value = len(chunks)
+        errorct = 0
+
+        # 1. Collect mini summaries for entire conversation
+        while chunks or ct > terminate_value:  # Breaks if chunks is empty or infinite loop
+            if chunks and tokens_in_chunks < threshold:  # If the list is not empty and we have enough spare tokens
+                try:
+                    prompt = str(chunks[0])  # Grab first chunk
+                    if not self.flagged_by_openai(prompt):  # Make sure it's clean
+                        summary = get_conversation_summary(prompt, self.api_key, gpt_model=gpt_model, quiet=quiet)  # Summarize it
+                        summaries.append(summary[1])  # Save summary
+                        tokens_in_chunks += summary[2]  # Record added tokens to avoid passing threshold
+
+                except Exception as e:  # Ignore failures, full memory is not critical and bot is aware it can forget
+                    if not quiet: info(f'Error recycling: {e}', 'bad')
+                    errorct += 1
+
+                chunks = chunks[1:]  # Grab every chunk after first one (basically deleting first element)
+
+            elif chunks and tokens_in_chunks > threshold:  # Summarize what you got to get more space if you're too full
+                try:
+                    prompt = ''
+                    for chunk_summary in summaries:  # Create a prompt composed of summaries
+                        prompt += f'{chunk_summary}\n'
+
+                    summary = get_conversation_summary(prompt, self.api_key, gpt_model=gpt_model, quiet=quiet)  # Summarize the summaries
+                    summaries = [summary[1],]
+                    tokens_in_chunks = summary[2]
+                
+                except Exception as e:
+                    if not quiet: info(f'Error generating summaries summary: {e}', 'bad')
+                    errorct += 1
+
+            if errorct >= 3:  # Stop immediately if too many errors
+                self.recycled = True
+                self.conversation_memories = 'nothing'
+                info(f'Failure detected while trying to recycle tokens. Bot will have amnesia.', 'bad')
+                break
+
+            ct += 1
+
+        # 2. Create main summary 
+        final_summary = ''
+        tries = 0
+
+        while tries <= 3 and final_summary == '':  # If we haven't made too many attempts and got a summary
+            try:
+                final_summary = get_conversation_summary(str(summaries), self.api_key, gpt_model=gpt_model)[1]
+                final_summary = final_summary.replace('\n', '')  # Remove newlines
+            
+            except Exception as e:
+                if not quiet: info(f'Error generating final summary: {e}', 'bad')
+
+            tries += 1
+
+        if not quiet: info(f'Summary of conversation: {final_summary}')
+
+        self.conversation_memories = final_summary
+        self.recycled = True
+
+        self.total_back_and_forth.extend(self.back_and_forth)
+        self.back_and_forth = self.total_back_and_forth[-2:]
+
+        self.restore_conversation()
+
+        # 3. Report status to user
+        self.full_conversation += '\n(Tokens Recycled)\n'
+
+        if final_summary is None or final_summary == '':
+            info('Warning: failed to recycle tokens properly. The bot will have amnesia.', 'bad')
+        
+        else:
+            info('Tokens Recycled Successfully', 'good')
+            info('Conversation Summary', 'topic')
+            info(f'{final_summary}', 'plain')
+        
 
     def remember(self):
         """
@@ -587,12 +738,20 @@ class Chatbot():
         formatted into it. Useful for situations that alter memory or
         presets.
         """
+
+        if self.recycled:
+            recycle_text = ("\nThe conversation got too long and needed to be recycled. The AI only has a " + 
+                            f"vague memory of the previous conversation. The AI remembers: {self.conversation_memories}. " +
+                            "If the human says something that looks like it may have been previously discussed, the AI will ask " + 
+                            "if it talked with the human about it and ask for a refresher.")
+        else:
+            recycle_text = ''
         
         base = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
                 "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
-                f" discussion at hand); it currently remembers: {self.memories}." + 
+                f" discussion at hand); it currently remembers: {self.memories}.{recycle_text}" + 
                 f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
                 " can I help you today?")
 
@@ -613,8 +772,6 @@ class Chatbot():
 
         if rename: 
             self.back_and_forth = new_messages  # Save edited list of messages 
-
-        info(base)
 
         self.conversation = base
 
@@ -684,6 +841,25 @@ class Chatbot():
             return False
         
 
+    def set_model(self, desired_model: str, quiet=True):
+        """
+        If the model is a valid option, will set to it.
+        """
+
+        models = {'davinci':('text-davinci-003', 4000), 'curie':('text-curie-001', 2049),
+                'babbage':('text-babbage-001', 2049), 'ada':('text-ada-001', 2049)}
+
+        for gpt_model in models.keys():
+            regex = re.compile(desired_model, re.IGNORECASE)
+            if regex.search(gpt_model):
+                self.gpt_model = models[desired_model][0]
+                self.max_tokens = models[desired_model][1]
+                if not quiet: info(f'Successfully Set GPT Model to {self.gpt_model}', 'good')
+
+        if not quiet:
+            info(f'Failed to set model to {desired_model}. It may be an invalid option or miss-spelled.', 'bad')
+            info(f'Valid gpt models: {models.keys()}')
+
 
 class GPT3(Chatbot):
     """
@@ -697,7 +873,7 @@ class GPT3(Chatbot):
 
             # 1. Get response
             response = openai.Completion.create(
-            model="text-davinci-003",
+            model=self.gpt_model,
             prompt=text,
             temperature=0.9,
             max_tokens=tokens,
@@ -709,6 +885,22 @@ class GPT3(Chatbot):
             # Cut response and play it
             reply = json.loads(str(response))['choices'][0]['text']
             return reply
+
+    def raw_request(self, text:str, tokens: int = 1000):
+        if not hostile_or_personal(text) and not self.flagged_by_openai(text):
+
+            # 1. Get response
+            response = openai.Completion.create(
+            model=self.gpt_model,
+            prompt=text,
+            temperature=0.9,
+            max_tokens=tokens,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0.6,
+            )
+
+            return response
 
 # Ensure that nltk is downloaded
 try:
