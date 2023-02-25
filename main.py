@@ -65,7 +65,6 @@ class GUI:
             "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
 
     def __init__(self):
-        # Determine if we have a token
         num_args = len(sys.argv) 
         self.key = ''
         self.key_11 = ''
