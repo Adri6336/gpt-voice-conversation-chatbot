@@ -183,7 +183,7 @@ class GPTCli():
                     continue
 
                 elif 'lease set preset to' in speech:
-                    preset = speech.split('please set preset to')[1]
+                    preset = speech.split('lease set preset to')[1]
                     success = self.chatbot.set_self(preset, 'preset')
 
                     if success:
@@ -208,7 +208,7 @@ class GPTCli():
                     continue
 
                 elif 'lease set name to' in speech:
-                    name = speech.split('please set name to')[1]
+                    name = speech.split('lease set name to')[1]
                     info(f'Attempting to set name to {name}.')
                     self.chatbot.restore_self()
                     success = self.chatbot.change_name(name)
