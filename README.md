@@ -1,4 +1,4 @@
-# gpt-voice-conversation-chatbot (GPT-VCC)
+# gpt-voice-conversation-chatbot (GPT-VCC) (formerly GPT3-STTC)
 
 (Used to be called gpt3-speech-to-text-chatbot, but was changed due to plans to add ability to swap model if desired)
 
