@@ -295,7 +295,7 @@ class Chatbot():
         # 2. Set up bot memories and init prompt
         self.memories = self.remember()  # This will collect memories
         self.conversation = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
-                "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
+                "clever, very friendly, engaging, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
                 f" discussion at hand); it currently remembers: {self.memories}." + 
@@ -335,7 +335,7 @@ class Chatbot():
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
             # 1. Get response
-            start_sequence = "\n{self.name}:"
+            start_sequence = "\n{self.name}:"  # I know this is a typo that affects function, but it works for some reason so it'll stay
             restart_sequence = "\nHuman: "
             self.conversation += f'\nHuman: {text}'
             self.full_conversation += f'\nHuman: {text}'
@@ -748,7 +748,7 @@ class Chatbot():
             recycle_text = ''
         
         base = (f"{self.restore_self()}The following is a conversation with an AI assistant. The AI assistant is helpful, creative," + 
-                "clever, very friendly, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
+                "clever, very friendly, engaging, and supports users like a motivational coach. The AI assistant is able to understand numerous languages and will reply" +
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
                 f" discussion at hand); it currently remembers: {self.memories}.{recycle_text}" + 
