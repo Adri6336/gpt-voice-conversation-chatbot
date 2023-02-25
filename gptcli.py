@@ -95,7 +95,7 @@ class GPTCli():
             print('\n')
 
     def main_loop(self):
-        info('Type !recycle() to manually recycle tokens')
+        info('Type "!recycle()" to manually recycle tokens')
         info('Type "!remember()" to exit and have bot remember')
         info('Press Ctrl + C to exit without memory')
 
