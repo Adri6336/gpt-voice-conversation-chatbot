@@ -2,9 +2,11 @@
 
 (Used to be called gpt3-speech-to-text-chatbot, but was changed due to plans to add ability to swap model if desired)
 
-This is a bot that allows you to have a spoken conversation with GPT using your microphone in a way that's similar to ChatGPT. The tool uses a modified GPT chat preset and handles keeping track of the conversation. You can tell GPT something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. In order to use this tool, you need a valid OpenAI API key.
+This is a bot that allows you to have a spoken conversation with GPT using your microphone in a way that's similar to ChatGPT. If you'd prefer to type rather than speak, you can also converse with the bot via the terminal.
 
-The bot requires OpenAI's moderation and GPT apis to be working properly without too much latency. You can find the status here: https://status.openai.com/
+The tool uses a modified GPT chat preset and handles keeping track of the conversation. You can tell GPT something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. Despite limitations based on GPT's max token count, GPT-VCC should still be able to converse with you for as long as you'd like without losing awareness about what you've talked about. In order to use this tool, you will need a valid OpenAI API key.
+
+The bot requires OpenAI's moderation and GPT APIs to be working properly without too much latency. You can find the status here: https://status.openai.com/
 
 The releases are stable, as far as previous testing goes, but will not have all of the newest features. If you would like to have all the features as listed here, clone the repository and run 'git pull' every now and then. This will get you the newest features and bug fixes as they come, but it could be unstable. 
 
@@ -64,13 +66,15 @@ For convenience, you can also just enter the key into the keys.txt file. When yo
 
 A Pygame gui will pop up; its colors represent the state of the bot. The color red indicates that the bot is not listening. To make the bot listen to you, press space. The color will then turn to yellow when its loading, then green when it's listening. Speak freely when the color is green, your speech will be recorded, converted to text, then fed to GPT if it is in compliance with OpenAI's policies. When GPT is ready to reply, the screen will turn blue.
 
-Press 'q' to exit and have bot remember the conversation. Simply close the window to have the bot exit without remembering what you disucssed.
+If you would like to use the terminal, run gptcli.py instead using the same syntax (having keyfile also works):
 
-If you would like to use [ElevenLabs TTS](https://beta.elevenlabs.io/speech-synthesis), you must enter your personal ElevenLabs api key following your OpenAI api key as follows:
+    python gptcli.py <key>
+
+If you would like to use [ElevenLabs TTS](https://beta.elevenlabs.io/speech-synthesis), you must enter your personal ElevenLabs api key following your OpenAI api key as follows or fill in the key in the key file:
 
         python main.py <OpenAI key> <ElevenLabs TTS key>
 
-If you don't want to use the fancy TTS, this bot will use Google's TTS.
+If you don't want to use the fancy TTS, this bot will automatically use Google's TTS.
 
 # Content Moderation
 
@@ -129,3 +133,5 @@ Please note that outages or latency problems with the moderation api will preven
 - Save a custom preset to have an experience better suited for you and your needs
 
 - Customize the bot's name
+
+- Chat with GPT via the terminal (Windows and Linux)
