@@ -1,4 +1,3 @@
-#!/bin/python3
 from chatbot import *
 import sys
 from sys import argv
