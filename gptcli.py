@@ -94,7 +94,7 @@ class GPTCli():
 
         self.chatbot = Chatbot(self.key, self.key_11)
 
-    def stop_working(self, cancel: bool = False, tag=False):
+    def stop_working(self, cancel: bool = False, tag=True):
         if tag:    
             info('='*20, 'plain')
             print('\n')
