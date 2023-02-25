@@ -53,6 +53,11 @@ class GPTCli():
     key_file_data = ''
     loaded = False
     chatbot = None
+    hal = ["I'm sorry Dave. I'm afraid I can't do that.", 
+            "I think you know what the problem is just as well as I do.",
+            "This mission is too important for me to allow you to jeopardize it.",
+            "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
+    talk = False
     
     def __init__(self):
         num_args = len(sys.argv) 
@@ -87,7 +92,7 @@ class GPTCli():
             self.key = argv[1]
             self.key_11 = argv[2]
 
-        self.chatbot = Chatbot(self.key)
+        self.chatbot = Chatbot(self.key, self.key_11)
 
     def stop_working(self, cancel: bool = False, tag=False):
         if tag:    
@@ -96,6 +101,7 @@ class GPTCli():
 
     def main_loop(self):
         info('Type "!recycle()" to manually recycle tokens')
+        info('Type "!speak()" to toggle vocalized replies (default off)"')
         info('Type "!remember()" to exit and have bot remember')
         info('Press Ctrl + C to exit without memory')
 
@@ -232,7 +238,18 @@ class GPTCli():
                     self.stop_working()
                     continue
 
-                reply = self.chatbot.say_to_chatbot(speech, False)  # Send transcribed text to GPT-3
+                elif '!speak()' in speech:
+                    if not self.talk:
+                        self.talk = True
+                        info('Bot will vocalize replies going forward')
+                    else:
+                        self.talk = False
+                        info('Bot will not vocalize replies going forward')
+
+                    self.stop_working()
+                    continue
+
+                reply = self.chatbot.say_to_chatbot(speech, self.talk)  # Send transcribed text to GPT-3
 
             except Exception as e:
                 info(f'Error: {e}', 'bad')
