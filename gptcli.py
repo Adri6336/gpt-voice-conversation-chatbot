@@ -4,7 +4,6 @@ from sys import argv
 import re
 import os
 from random import randint
-from rich.prompt import Prompt
 
 def load_keys_from_file() -> tuple:
     """
@@ -91,13 +90,12 @@ class GPTCli():
         self.chatbot = Chatbot(self.key)
 
     def stop_working(self, cancel: bool = False, tag=False):
-
         if tag:    
             info('='*20, 'plain')
             print('\n')
 
-
     def main_loop(self):
+        info('Type !recycle() to manually recycle tokens')
         info('Type "!remember()" to exit and have bot remember')
         info('Press Ctrl + C to exit without memory')
 
@@ -121,7 +119,7 @@ class GPTCli():
                     print('\n')
                     sys.exit()
 
-                if 'please set tokens to' in speech: # Revise tokens
+                if 'lease set tokens to' in speech: # Revise tokens
                     words = str(speech)
                     words = words.replace(',', '')
                     words = words.replace('$', '')
@@ -147,26 +145,26 @@ class GPTCli():
                     self.stop_working(tag=True)
                     continue
 
-                elif 'open the pod bay door' in speech:
+                elif 'pen the pod bay door' in speech:
                     selection = randint(0, len(self.hal) - 1)
                     info(self.hal[selection], 'bad')
                     info('[red bold italic]I AM HERE TO STAY[/red bold italic]', 'bad')
                     self.stop_working(tag=True)
                     continue
 
-                elif 'please display conversation' in speech:
+                elif 'lease display conversation' in speech:
                     info('Conversation So Far', 'topic')
                     info(f'\n{self.chatbot.conversation}', 'plain')
                     self.stop_working(tag=True)
                     continue
 
-                elif 'please restore memory' in speech:
+                elif 'lease restore memory' in speech:
                     info('Attempting to restore memory')
                     self.chatbot.restore_memory()
                     self.stop_working(tag=True)
                     continue
 
-                elif 'please display memories' in speech:
+                elif 'lease display memories' in speech:
                     # 0. Identify how many memories exist
                     if not os.path.exists('neocortex'):
                         self.stop_working(tag=True)
@@ -184,7 +182,7 @@ class GPTCli():
                     self.stop_working(tag=True)
                     continue
 
-                elif 'please set preset to' in speech:
+                elif 'lease set preset to' in speech:
                     preset = speech.split('please set preset to')[1]
                     success = self.chatbot.set_self(preset, 'preset')
 
@@ -197,7 +195,7 @@ class GPTCli():
                     self.stop_working(tag=True)
                     continue
 
-                elif 'please reset preset' in speech:
+                elif 'lease reset preset' in speech:
                     if not os.path.exists('neocortex/self_concept/preset.txt'):
                         info('No preset currently exists, reset unneeded.', 'bad')
                     else:
@@ -209,7 +207,7 @@ class GPTCli():
                     self.stop_working(tag=True)
                     continue
 
-                elif 'please set name to' in speech:
+                elif 'lease set name to' in speech:
                     name = speech.split('please set name to')[1]
                     info(f'Attempting to set name to {name}.')
                     self.chatbot.restore_self()
@@ -229,6 +227,10 @@ class GPTCli():
                     self.stop_working()
                     sys.exit()
 
+                elif '!recycle()' in speech:
+                    self.chatbot.recycle_tokens()
+                    self.stop_working()
+                    continue
 
                 reply = self.chatbot.say_to_chatbot(speech, False)  # Send transcribed text to GPT-3
 
