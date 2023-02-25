@@ -95,7 +95,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **P**: This attempts to cancel a request to GPT. It will either prevent transcribing of message or will avoid sending it to GPT.
 
-#### Voice Commands
+#### Voice Commands (All work with CLI version too except for the robot-speaking commands)
 
 - **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
