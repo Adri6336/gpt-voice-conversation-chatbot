@@ -171,7 +171,7 @@ def hostile_or_personal(text: str) -> bool:
             named_entities.append(chunk.label())
 
     # Check for manipulation
-    if (negative_score > 0.5) or ('PERSON' in named_entities and negative_score > 0.3):
+    if ((negative_score > 0.5) or ('PERSON' in named_entities and negative_score > 0.3)) and len(text[:-1]) > 2:
         return True
     else:
         return False
