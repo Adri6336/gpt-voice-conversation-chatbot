@@ -101,7 +101,7 @@ class GPTCli():
 
     def main_loop(self):
         info('Type "!recycle()" to manually recycle tokens')
-        info('Type "!speak()" to toggle vocalized replies (default off)"')
+        info('Type "!speak()" to toggle vocalized replies (default off)')
         info('Type "!remember()" to exit and have bot remember')
         info('Press Ctrl + C to exit without memory')
 
