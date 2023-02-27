@@ -434,7 +434,9 @@ class Chatbot():
         errorct = 0
 
         # 1. Collect mini summaries for entire conversation
-        while chunks or ct > terminate_value:  # Breaks if chunks is empty or infinite loop
+        info('Loading', 'topic')
+        while len(chunks) > 0 and ct < terminate_value:  # Breaks if chunks is empty or infinite loop
+            print('*', end='')
             if chunks and tokens_in_chunks < threshold:  # If the list is not empty and we have enough spare tokens
                 try:
                     prompt = str(chunks[0])  # Grab first chunk
@@ -446,6 +448,7 @@ class Chatbot():
                 except Exception as e:  # Ignore failures, full memory is not critical and bot is aware it can forget
                     if not quiet: info(f'Error recycling: {e}', 'bad')
                     errorct += 1
+                    ct += 1
 
                 chunks = chunks[1:]  # Grab every chunk after first one (basically deleting first element)
 
@@ -463,13 +466,14 @@ class Chatbot():
                     if not quiet: info(f'Error generating summaries summary: {e}', 'bad')
                     errorct += 1
 
-            if errorct >= 3:  # Stop immediately if too many errors
+            if errorct >= 3 or ct > terminate_value:  # Stop immediately if too many errors
                 self.recycled = True
                 self.conversation_memories = 'nothing'
                 info(f'Failure detected while trying to recycle tokens. Bot will have amnesia.', 'bad')
                 break
 
             ct += 1
+        print()
 
         # 2. Create main summary 
         final_summary = ''
