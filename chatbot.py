@@ -335,7 +335,7 @@ class Chatbot():
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
             # 1. Get response
-            start_sequence = "\n{self.name}:"  # I know this is a typo that affects function, but it works for some reason so it'll stay
+            start_sequence = f"\n{self.name}:"
             restart_sequence = "\nHuman: "
             self.conversation += f'\nHuman: {text}'
             self.full_conversation += f'\nHuman: {text}'
