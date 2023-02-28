@@ -35,7 +35,8 @@ def chunk_list(list1, chunk_by: int):
 
     return list2
 
-def get_conversation_summary(conversation_section: str, openai_key: str, quiet: bool = True, gpt_model: str = 'curie') -> tuple:
+def get_conversation_summary(conversation_section: str, openai_key: str, 
+                            quiet: bool = True, gpt_model: str = 'curie', custom_prompt = '') -> tuple:
     """
     Each conversation section should be a single string with the AI and Human messages appended.
 
@@ -47,7 +48,10 @@ def get_conversation_summary(conversation_section: str, openai_key: str, quiet: 
     gpt.set_model('curie')
 
     # 2. Set up prompt
-    prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
+    if custom_prompt == '':
+        prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
+    else:
+        prompt = f'{custom_prompt}\n{conversation_section}'
 
     try:
         response = gpt.raw_request(prompt, 200)
