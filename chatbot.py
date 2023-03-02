@@ -834,7 +834,14 @@ class Chatbot():
         """
         sections = text.split(f'{self.name}:')
         try:
-            target = sections[1]
+            if len(sections) == 2:
+                target = sections[1]
+            
+            elif len(sections) == 3:
+                target = sections[2]
+
+            else:
+                target = text  # Default return
 
         except Exception as e:
             info(f'\nError occurred while trying to separate "{self.name}:" from response {e}', 'bad')
