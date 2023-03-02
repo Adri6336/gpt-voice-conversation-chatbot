@@ -35,8 +35,7 @@ def chunk_list(list1, chunk_by: int):
 
     return list2
 
-def get_conversation_summary(conversation_section: str, openai_key: str, 
-                            quiet: bool = True, gpt_model: str = 'curie', custom_prompt = '') -> tuple:
+def get_conversation_summary(conversation_section: str, openai_key: str, quiet: bool = True, gpt_model: str = 'curie') -> tuple:
     """
     Each conversation section should be a single string with the AI and Human messages appended.
 
@@ -48,10 +47,7 @@ def get_conversation_summary(conversation_section: str, openai_key: str,
     gpt.set_model('curie')
 
     # 2. Set up prompt
-    if custom_prompt == '':
-        prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
-    else:
-        prompt = f'{custom_prompt}\n{conversation_section}'
+    prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
 
     try:
         response = gpt.raw_request(prompt, 200)
@@ -306,6 +302,7 @@ class Chatbot():
                 f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
                 " can I help you today?")
         self.full_conversation = self.conversation
+        self.set_model('chatgpt')
 
     def flagged_by_openai(self, text: str) -> bool:
         """
@@ -327,6 +324,33 @@ class Chatbot():
             info(f'Failed to test with OpenAI. Key might be invalid.', 'bad')
             return True
 
+    def gpt_response(self, prompt: str) -> str:
+        if not self.gpt_model == 'gpt-3.5-turbo':
+            response = openai.Completion.create(
+                model=self.gpt_model,
+                prompt=self.conversation,
+                temperature=0.9,
+                max_tokens=self.reply_tokens,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0.6,
+                stop=[" Human:", f" {self.name}:"]
+                )
+            
+        else:
+            query = [{'role':'user', 'content':self.conversation + prompt}]
+            response = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo",
+                            messages=query,
+                            max_tokens=self.reply_tokens,
+                            stop=[" Human:", f" {self.name}:"])
+            
+            text = response['choices'][0]['message']['content']
+            if not f'{self.name}: ' in text:
+                response['choices'][0]['message']['content'] = f'{self.name}: {text[2:]}'
+            
+        return response
+
     def say_to_chatbot(self, text: str, outloud: bool = True, show_text:bool = True) -> str:
         """
         This sends a message to GPT-3 if it passes tests, then returns a
@@ -336,6 +360,8 @@ class Chatbot():
         :param outloud: A switch that enables / disables spoken replies.
         :returns: A string containing the response
         """
+        prompt = text
+
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
             # 1. Get response
@@ -346,30 +372,12 @@ class Chatbot():
             self.back_and_forth.append(f'\nHuman: {text}')
 
             try:
-                response = openai.Completion.create(
-                model=self.gpt_model,
-                prompt=self.conversation,
-                temperature=0.9,
-                max_tokens=self.reply_tokens,
-                top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0.6,
-                stop=[" Human:", f" {self.name}:"]
-                )
+                response = self.gpt_response(prompt)
 
             except Exception as e:
                 if 'server had an error while processing' in str(e):  # If connection issue, try again once more
                     try:
-                        response = openai.Completion.create(
-                            model="text-davinci-003",
-                            prompt=self.conversation,
-                            temperature=0.9,
-                            max_tokens=self.reply_tokens,
-                            top_p=1,
-                            frequency_penalty=0,
-                            presence_penalty=0.6,
-                            stop=[" Human:", f" {self.name}:"]
-                            )
+                        response = self.gpt_response(prompt)
 
                     except Exception as e:
                         info(f'Error communicating with GPT-3: {e}', 'bad')
@@ -392,7 +400,10 @@ class Chatbot():
             self.tokens = response['usage']['total_tokens']
             
             # Cut response and play it
-            reply = response['choices'][0]['text']
+            if not self.gpt_model == 'gpt-3.5-turbo':
+                reply = response['choices'][0]['text']
+            else:
+                reply = response['choices'][0]['message']['content']
 
             if show_text:
                 info(f'{self.name}\'s Response', 'topic')
@@ -855,7 +866,7 @@ class Chatbot():
         """
 
         models = {'davinci':('text-davinci-003', 4000), 'curie':('text-curie-001', 2049),
-                'babbage':('text-babbage-001', 2049), 'ada':('text-ada-001', 2049)}
+                'babbage':('text-babbage-001', 2049), 'ada':('text-ada-001', 2049), 'chatgpt':('gpt-3.5-turbo', 4096)}
 
         for gpt_model in models.keys():
             regex = re.compile(desired_model, re.IGNORECASE)
