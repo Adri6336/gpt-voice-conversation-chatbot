@@ -2,9 +2,9 @@
 
 (Used to be called gpt3-speech-to-text-chatbot, but was changed due to plans to add ability to swap model if desired)
 
-This is a bot that allows you to have a spoken conversation with GPT using your microphone in a way that's similar to ChatGPT. If you'd prefer to type rather than speak, you can also converse with the bot via the terminal.
+This is a bot that allows you to have a spoken conversation with ChatGPT using your microphone. If you'd prefer to type rather than speak, you can also converse with the bot via the terminal.
 
-The tool uses a modified GPT chat preset and handles keeping track of the conversation. You can tell GPT something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. Despite limitations based on GPT's max token count, GPT-VCC should still be able to converse with you for as long as you'd like without losing awareness about what you've talked about. In order to use this tool, you will need a valid OpenAI API key.
+The tool uses a modified GPT chat preset, handles keeping track of the conversation, and uses ChatGPT's API by default. You can tell GPT something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. Despite limitations based on GPT's max token count, GPT-VCC should still be able to converse with you for as long as you'd like without losing awareness about what you've talked about. In order to use this tool, you will need a valid OpenAI API key.
 
 The bot requires OpenAI's moderation and GPT APIs to be working properly without too much latency. You can find the status here: https://status.openai.com/
 
@@ -118,7 +118,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 # Features
 
-- Have a conversation with GPT as if it was ChatGPT
+- Have a personalized conversation with ChatGPT
 
 - Hear GPT talk to you with Google's TTS tool (will pronounce accents accurately if it can), in ElevenLab's life-like TTS (if you have a valid api key), or as a robot (say "speak like a robot" to activate)
 
