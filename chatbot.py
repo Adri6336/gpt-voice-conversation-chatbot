@@ -928,6 +928,38 @@ class GPT3(Chatbot):
             )
 
             return response
+        
+    def get_text_tokens(self, prompt: str) -> tuple:
+        '''
+        Send a request to gpt, get (response: str, token_count: int)
+        '''
+
+        if not self.gpt_model == 'gpt-3.5-turbo':
+            response = openai.Completion.create(
+                model=self.gpt_model,
+                prompt=self.conversation,
+                temperature=0.9,
+                max_tokens=self.reply_tokens,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0.6,
+                )
+            reply = json.loads(str(response))
+            text = reply['choices'][0]['text']
+            tokens = reply['usage']['total_tokens']
+            
+        else:
+            query = [{'role':'user', 'content':prompt}]
+            response = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo",
+                            messages=query,
+                            max_tokens=self.reply_tokens)
+            
+            reply = json.loads(str(response))
+            text= reply['choices'][0]['message']['content']
+            tokens = reply['usage']['total_tokens']
+            
+        return (text, tokens)
 
 # Ensure that nltk is downloaded
 try:
