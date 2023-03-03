@@ -581,11 +581,11 @@ class Chatbot():
         print(prompt)
 
         # 2. Remember the info as short term    
-        memories = gpt.request(prompt, 500)
+        memories = gpt.get_text_tokens(prompt, 500)[0]
         ct = 0
 
         while memories == '' or memories == '||' and ct > 3:
-            memories = gpt.request(prompt)
+            memories = gpt.get_text_tokens(prompt, 500)[0]
 
         memories = memories.replace(' ', '')  # Remove spaces
         memories = memories.replace('\n', '')  # Remove newlines
