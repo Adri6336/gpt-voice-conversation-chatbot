@@ -44,15 +44,15 @@ def get_conversation_summary(conversation_section: str, openai_key: str, quiet: 
 
     # 1. Set up model
     gpt = GPT3(openai_key)
-    gpt.set_model('curie')
+    gpt.set_model('chatgpt')
 
     # 2. Set up prompt
     prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
 
     try:
-        response = gpt.raw_request(prompt, 200)
-        tokens = int(json.loads(str(response))['usage']['total_tokens'])
-        summary = json.loads(str(response))['choices'][0]['text']
+        response = gpt.get_text_tokens(prompt, 200)
+        tokens = response[1]
+        summary = response[0]
 
         return (True, summary, tokens)
 
@@ -929,7 +929,7 @@ class GPT3(Chatbot):
 
             return response
         
-    def get_text_tokens(self, prompt: str) -> tuple:
+    def get_text_tokens(self, prompt: str, max_token_ct: int = 200) -> tuple:
         '''
         Send a request to gpt, get (response: str, token_count: int)
         '''
@@ -939,7 +939,7 @@ class GPT3(Chatbot):
                 model=self.gpt_model,
                 prompt=self.conversation,
                 temperature=0.9,
-                max_tokens=self.reply_tokens,
+                max_tokens=max_token_ct,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0.6,
@@ -953,7 +953,7 @@ class GPT3(Chatbot):
             response = openai.ChatCompletion.create(
                             model="gpt-3.5-turbo",
                             messages=query,
-                            max_tokens=self.reply_tokens)
+                            max_tokens=max_token_ct)
             
             reply = json.loads(str(response))
             text= reply['choices'][0]['message']['content']
