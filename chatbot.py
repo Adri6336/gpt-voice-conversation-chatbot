@@ -383,7 +383,8 @@ class Chatbot():
                         info(f'Error communicating with GPT-3: {e}', 'bad')
                         return ''
 
-                elif 'Please reduce your prompt; or completion length' in str(e):  # Too many tokens. 
+                elif ('Please reduce your prompt; or completion length' in str(e) or
+                      'maximum context length is 4096' in str(e)):  # Too many tokens. 
                     info('Max tokens reached. Conversation will continue on with a superficial '+ 
                         'memory of what was previously discussed', 'bad')
                     self.recycle_tokens()
