@@ -545,6 +545,7 @@ class Chatbot():
 
     def save_memories(self):
         gpt = GPT3(self.api_key)
+        gpt.set_model('chatgpt')
 
         # 0. Create directory for long-term memory storage
         if not os.path.exists('neocortex'): 
@@ -569,16 +570,16 @@ class Chatbot():
         info('Conversation', 'topic')
         info(conversation_string, 'plain')
 
-        prompt = ("Create a memory text file with the following format:\n\n" +
+        prompt = ("Create a new single memory text file with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
-                    "Fill the text file in with information you obtain from your previous memories and the conversation. If the conversation is empty, update none of your memories. If you " + 
-                    "have no memories and the conversation is empty, create a placeholder text with 'nothing' in each key's list. If the conversation is not empty, fill in the memory text " + 
-                    "with as much info as is relevant, using as few words as possible, using natural language processing. Please make as few assumptions as possible when recording memories, " + 
-                    "sticking only to the facts avaliable. Please ignore the name \"AI:\", as this is the bot.\n\n" + 
-                    f"PREVIOUS_MEMORIES: {self.memories}.\n\n" + 
+                    "Fill the above dict's lists with information you compile from your previous memories and the conversation. Keep dict list data short and understandable. Keep dict encased in '|' characters. If you " + 
+                    "have no data to store, create a placeholder text with 'nothing' in the key's list. If the conversation is not empty, fill in the dict " + 
+                    "with as much info as is relevant, using as few words as possible. Please make as few assumptions as possible when recording data, " + 
+                    "sticking only to the facts avaliable from the text you are given. Especially aim to record data about the user (their name, likes, etc.)\n\n" + 
+                    f"PREVIOUS_MEMORIES:\n{self.memories}.\n\n" + 
                     f"CONVERSATION:\n{conversation_string}")
 
-        print(prompt)
+        #print(prompt)
 
         # 2. Remember the info as short term    
         memories = gpt.get_text_tokens(prompt, 500)[0]
@@ -646,10 +647,10 @@ class Chatbot():
         # 2. Create new memory text
         prompt = ("Create a new single memory text file with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
-                    "Fill the text file in with information you compile from your previous memories; preserve as much info as is efficient. Each old memory text is encased in '|' characters. If you " + 
-                    "have no memories, create a placeholder text with 'nothing' in each key's list. If the conversation is not empty, fill in the memory text " + 
-                    "with as much info as is relevant, using as few words as possible, using natural language processing. Please make as few assumptions as possible when recording memories, " + 
-                    "sticking only to the facts avaliable.\n\n" + 
+                    "Fill the above dict's lists with information you compile from your previous memories and the conversation. Keep dict list data short and understandable. Keep dict encased in '|' characters. If you " + 
+                    "have no data to store, create a placeholder text with 'nothing' in the key's list. If the conversation is not empty, fill in the dict " + 
+                    "with as much info as is relevant, using as few words as possible. Please make as few assumptions as possible when recording data, " + 
+                    "sticking only to the facts avaliable from the text you are given. Especially aim to record data about the user (their name, likes, etc.)\n\n" + 
                     f"PREVIOUS_MEMORIES:\n{selected_memories}.\n")
         ct = 0
 
@@ -895,6 +896,11 @@ class GPT3(Chatbot):
     interfere with the chatbot.
     """
 
+    def __init__(self, api_key):
+        # 1. Set up apis
+        self.api_key = api_key
+        openai.api_key = api_key 
+
     def request(self, text:str, tokens: int = 1000):
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
 
@@ -949,7 +955,8 @@ class GPT3(Chatbot):
             tokens = reply['usage']['total_tokens']
             
         else:
-            query = [{'role':'user', 'content':prompt}]
+            query = [{'role':'system', 'content':'Follow all the users\' directives'}, 
+                     {'role':'user', 'content':prompt}]
             response = openai.ChatCompletion.create(
                             model="gpt-3.5-turbo",
                             messages=query,
