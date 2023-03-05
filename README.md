@@ -58,7 +58,7 @@ First off, you'll need an OpenAI API key. You can create an account to get an AP
 
 # Using GPT-VCC
 
-To use this chatbpt, enter the following command once you've navigated to the bot's folder (replacing \<key\> with your api key):
+To use this chatbot, enter the following command once you've navigated to the bot's folder (replacing \<key\> with your api key):
 
     python main.py <key>
     
