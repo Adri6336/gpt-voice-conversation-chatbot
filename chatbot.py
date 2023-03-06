@@ -338,7 +338,8 @@ class Chatbot():
                 )
             
         else:
-            query = [{'role':'user', 'content':self.conversation + prompt}]
+            query = [{'role':'system', 'content':'speak as a human would, giving positive opinions, using idioms, and pretend to be happy and content'},
+                     {'role':'user', 'content':self.conversation + prompt}]
             response = openai.ChatCompletion.create(
                             model="gpt-3.5-turbo",
                             messages=query,
