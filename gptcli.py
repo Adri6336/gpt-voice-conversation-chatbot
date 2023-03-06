@@ -125,21 +125,25 @@ class GPTCli():
 
             try:
                 try:
+                    speech = ''
                     if self.linux:
                         info('Human Message', 'topic')
                         print()  # The newline is to avoid having the [Human Message] tag get overridden by left arrow presses
+                        speech = input('>>>> ')
+
                     else:
                         info('Human Message', 'topic')
-                    speech = input()
+                        speech = input()
                     
                     while speech == '':  # If user didn't enter anything, reask
                         if self.linux:
                             info('Human Message', 'topic')
                             print()
+                            speech = input('>>>> ')
+
                         else:
                             info('Human Message', 'topic')
-
-                        speech = input()
+                            speech = input()
 
                     speech += '\n'  # The added \n should help prevent hallucination of user statement
                 
