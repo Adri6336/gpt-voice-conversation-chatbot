@@ -4,6 +4,16 @@ from sys import argv
 import re
 import os
 from random import randint
+import platform
+
+
+if platform.system() == 'Linux':
+    # This will allow Linux users to go back and forth on the text line and access text entry history with up and down
+    import readline
+    readline.parse_and_bind('"\e[A": history-search-backward')
+    readline.parse_and_bind('"\e[B": history-search-forward')
+    readline.parse_and_bind('"\e[C": forward-char')
+    readline.parse_and_bind('"\e[D": backward-char')
 
 def load_keys_from_file() -> tuple:
     """
@@ -58,8 +68,12 @@ class GPTCli():
             "This mission is too important for me to allow you to jeopardize it.",
             "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
     talk = False
+    linux = False
     
     def __init__(self):
+        if platform.system() == 'Linux':  # This will only alter how the input text prompt is printed
+            self.linux = True
+
         num_args = len(sys.argv) 
         self.key = ''
         self.key_11 = ''
@@ -111,11 +125,20 @@ class GPTCli():
 
             try:
                 try:
-                    info('Human Message', 'topic')
+                    if self.linux:
+                        info('Human Message', 'topic')
+                        print()  # The newline is to avoid having the [Human Message] tag get overridden by left arrow presses
+                    else:
+                        info('Human Message', 'topic')
                     speech = input()
                     
-                    while speech == '':
-                        info('Human Message', 'topic')
+                    while speech == '':  # If user didn't enter anything, reask
+                        if self.linux:
+                            info('Human Message', 'topic')
+                            print()
+                        else:
+                            info('Human Message', 'topic')
+
                         speech = input()
 
                     speech += '\n'  # The added \n should help prevent hallucination of user statement
