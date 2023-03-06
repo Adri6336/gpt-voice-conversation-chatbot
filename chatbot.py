@@ -299,7 +299,7 @@ class Chatbot():
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
                 f" discussion at hand); it currently remembers: {self.memories}." + 
-                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
+                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. How" + 
                 " can I help you today?")
         self.full_conversation = self.conversation
         self.set_model('chatgpt')
@@ -774,7 +774,7 @@ class Chatbot():
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
                 f" discussion at hand); it currently remembers: {self.memories}.{recycle_text}" + 
-                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-3 STTC. How" + 
+                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. How" + 
                 " can I help you today?")
 
         conversation = ''
