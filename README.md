@@ -126,7 +126,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 - Bot will remember things about you if you close with the 'Q' key
 
-- See text GPT's replies as text in the terminal window. Most UTF-32 characters (like Chinese and Arabic text) will also be printed
+- See GPT's replies as text in the terminal window. Most UTF-32 characters (like Chinese and Arabic text) will also be printed
 
 - Automatically save conversations to a file on your disk to help you keep track of what you've talked about 
 
