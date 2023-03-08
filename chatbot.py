@@ -971,25 +971,20 @@ class GPT3(Chatbot):
 
 # Ensure that nltk is downloaded
 try:
-    nltk.download('punkt', quiet=True, raise_on_error=True)
-    nltk.download('averaged_perceptron_tagger', quiet=True, raise_on_error=True)
-    nltk.download('maxent_ne_chunker', quiet=True, raise_on_error=True)
-    nltk.download('words', quiet=True, raise_on_error=True)
+    hostile_or_personal('Thats pretty wack yo')
     info('NLTK Loaded', 'good')
 
 except Exception as e:
-    if 'getaddrinfo failed' in str(e):  # Notify that you have a connection issue
-        info('Failed to download NLTK data', 'bad')
-        info('Testing if NLTK requirements met ... ')
-    
-    else:  # If some other issue presents, exit
-        info(f'Unexpected error while downloading NLTK data: {e}')
-        exit(2)
-
-    # Test to see if NLTK requirements met
     try:
-        hostile_or_personal('Thats pretty wack yo')
-        info('NLTK Requirements Met', 'good')
-    
+        info('Downloading NLTK packages ...')
+        nltk.download('punkt', quiet=True, raise_on_error=True)
+        nltk.download('averaged_perceptron_tagger', quiet=True, raise_on_error=True)
+        nltk.download('maxent_ne_chunker', quiet=True, raise_on_error=True)
+        nltk.download('words', quiet=True, raise_on_error=True)
+        info('NLTK Loaded', 'good')
+
     except Exception as e:
-        info('NLTK requirements not met', 'bad')
+        info('Failed to download NLTK data', 'bad')
+        info(f'Unexpected error while downloading NLTK data: {e}', 'bad')
+        exit(2)
+        
