@@ -193,7 +193,8 @@ class GPTCli():
 
                 elif 'lease restore memory' in speech:
                     info('Attempting to restore memory')
-                    self.chatbot.restore_memory()
+                    #self.chatbot.restore_memory()
+                    self.chatbot.create_memories(restore=True)
                     self.stop_working(tag=True)
                     continue
 

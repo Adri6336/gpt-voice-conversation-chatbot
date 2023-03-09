@@ -533,7 +533,7 @@ class Chatbot():
             info('Conversation Summary', 'topic')
             info(f'{final_summary}', 'plain')
     
-    def create_memories(self, chunk_by=2, quiet=True):
+    def create_memories(self, chunk_by=2, quiet=True, restore=False):
         '''
         This is a new memory algorithm that will essentially be a modified token
         recycling algorithm. Chunks a total back and forth, creates memories for it,
@@ -543,7 +543,12 @@ class Chatbot():
         tokens_in_chunks = 0
         summaries = []
         threshold = self.max_tokens / 2  # 50% of max to safely generate summaries
-        chunks = chunk_list(self.back_and_forth + self.back_and_forth, chunk_by=chunk_by)  # Join all messages
+
+        if not restore:
+            chunks = chunk_list(self.back_and_forth + self.back_and_forth, chunk_by=chunk_by)  # Join all messages
+        else:
+            chunks = chunk_list(self.restore_memory(50, get_list=True, quiet=True), 2)
+
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
@@ -715,7 +720,7 @@ class Chatbot():
         with open(f'neocortex/{memory_name}', 'w') as file:
             file.write(f'|{memories}|')
 
-    def restore_memory(self, max_memories=5):
+    def restore_memory(self, max_memories=5, get_list=False, quiet=False):
         """
         This will compile the memories stored in the neocortex
         folder into a new memories.txt file, then save the file
@@ -733,6 +738,7 @@ class Chatbot():
         memory_files = get_files_in_dir('neocortex')
         num_memories = len(memory_files)
         selected_memories = ''
+        individual_memories = []
         one_memory = False
 
         if num_memories == 0:  # No memories exist
@@ -755,8 +761,13 @@ class Chatbot():
                 with open(memory_path, 'r') as file:
                     selected_memory = file.read()
                     selected_memories += f'{selected_memory}\n'
-                    info(f'Selected Memory {x}', 'topic')
-                    print(f'{selected_memory}\n')
+                    individual_memories.append(selected_memories)
+                    if not quiet:
+                        info(f'Selected Memory {x}', 'topic')
+                        print(f'{selected_memory}\n')
+
+        if get_list:
+            return individual_memories
 
 
         # 2. Create new memory text
