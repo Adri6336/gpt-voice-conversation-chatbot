@@ -35,7 +35,9 @@ def chunk_list(list1, chunk_by: int):
 
     return list2
 
-def get_conversation_summary(conversation_section: str, openai_key: str, quiet: bool = True, gpt_model: str = 'curie') -> tuple:
+def get_conversation_summary(conversation_section: str, openai_key: str, 
+                             quiet: bool = True, gpt_model: str = 'curie',
+                             custom_prompt = '') -> tuple:
     """
     Each conversation section should be a single string with the AI and Human messages appended.
 
@@ -47,7 +49,11 @@ def get_conversation_summary(conversation_section: str, openai_key: str, quiet: 
     gpt.set_model('chatgpt')
 
     # 2. Set up prompt
-    prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
+    if custom_prompt == '':
+        prompt = f'Please briefly summarize the following exchange:\n{conversation_section}'
+    
+    else:
+        prompt = f'{custom_prompt}\n{conversation_section}'
 
     try:
         response = gpt.get_text_tokens(prompt, 200)
@@ -526,7 +532,115 @@ class Chatbot():
             info('Tokens Recycled Successfully', 'good')
             info('Conversation Summary', 'topic')
             info(f'{final_summary}', 'plain')
+    
+    def create_memories(self, chunk_by=4, quiet=True):
+        '''
+        This is a new memory algorithm that will essentially be a modified token
+        recycling algorithm. Chunks a total back and forth, creates memories for it,
+        and saves a memory text to the memory.txt file and neocortex.
+        '''
+        info('Creating memories ...')
+        tokens_in_chunks = 0
+        summaries = []
+        threshold = self.max_tokens / 2  # 50% of max to safely generate summaries
+        chunks = chunk_list(self.back_and_forth + self.back_and_forth, chunk_by=chunk_by)  # Join all messages
+        ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
+        terminate_value = len(chunks)
+        errorct = 0
+        model_placeholder = ''  # Actual function does not care what you enter, will remove / fix later
+
+        memory_directive = ("Create a new single memory text file with the following format:\n\n" +
+                    "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
+                    "Fill the above dict's lists with information you compile from your previous memories and the conversation. Keep dict list data short and understandable. Keep dict encased in '|' characters. If you " + 
+                    "have no data to store, create a placeholder text with 'nothing' in the key's list. If the conversation is not empty, fill in the dict " + 
+                    "with as much info as is relevant, using as few words as possible. Please make as few assumptions as possible when recording data, " + 
+                    "sticking only to the facts avaliable from the text you are given. Especially aim to record data about the user (their name, likes, etc.). " + 
+                    "When filling this dict, be sure to use no more than 500 words, preserving important data and replacing unimportant data. " + 
+                    "things_discussed is the least important and can be replaced as you deem appropriate. Only reply with one completed converged dict in proper format.\n\n" + 
+                    f"PREVIOUS_MEMORIES / EXCHANGES:")
         
+        summaries.append(self.memories)  # Add current memories into consideration
+        
+        # 1. Collect mini summaries for entire conversation
+        info('Loading', 'topic')
+        while len(chunks) > 0 and ct < terminate_value:  # Breaks if chunks is empty or infinite loop
+            print('*', end='')
+            if chunks and tokens_in_chunks < threshold:  # If the list is not empty and we have enough spare tokens
+                try:
+                    prompt = str(chunks[0])  # Grab first chunk
+                    if not self.flagged_by_openai(prompt):  # Make sure it's clean
+                        summary = get_conversation_summary(prompt, self.api_key, gpt_model=model_placeholder, quiet=quiet,
+                                                           custom_prompt=memory_directive)  # Summarize it
+                        summaries.append(summary[1])  # Save summary
+                        tokens_in_chunks += summary[2]  # Record added tokens to avoid passing threshold
+
+                except Exception as e:  # Ignore failures, full memory is not critical
+                    if not quiet: info(f'Error memorizing: {e}', 'bad')
+                    errorct += 1
+                    ct += 1
+
+                chunks = chunks[1:]  # Grab every chunk after first one (basically deleting first element)
+
+            elif chunks and tokens_in_chunks > threshold:  # Summarize what you got to get more space if you're too full
+                try:
+                    prompt = ''
+                    for chunk_summary in summaries:  # Create a prompt composed of summaries
+                        prompt += f'{chunk_summary}\n'
+
+                    summary = get_conversation_summary(prompt, self.api_key, gpt_model=model_placeholder, 
+                                                       quiet=quiet, custom_prompt=memory_directive)  # Summarize the summaries
+                    summaries = [summary[1],]
+                    tokens_in_chunks = summary[2]
+                
+                except Exception as e:
+                    if not quiet: info(f'Error generating memories summary: {e}', 'bad')
+                    errorct += 1
+
+            if errorct >= 3 or ct > terminate_value:  # Stop immediately if too many errors
+                self.recycled = True
+                self.conversation_memories = 'nothing'
+                info(f'Failure detected while trying to memorize. Bot will have amnesia.', 'bad')
+                break
+
+            ct += 1
+        print()
+
+        # 2. Create finalized memory 
+        memories = ''
+        tries = 0
+
+        while tries <= 3 and memories == '':  # If we haven't made too many attempts and got a summary
+            try:
+                memories = get_conversation_summary(str(summaries), self.api_key, gpt_model=model_placeholder,
+                                                         quiet=quiet, custom_prompt=memory_directive)[1]
+                memories = memories.replace('\n', '')  # Remove newlines
+                memories = memories.replace(' ', '')  # Remove spaces
+            
+            except Exception as e:
+                if not quiet: info(f'Error generating final memory: {e}', 'bad')
+                return
+
+            tries += 1
+
+        if not quiet: info(f'Summary of conversation: {memories}')
+
+        # 3. Save memories to proper location
+        # 3.0. Create directory for long-term memory storage
+        if not os.path.exists('neocortex'): 
+            os.mkdir('neocortex')
+            memory_name = '1.txt'
+
+        else:
+            memory_name = f'{(len(get_files_in_dir("neocortex")) + 1)}.txt'
+
+        with open('memories.txt', 'w') as file:
+            file.write(f'|{memories}|')
+
+        # 3. Remember the info as long term
+        with open(f'neocortex/{memory_name}', 'w') as file:
+            file.write(f'|{memories}|')
+
+        info('Successfully Created Memories', 'good')
 
     def remember(self):
         """

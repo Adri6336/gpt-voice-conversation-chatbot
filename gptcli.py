@@ -256,7 +256,7 @@ class GPTCli():
                     continue
 
                 elif '!remember()' in speech:
-                    self.chatbot.save_memories()
+                    self.chatbot.create_memories()  # Use new memory generator
                     self.stop_working()
                     sys.exit()
 
