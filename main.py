@@ -136,7 +136,9 @@ class GUI:
                         self.listen_thread.start()
 
                     if event.key == pygame.K_q and not self.working:  # Exit and save memories
-                        self.chatbot.save_memories()
+                        #self.chatbot.save_memories()
+                        robospeak('Saving memories. Please wait.')
+                        self.chatbot.create_memories()
                         self.running = False
                         pygame.quit()
                         sys.exit()
@@ -272,7 +274,9 @@ class GUI:
                 elif 'please restore memory' in speech:
                     info('Attempting to restore memory')
                     robospeak('Attempting to restore memory. Please wait a moment.')
-                    self.chatbot.restore_memory()
+                    #self.chatbot.restore_memory()
+                    self.chatbot.create_memories(restore=True)
+                    robospeak('Memory restoration attempt completed.')
                     self.stop_working(tag=True)
                     return
 
