@@ -440,6 +440,8 @@ class Chatbot():
 
             save_conversation(self.full_conversation, self.conversation_name)
 
+            self.restore_conversation()  # This will update current time
+
             return reply
 
         else:
@@ -818,7 +820,8 @@ class Chatbot():
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         week_day = datetime.today().weekday()
         day_name = days[week_day]
-        today = f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}'
+        time = f'{now.hour}:{now.minute}'
+        today = f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}, {time} (this time changes, consider it new and up to date. Use 12hr. Use "good afternoon", etc. as appropriate)'
 
         # Get name and preset
         # 1. Ensure valid dirs
