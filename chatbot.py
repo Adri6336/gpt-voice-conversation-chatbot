@@ -22,6 +22,9 @@ def convert_to_12hr(hour_24, minutes):
     '''
     Converts 24 hour time into a nicely formatted 12 hour timestamp
     '''
+    if minutes < 10:
+        minutes = f'0{minutes}'
+
     if hour_24 == 0:
         return '12:' + str(minutes) + ' AM'
     elif hour_24 < 12:
@@ -383,6 +386,7 @@ class Chatbot():
         prompt = text
 
         if not hostile_or_personal(text) and not self.flagged_by_openai(text):
+            self.restore_conversation()  # This will update current time
 
             # 1. Get response
             start_sequence = f"\n{self.name}:"
@@ -452,8 +456,6 @@ class Chatbot():
             self.back_and_forth.append(reply)
 
             save_conversation(self.full_conversation, self.conversation_name)
-
-            self.restore_conversation()  # This will update current time
 
             return reply
 
@@ -834,9 +836,9 @@ class Chatbot():
         week_day = datetime.today().weekday()
         day_name = days[week_day]
         time = convert_to_12hr(now.hour, now.minute)
-        today = (f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}, {time} (this time changes, consider it new and up to date.' + 
-                 ' If time is AM, use good morning; ' + 
-                 ' if time PM, use good afternoon)')
+        today = (f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}, {time} (AI understands timestamp up-to-date.' + 
+                 ' AI only uses this timestamp to tell time, understands timestamp always right. If time AM, use good morning; ' + 
+                 ' if time PM, use good afternoon.)')
 
         # Get name and preset
         # 1. Ensure valid dirs
