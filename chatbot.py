@@ -557,7 +557,7 @@ class Chatbot():
         memory_directive = ("Create a new single memory text dict with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
                     "Fill the above dict's lists with information you compile from your previous memories and the conversation. Keep dict list data short and understandable. If you " + 
-                    "have no data to store, create a placeholder text with 'nothing' in the key's list. If the conversation is not empty, fill in the dict " + 
+                    "have no data to store, create a placeholder text with 'unknown' in the key's list. If the conversation is not empty, fill in the dict " + 
                     "with as much info as is relevant, using as few words as possible. Please make as few assumptions as possible when recording data, " + 
                     "sticking only to the facts avaliable from the text you are given. If asked by user to remember something, prioritize that data and save in things_to_remember. Especially aim to record data about the user (their name, likes, etc.). " + 
                     "When filling this dict, be sure to use no more than 50 words per key value, preserving important data and replacing less important data with new data. " + 
