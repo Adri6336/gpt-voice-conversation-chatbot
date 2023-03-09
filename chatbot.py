@@ -555,7 +555,7 @@ class Chatbot():
                     "have no data to store, create a placeholder text with 'nothing' in the key's list. If the conversation is not empty, fill in the dict " + 
                     "with as much info as is relevant, using as few words as possible. Please make as few assumptions as possible when recording data, " + 
                     "sticking only to the facts avaliable from the text you are given. Especially aim to record data about the user (their name, likes, etc.). " + 
-                    "When filling this dict, be sure to use no more than 500 words, preserving important data and replacing unimportant data. " + 
+                    "When filling this dict, be sure to use no more than 3750 characters, preserving important data and replacing unimportant data. " + 
                     "things_discussed is the least important and can be replaced as you deem appropriate. Only reply with one completed converged dict in proper format.\n\n" + 
                     f"PREVIOUS_MEMORIES / EXCHANGES:")
         
