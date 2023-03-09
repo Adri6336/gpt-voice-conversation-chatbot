@@ -18,6 +18,19 @@ import re
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
 
+def convert_to_12hr(hour_24, minutes):
+    '''
+    Converts 24 hour time into a nicely formatted 12 hour timestamp
+    '''
+    if hour_24 == 0:
+        return '12:' + str(minutes) + ' AM'
+    elif hour_24 < 12:
+        return str(hour_24) + ':' + str(minutes) + ' AM'
+    elif hour_24 == 12:
+        return '12:' + str(minutes) + ' PM'
+    else:
+        return str(hour_24 - 12) + ':' + str(minutes) + ' PM'
+
 def chunk_list(list1, chunk_by: int):
     """
     Creates a new list (list2) that is composed of all the elements
@@ -820,10 +833,10 @@ class Chatbot():
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         week_day = datetime.today().weekday()
         day_name = days[week_day]
-        time = f'{now.hour}:{now.minute}'
+        time = convert_to_12hr(now.hour, now.minute)
         today = (f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}, {time} (this time changes, consider it new and up to date.' + 
-                 ' Convert to 12hr. If unconverted time is less than 12, use good morning; ' + 
-                 ' else if time greater than 12, use good afternoon)')
+                 ' If time is AM, use good morning; ' + 
+                 ' if time PM, use good afternoon)')
 
         # Get name and preset
         # 1. Ensure valid dirs
