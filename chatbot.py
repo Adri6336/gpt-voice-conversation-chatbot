@@ -533,7 +533,7 @@ class Chatbot():
             info('Conversation Summary', 'topic')
             info(f'{final_summary}', 'plain')
     
-    def create_memories(self, chunk_by=4, quiet=True):
+    def create_memories(self, chunk_by=2, quiet=True):
         '''
         This is a new memory algorithm that will essentially be a modified token
         recycling algorithm. Chunks a total back and forth, creates memories for it,
@@ -549,14 +549,14 @@ class Chatbot():
         errorct = 0
         model_placeholder = ''  # Actual function does not care what you enter, will remove / fix later
 
-        memory_directive = ("Create a new single memory text file with the following format:\n\n" +
+        memory_directive = ("Create a new single memory text dict with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
-                    "Fill the above dict's lists with information you compile from your previous memories and the conversation. Keep dict list data short and understandable. Keep dict encased in '|' characters. If you " + 
+                    "Fill the above dict's lists with information you compile from your previous memories and the conversation. Keep dict list data short and understandable. If you " + 
                     "have no data to store, create a placeholder text with 'nothing' in the key's list. If the conversation is not empty, fill in the dict " + 
                     "with as much info as is relevant, using as few words as possible. Please make as few assumptions as possible when recording data, " + 
-                    "sticking only to the facts avaliable from the text you are given. Especially aim to record data about the user (their name, likes, etc.). " + 
-                    "When filling this dict, be sure to use no more than 3750 characters, preserving important data and replacing unimportant data. " + 
-                    "things_discussed is the least important and can be replaced as you deem appropriate. Only reply with one completed converged dict in proper format.\n\n" + 
+                    "sticking only to the facts avaliable from the text you are given. If asked by user to remember something, prioritize that data and save in things_to_remember. Especially aim to record data about the user (their name, likes, etc.). " + 
+                    "When filling this dict, be sure to use no more than 50 words per key value, preserving important data and replacing less important data with new data. " + 
+                    "things_discussed is the least important and its data can be replaced as you deem appropriate. Only reply with one completed converged dict in proper format.\n\n" + 
                     f"PREVIOUS_MEMORIES / EXCHANGES:")
         
         summaries.append(self.memories)  # Add current memories into consideration
