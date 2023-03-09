@@ -645,7 +645,12 @@ class Chatbot():
         with open(f'neocortex/{memory_name}', 'w') as file:
             file.write(f'|{memories}|')
 
-        info('Successfully Created Memories', 'good')
+        if restore:
+            self.restore_conversation()
+            info('Successfully Restored Memories', 'good')
+        
+        else:
+            info('Successfully Created Memories', 'good')
 
     def remember(self):
         """
