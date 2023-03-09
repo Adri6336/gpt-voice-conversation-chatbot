@@ -836,9 +836,7 @@ class Chatbot():
         week_day = datetime.today().weekday()
         day_name = days[week_day]
         time = convert_to_12hr(now.hour, now.minute)
-        today = (f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}, {time} (AI understands timestamp up-to-date.' + 
-                 ' AI only uses this timestamp to tell time, understands timestamp always right. If time AM, use good morning; ' + 
-                 ' if time PM, use good afternoon.)')
+        today = (f'{day_name} (MM-dd-YY) {now.month}-{now.day}-{now.year}, {time} (If time AM, use good morning; if time PM, use good afternoon.)')
 
         # Get name and preset
         # 1. Ensure valid dirs
