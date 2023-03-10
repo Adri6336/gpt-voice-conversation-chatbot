@@ -135,3 +135,15 @@ Please note that outages or latency problems with the moderation api will preven
 - Customize the bot's name
 
 - Chat with GPT via the terminal (Windows and Linux)
+
+# Example Use Cases
+
+- Converse with bot recreationally
+
+- Use bot via terminal to practice a language by a setting preset to talk to you in that language like a teacher, and entering '!speak()' with google TTS to pronounce the bot's reponses in that language properly
+
+- Have bot help you practice programming by asking you questions and giving feedback on your code
+
+- Ask bot questions over various things that pop up
+
+- Ask bot to help you with writing cover letters and descriptions
