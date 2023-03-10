@@ -1,55 +1,16 @@
-import gtts
-from gtts import gTTS
-from playsound import playsound
 import os
 import json
 import openai
-import requests
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import ne_chunk, pos_tag
 from nltk.tokenize import word_tokenize
 from datetime import datetime
-from langdetect import detect
-import pyttsx3
-from rich import print as color
 from random import shuffle
 import re
-gtts_languages = set(gtts.lang.tts_langs().keys())
+from tts_functions import *
+from general_functions import *
 
-
-def convert_to_12hr(hour_24, minutes):
-    '''
-    Converts 24 hour time into a nicely formatted 12 hour timestamp
-    '''
-    if minutes < 10:
-        minutes = f'0{minutes}'
-
-    if hour_24 == 0:
-        return '12:' + str(minutes) + ' AM'
-    elif hour_24 < 12:
-        return str(hour_24) + ':' + str(minutes) + ' AM'
-    elif hour_24 == 12:
-        return '12:' + str(minutes) + ' PM'
-    else:
-        return str(hour_24 - 12) + ':' + str(minutes) + ' PM'
-
-def chunk_list(list1, chunk_by: int):
-    """
-    Creates a new list (list2) that is composed of all the elements
-    of list1, chunked by chunk_by for as long as it can.
-    """
-    list2 = []
-    while list1:
-        if len(list1) >= chunk_by:
-            list2.append(list1[:chunk_by])
-            list1 = list1[chunk_by:]
-
-        else:
-            list2.append(list1)
-            list1 = []
-
-    return list2
 
 def get_conversation_summary(conversation_section: str, openai_key: str, 
                              quiet: bool = True, gpt_model: str = 'curie',
@@ -82,94 +43,6 @@ def get_conversation_summary(conversation_section: str, openai_key: str,
         if not quiet: info(f'Failed to get summary: {str(e)}', 'bad')
         return (False, '', 0)
 
-def info(content, kind='info'):
-    """
-    This prints info to the terminal in a fancy way
-    :param content: This is the string you want to display
-    :param kind: bad, info, question, good, topic, plain; changes color
-    :return: None
-    """
-
-    if kind == 'info':
-        color(f'[bold blue]\[[/bold blue][bold white]i[/bold white][bold blue]][/bold blue]: [white]{content}[/white]')
-
-    elif kind == 'bad':
-        color(f'[bold red][X][/bold red] [white]{content}[/white]')
-
-    elif kind == 'question':
-        color(f'[bold yellow]\[?][/bold yellow] [white]{content}[/white]')
-    
-    elif kind == 'good':
-        color(f'[bold green][OK][/bold green] [white]{content}[/white]')
-
-    elif kind == 'topic':
-        color(f'[bold blue]\[[/bold blue][bold white]{content}[/bold white][bold blue]][/bold blue]: ', end='')
-
-    elif kind == 'plain':
-        color(f'[white]{content}[/white]')
-
-def get_files_in_dir(directory: str) -> None:
-    # This looks inside a directory and gives you a path to all
-    # of the files inside it
-
-    filePaths = []
-
-    for fileName in os.listdir(directory):
-        filePath = os.path.join(directory, fileName)
-
-        if os.path.isfile(filePath):
-            filePaths.append(filePath)
-
-    return filePaths
-
-def robospeak(text: str):
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
-
-def tts11AI(key: str, text: str, path: str) -> bool:
-    """
-    This uses ElevenLab's AI to generate text to speech.
-
-    :param key: This is your 11.ai key
-    :param text: What you want spoken
-    :param path: Where you want your file saved
-    """
-
-    # create a session object 
-    s = requests.Session()
-
-    # set the headers
-    headers = {
-        "accept": "audio/mpeg",
-        "xi-api-key": key,
-        "Content-Type": "application/json",
-    }
-
-    # set the payload
-    payload = {
-        "text": text
-    }
-
-    # make the post request
-    url = "https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL"
-    try:
-        r = s.post(url, data=json.dumps(payload), headers=headers, timeout=60)
-        if r.status_code != 200:
-            return False
-
-        # save the response content
-        with open(path, 'wb') as f:
-            f.write(r.content)
-    except requests.exceptions.Timeout:
-        return False
-
-    except Exception as e:
-        info(f'Unexpected error: {e}', 'bad')
-        return False
-    
-    return True
-
 def hostile_or_personal(text: str) -> bool:
     """
     This tests the text to see if it is hostile
@@ -197,71 +70,6 @@ def hostile_or_personal(text: str) -> bool:
         return True
     else:
         return False
-
-def google_tts(text: str, path: str, show_text:bool = True):
-
-    language = detect(text)
-    if show_text: info(f'DETECTED LANGUAGE: {language}')
-    
-    if language in gtts_languages:  # Pronounce correctly if possible
-        tts = gTTS(text, lang=language)
-        tts.save(path)
-
-    elif language == 'zh-cn':
-        tts = gTTS(text, lang='zh-CN')
-        tts.save(path)
-
-    elif language == 'zh-tw':
-        tts = gTTS(text, lang='zh-TW')
-        tts.save(path)
-
-    else:  # Otherwise just use English pronounciation
-        tts = gTTS(text)
-        tts.save(path)
-
-def talk(text: str, name: str, use11: bool = False, key11: str = '', show_text:bool = True) -> bool:
-    """
-    This will provide a sound file for what ever you enter, then 
-    play it using playsound. Saves an mp3 file.
-
-    :param text: This is what you want to be converted to speech
-    :param name: This is what you want the mp3 file to be called 
-    """
-
-    tts11_okay = False
-
-    # 1. Set up name
-    now = datetime.now()
-    today = f'{now.month}-{now.day}-{now.year}'
-    file = f'./messages/{today}/{name}'
-
-    if not os.path.isdir(f'messages'):  # Make primary dir if not there
-        os.mkdir(f'messages')
-
-    if not os.path.isdir(f'./messages/{today}'):
-        os.mkdir(f'./messages/{today}')
-
-    if os.path.isfile(file + '.mpeg'):  # Delete file if it's already there
-        os.remove(file + '.mpeg')
-    
-    elif os.path.isfile(file + '.mp3'):
-        os.remove(file + '.mp3')
-
-    # 2. Have gtts create file
-    try:
-        if use11 and tts11AI(key11, text, f'{file}.mpeg'):  
-            playsound(file + '.mpeg')
-            return True
-
-        else:
-            google_tts(text, f'{file}.mp3', show_text=show_text)
-            playsound(file + '.mp3')
-            return tts11_okay
-
-    except:
-        google_tts(text, f'{file}.mp3', show_text=show_text)
-        playsound(file + '.mp3')
-        return tts11_okay
 
 def save_conversation(conversation: str, name:str):
     
