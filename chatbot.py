@@ -182,7 +182,8 @@ class Chatbot():
             
         return response
 
-    def say_to_chatbot(self, text: str, outloud: bool = True, show_text:bool = True) -> str:
+    def say_to_chatbot(self, text: str, outloud: bool = True,
+                        show_text:bool = True, correct_time=True) -> str:
         """
         This sends a message to GPT-3 if it passes tests, then returns a
         response. Manages advancing the conversation. 
@@ -232,12 +233,19 @@ class Chatbot():
             response = json.loads(str(response))
             self.tokens = response['usage']['total_tokens']
             
-            # Cut response and play it
+            # Cut response
             if not self.gpt_model == 'gpt-3.5-turbo':
                 reply = response['choices'][0]['text']
             else:
                 reply = response['choices'][0]['message']['content']
 
+            # If chatbot says time, replace with current time (it does not understand time and will give the wrong answer otherwise)
+            if correct_time:
+                now = datetime.now()
+                time = convert_to_12hr(now.hour, now.minute)
+                reply = replace_time(reply, time)
+
+            # Show / play text
             if show_text:
                 info(f'{self.name}\'s Response', 'topic')
                 info(self.get_AI_response(reply), 'plain')

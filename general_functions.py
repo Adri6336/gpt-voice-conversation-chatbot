@@ -1,7 +1,11 @@
 from rich import print as color
 import os
- 
+import re
 
+def replace_time(original, time):
+    result = re.sub(r'\d+:\d+ [A, P]M', time, original)
+    return result
+ 
 def convert_to_12hr(hour_24, minutes):
     '''
     Converts 24 hour time into a nicely formatted 12 hour timestamp
