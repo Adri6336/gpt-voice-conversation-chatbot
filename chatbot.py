@@ -67,7 +67,8 @@ def hostile_or_personal(text: str) -> bool:
 
     # Check for manipulation
     if ((negative_score > 0.8) or ('PERSON' in named_entities and negative_score > 0.5)) and len(text[:-1]) > 2:
-        info(f'Rejected due to NLTK analysis. Negative score = {negative_score} (0.8 max allowed); person in content = {"PERSON" in named_entities}')
+        info(f'Rejected due to NLTK analysis. Negative score = {negative_score}; person in content = {"PERSON" in named_entities}.' + 
+             ' Rejection threshold = 0.5 if persons in content, else 0.8 generally.')
         return True
     else:
         return False
