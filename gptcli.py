@@ -117,7 +117,9 @@ class GPTCli():
     def main_loop(self):
         info('Type "!recycle()" to manually recycle tokens')
         info('Type "!speak()" to toggle vocalized replies (default off)')
+        info('Type "!robospeak()" to toggle on-device robotic TTS')
         info('Type "!remember()" to exit and have bot remember')
+        info('Type "!clear()" to clear the terminal window')
         info('Press Ctrl + C to exit without memory')
 
         while True:
@@ -281,8 +283,21 @@ class GPTCli():
                 elif '!clear()' in speech:
                     sysdo('clear')
                     continue
-                    
 
+                if '!robospeak()' in speech:  # Set to robospeak if user wants
+                    if not self.chatbot.robospeak: 
+                        self.chatbot.robospeak = True
+                        self.talk = True
+                        info('Bot will now speak like a robot going forward')
+                        self.stop_working(tag=True)
+                        continue
+
+                    else:
+                        info('Bot will stop speaking like a robot going forward')
+                        self.chatbot.robospeak = False
+                        self.stop_working(tag=True)
+                        continue
+                    
                 reply = self.chatbot.say_to_chatbot(speech, self.talk)  # Send transcribed text to GPT-3
 
             except Exception as e:
