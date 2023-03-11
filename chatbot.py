@@ -945,6 +945,7 @@ except Exception as e:
         nltk.download('punkt', quiet=True, raise_on_error=True)
         nltk.download('averaged_perceptron_tagger', quiet=True, raise_on_error=True)
         nltk.download('maxent_ne_chunker', quiet=True, raise_on_error=True)
+        nltk.download('vader_lexicon', quiet=True, raise_on_error=True)
         nltk.download('words', quiet=True, raise_on_error=True)
         info('NLTK Loaded', 'good')
 
