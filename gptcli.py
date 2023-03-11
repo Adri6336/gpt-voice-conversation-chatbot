@@ -3,6 +3,7 @@ import sys
 from sys import argv
 import re
 import os
+from os import system as sysdo
 from random import randint
 import platform
 
@@ -276,6 +277,11 @@ class GPTCli():
 
                     self.stop_working()
                     continue
+
+                elif '!clear()' in speech:
+                    sysdo('clear')
+                    continue
+                    
 
                 reply = self.chatbot.say_to_chatbot(speech, self.talk)  # Send transcribed text to GPT-3
 
