@@ -8,7 +8,7 @@ The tool uses a modified GPT chat preset, handles keeping track of the conversat
 
 The bot requires OpenAI's moderation and GPT APIs to be working properly without too much latency. You can find the status here: https://status.openai.com/
 
-The releases are stable, as far as previous testing goes, but will not have all of the newest features. If you would like to have all the features as listed here, clone the repository and run 'git pull' every now and then. This will get you the newest features and bug fixes as they come, but it could be unstable. 
+The releases should be stable, as far as previous testing goes, but will not have all of the newest features. If you would like to have all the features as listed here, clone the repository and run 'git pull' every now and then. This will get you the newest features and bug fixes as they come, but it could be unstable. 
 
 ![_image_](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/blob/main/bot.jpeg)
 
@@ -22,7 +22,7 @@ First off, you'll need an OpenAI API key. You can create an account to get an AP
 
 1. Download Python at https://www.python.org/
 
-2. Download this repo either via the releases like [v0.9.9.1](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/archive/refs/tags/v0.9.9.1.zip), git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
+2. Download this repo either via the releases, git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
 
 3. Extract contents, then move into folder with the files.
 
@@ -37,7 +37,7 @@ First off, you'll need an OpenAI API key. You can create an account to get an AP
 
         sudo apt install python3-pip
         
-2. Download this repo either via the releases like [v0.9.9.1](https://github.com/Adri6336/gpt3-speech-to-text-chatbot/archive/refs/tags/v0.9.9.1.zip), git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
+2. Download this repo either via the releases, git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
 
 3. Extract files, move into directory, open requirements.txt, and delete pyaudio==0.2.13 from file. Make it look like it was never there, preserving the original formatting.
 
