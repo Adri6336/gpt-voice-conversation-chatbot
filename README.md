@@ -2,7 +2,7 @@
 
 (Used to be called gpt3-speech-to-text-chatbot, but was changed due to plans to add ability to swap model if desired)
 
-This is a bot that allows you to have an engaging and safely emotive spoken conversation with ChatGPT using your microphone. If you'd prefer to type rather than speak, you can also converse with the bot via the terminal.
+This is a bot that allows you to have an engaging and safely emotive spoken conversation with ChatGPT or GPT-4 using your microphone. If you'd prefer to type rather than speak, you can also converse with the bot via the terminal.
 
 The tool uses a modified GPT chat preset, handles keeping track of the conversation, and uses ChatGPT's API by default. You can tell GPT something and it will remember what you said for the session and you can also have the bot develop a memory of you over time if you'd like. Despite limitations based on GPT's max token count, GPT-VCC should still be able to converse with you for as long as you'd like without losing awareness about what you've talked about. In order to use this tool, you will need a valid OpenAI API key.
 
@@ -95,13 +95,13 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **P**: This attempts to cancel a request to GPT. It will either prevent transcribing of message or will avoid sending it to GPT.
 
-#### Voice Commands (All work with CLI version too except for the robot-speaking commands)
+#### Voice Commands
 
 - **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
 - **Say 'speak like a robot'**: This will set all responses from GPT to be spoken with a robotic TTS program that works offline.
 
-- **Say 'stop speaking like a robot'**: This will revert bot's TTS to whatever you had before (either Google or ElevenLabs TTS).
+- **Say 'stop speaking like a robot'**: This will revert bot's TTS to whatever you had before (either Google or ElevenLabs TTS). In CLI mode, enter '!robospeak()' to toggle this mode.
 
 - **Say 'please display conversation'**: This will output your entire conversation to the terminal window.
 
@@ -115,10 +115,12 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **Say 'please set name to'**: This will set the name of the bot to whatever you specify, so long as it is in accordance with OpenAI's usage policies. After setting name, the bot will refer to itself by the name you set.
 
+- **Say 'please toggle gpt4'**: This will toggle between ChatGPT and GPT-4 models. On start up, your switch will be preserved. In CLI mode, enter '!gpt4()' to toggle the model.
+
 
 # Features
 
-- Have a personalized conversation with ChatGPT
+- Have a personalized conversation with ChatGPT or GPT-4
 
 - Hear GPT talk to you with Google's TTS tool (will pronounce accents accurately if it can), in ElevenLab's life-like TTS (if you have a valid api key), or as a robot (say "speak like a robot" to activate)
 

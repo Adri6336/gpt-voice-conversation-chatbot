@@ -108,6 +108,7 @@ class GPTCli():
             self.key_11 = argv[2]
 
         self.chatbot = Chatbot(self.key, self.key_11)
+        info(f'Model Set To {self.chatbot.gpt_model}', 'good')
 
     def stop_working(self, cancel: bool = False, tag=True):
         if tag:    
@@ -120,6 +121,7 @@ class GPTCli():
         info('Type "!robospeak()" to toggle on-device robotic TTS')
         info('Type "!remember()" to exit and have bot remember')
         info('Type "!clear()" to clear the terminal window')
+        info('Type "!gpt4()" to toggle GPT-4 (default is ChatGPT)')
         info('Press Ctrl + C to exit without memory')
 
         while True:
@@ -284,7 +286,7 @@ class GPTCli():
                     sysdo('clear')
                     continue
 
-                if '!robospeak()' in speech:  # Set to robospeak if user wants
+                elif '!robospeak()' in speech:  # Set to robospeak if user wants
                     if not self.chatbot.robospeak: 
                         self.chatbot.robospeak = True
                         self.talk = True
@@ -297,6 +299,18 @@ class GPTCli():
                         self.chatbot.robospeak = False
                         self.stop_working(tag=True)
                         continue
+
+                elif '!gpt4()' in speech:
+                    if not self.chatbot.gpt_model == 'gpt-4':
+                        self.chatbot.toggle_gpt4()
+                        info('Bot will use GPT-4 going forward if you have access')
+
+                    else:
+                        self.chatbot.toggle_gpt4()
+                        info('Bot will use ChatGPT model going forward')
+                    
+                    self.stop_working()
+                    continue
                     
                 reply = self.chatbot.say_to_chatbot(speech, self.talk)  # Send transcribed text to GPT-3
 

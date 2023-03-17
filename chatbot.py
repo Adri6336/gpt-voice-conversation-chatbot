@@ -13,7 +13,7 @@ from general_functions import *
 
 
 def get_conversation_summary(conversation_section: str, openai_key: str, 
-                             quiet: bool = True, gpt_model: str = 'curie',
+                             quiet: bool = True, gpt_model: str = 'chatgpt',
                              custom_prompt = '') -> tuple:
     """
     Each conversation section should be a single string with the AI and Human messages appended.
@@ -23,7 +23,7 @@ def get_conversation_summary(conversation_section: str, openai_key: str,
 
     # 1. Set up model
     gpt = GPT3(openai_key)
-    gpt.set_model('chatgpt')
+    gpt.set_model(gpt_model)
 
     # 2. Set up prompt
     if custom_prompt == '':
@@ -112,6 +112,7 @@ class Chatbot():
     total_back_and_forth = []  # This will contain the entire conversation, preserved through recycling 
     gpt_model = 'text-davinci-003'  # This determines the model you're using for completion. Edit with self.set_model()
     max_tokens = 4000
+    tokens = 0  # This represents the current token consumption
     full_conversation = ''
 
     def __init__(self, api_key: str, api_key_11: str = ''):
@@ -134,7 +135,12 @@ class Chatbot():
                 f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. Let's" + 
                 " have a conversation!")
         self.full_conversation = self.conversation
-        self.set_model('chatgpt')
+
+        if not self.is_gpt4():
+            self.set_model('chatgpt')
+        
+        else:
+            self.set_model('gpt-4')
 
     def flagged_by_openai(self, text: str) -> bool:
         """
@@ -157,7 +163,7 @@ class Chatbot():
             return True
 
     def gpt_response(self, prompt: str) -> str:
-        if not self.gpt_model == 'gpt-3.5-turbo':
+        if not self.gpt_model == 'gpt-3.5-turbo' and not self.gpt_model == 'gpt-4':
             response = openai.Completion.create(
                 model=self.gpt_model,
                 prompt=self.conversation,
@@ -174,7 +180,7 @@ class Chatbot():
                       'using idioms, and pretend to be happy and content. be conversational, asking open-ended questions about user'},
                      {'role':'user', 'content':self.conversation + prompt}]
             response = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo",
+                            model=self.gpt_model,
                             messages=query,
                             max_tokens=self.reply_tokens,
                             stop=[" Human:", f" {self.name}:"])
@@ -237,7 +243,7 @@ class Chatbot():
             self.tokens = response['usage']['total_tokens']
             
             # Cut response
-            if not self.gpt_model == 'gpt-3.5-turbo':
+            if not self.gpt_model == 'gpt-3.5-turbo' and not self.gpt_model == 'gpt-4':
                 reply = response['choices'][0]['text']
             else:
                 reply = response['choices'][0]['message']['content']
@@ -282,7 +288,7 @@ class Chatbot():
             info('Text flagged, no request sent.', 'bad')
             return '[X] Text flagged, no request sent.'
 
-    def recycle_tokens(self, chunk_by: int = 2, gpt_model = 'curie', quiet=True):
+    def recycle_tokens(self, chunk_by: int = 2, quiet=True):
         info('Recycling tokens ...')
         tokens_in_chunks = 0
         summaries = []
@@ -291,6 +297,7 @@ class Chatbot():
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
+        gpt_model = self.gpt_model
 
         # 1. Collect mini summaries for entire conversation
         info('Loading', 'topic')
@@ -388,7 +395,7 @@ class Chatbot():
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
-        model_placeholder = ''  # Actual function does not care what you enter, will remove / fix later
+        model_placeholder = self.gpt_model
 
         memory_directive = ("Create a new single memory text dict with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
@@ -843,18 +850,58 @@ class Chatbot():
         """
 
         models = {'davinci':('text-davinci-003', 4000), 'curie':('text-curie-001', 2049),
-                'babbage':('text-babbage-001', 2049), 'ada':('text-ada-001', 2049), 'chatgpt':('gpt-3.5-turbo', 4096)}
+                'babbage':('text-babbage-001', 2049), 'ada':('text-ada-001', 2049), 
+                'chatgpt':('gpt-3.5-turbo', 4096), 'gpt-4':('gpt-4', 8192)}
 
         for gpt_model in models.keys():
             regex = re.compile(desired_model, re.IGNORECASE)
             if regex.search(gpt_model):
+
+                # 1. Set model 
                 self.gpt_model = models[desired_model][0]
                 self.max_tokens = models[desired_model][1]
+
+                # 2. Determine if max tokens are passed on new model
+                if self.tokens >= self.max_tokens:
+                    self.recycle_tokens()
+
                 if not quiet: info(f'Successfully Set GPT Model to {self.gpt_model}', 'good')
 
         if not quiet:
             info(f'Failed to set model to {desired_model}. It may be an invalid option or miss-spelled.', 'bad')
             info(f'Valid gpt models: {models.keys()}')
+
+    def toggle_gpt4(self):
+
+        if self.gpt_model == 'gpt-4':
+            self.set_model('chatgpt')
+            with open('GPT4.txt', 'w') as file:
+                file.write('False')
+
+        else:
+            self.set_model('gpt-4')
+            with open('GPT4.txt', 'w') as file:
+                file.write('True')
+
+    def is_gpt4(self):
+        is_gpt4 = ''
+
+        # If no file exists, then we haven't asked to use GPT4 before
+        if not os.path.isfile('GPT4.txt'):
+            with open('GPT4.txt', 'w') as file:
+                file.write('False')
+            return False
+        
+        # If a file exists, check to see its contents
+        with open('GPT4.txt', 'r') as file:
+            is_gpt4 = file.read()
+
+        if 'True' in is_gpt4:
+            return True
+        
+        else:  # If True is not found, regardless of content it will be False
+            return False
+
 
 
 class GPT3(Chatbot):

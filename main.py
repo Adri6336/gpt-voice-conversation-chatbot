@@ -102,6 +102,7 @@ class GUI:
         self.mic = sr.Microphone()
 
         self.chatbot = Chatbot(self.key, self.key_11)
+        info(f'Model Set To {self.chatbot.gpt_model}', 'good')
         
         self.listen_for_audio(load_run=True)
 
@@ -338,6 +339,23 @@ class GUI:
 
                     else:
                         robospeak(f'I could not set name to {name}')
+                    
+                    self.stop_working(tag=True)
+                    return
+                
+                elif ('please toggle GPT 4' in speech or 
+                      'please toggle GPT-4' in speech or 
+                      'please toggle GPT for' in speech or 
+                      'please toggle gpt4' in speech):
+                    if not self.chatbot.gpt_model == 'gpt-4':
+                        self.chatbot.toggle_gpt4()
+                        info('Bot will use GPT-4 going forward if you have access')
+                        robospeak('Bot will use GPT-4 going forward if you have access')
+
+                    else:
+                        self.chatbot.toggle_gpt4()
+                        info('Bot will use ChatGPT model going forward')
+                        robospeak('Bot will use ChatGPT model going forward')
                     
                     self.stop_working(tag=True)
                     return
