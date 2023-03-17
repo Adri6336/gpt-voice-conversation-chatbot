@@ -254,6 +254,9 @@ class Chatbot():
                 time = convert_to_12hr(now.hour, now.minute)
                 reply = replace_time(reply, time)
 
+            # If chatbot tries to say good but only says 'od', help it out
+            reply = replace_od(reply)
+
             # Show / play text
             if show_text:
                 info(f'{self.name}\'s Response', 'topic')

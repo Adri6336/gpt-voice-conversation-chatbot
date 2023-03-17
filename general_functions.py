@@ -5,6 +5,9 @@ import re
 def replace_time(original, time):
     result = re.sub(r'\d+:\d+ [A, P]M', time, original)
     return result
+
+def replace_od(text):
+    return re.sub(r'\bod\b', 'Good', text, flags=re.IGNORECASE)
  
 def convert_to_12hr(hour_24, minutes):
     '''
