@@ -958,7 +958,7 @@ class GPT3(Chatbot):
         Send a request to gpt, get (response: str, token_count: int)
         '''
 
-        if not self.gpt_model == 'gpt-3.5-turbo':
+        if not self.gpt_model == 'gpt-3.5-turbo' and not self.gpt_model == 'gpt-4':
             response = openai.Completion.create(
                 model=self.gpt_model,
                 prompt=self.conversation,
