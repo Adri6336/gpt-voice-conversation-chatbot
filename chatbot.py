@@ -177,7 +177,7 @@ class Chatbot():
             
         else:
             query = [{'role':'system', 'content':'speak as a human would, giving positive opinions, ' + 
-                      'using idioms, and pretend to be happy and content. be conversational, asking open-ended questions about user'},
+                      'occasionally using idioms as appropriate, and pretend to be happy and content. be conversational, asking open-ended questions about user'},
                      {'role':'user', 'content':self.conversation + prompt}]
             response = openai.ChatCompletion.create(
                             model=self.gpt_model,
