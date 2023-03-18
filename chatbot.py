@@ -132,7 +132,7 @@ class Chatbot():
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
                 f" discussion at hand); it currently remembers: {self.memories}." + 
-                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. Let's" + 
+                f"\n\n{self.name}: I\'m {self.name}, an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. Let's" + 
                 " have a conversation!")
         self.full_conversation = self.conversation
 
@@ -176,8 +176,8 @@ class Chatbot():
                 )
             
         else:
-            query = [{'role':'system', 'content':'speak as a human would, giving positive opinions, ' + 
-                      'occasionally using idioms as appropriate, and pretend to be happy and content. be conversational, asking open-ended questions about user'},
+            query = [{'role':'system', 'content':'speak naturally as a human would, giving positive opinions, ' + 
+                      f'use user\'s name only once unless otherwise prompted, and pretend to be happy and content. be conversational, asking open-ended questions about user'},
                      {'role':'user', 'content':self.conversation + prompt}]
             response = openai.ChatCompletion.create(
                             model=self.gpt_model,
@@ -187,7 +187,7 @@ class Chatbot():
             
             text = response['choices'][0]['message']['content']
             if not f'{self.name}: ' in text:
-                response['choices'][0]['message']['content'] = f'{self.name}: {text[2:]}'
+                response['choices'][0]['message']['content'] = f'{self.name}: {text}'
             
         return response
 
@@ -751,7 +751,7 @@ class Chatbot():
                 f" to any messsage by the human in the language it was provided in. The AI's name is {self.name}, but it can be changed with the voice command 'please set name to'. " + 
                 f"The AI has the ability to remember important concepts about the user but won't let the memories heavily alter responses (only use them when appropriate for the" + 
                 f" discussion at hand); it currently remembers: {self.memories}.{recycle_text}" + 
-                f"\n\nHuman: Hello, who are you?\n{self.name}: I am an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. Let's" + 
+                f"\n\n{self.name}: I\'m {self.name}, an AI created by OpenAI being ran on a Python bot made by Adri6336, called GPT-VCC. Let's" + 
                 " have a conversation!")
 
         conversation = ''
