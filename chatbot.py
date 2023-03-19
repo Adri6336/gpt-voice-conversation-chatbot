@@ -114,6 +114,7 @@ class Chatbot():
     max_tokens = 4000
     tokens = 0  # This represents the current token consumption
     full_conversation = ''
+    creativity = 1.2  # At 1.2, the bot is much more creative and engaging whithout being too rambunctious and random
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -167,7 +168,7 @@ class Chatbot():
             response = openai.Completion.create(
                 model=self.gpt_model,
                 prompt=self.conversation,
-                temperature=0.9,
+                temperature=self.creativity,
                 max_tokens=self.reply_tokens,
                 top_p=1,
                 frequency_penalty=0,
@@ -182,6 +183,7 @@ class Chatbot():
             response = openai.ChatCompletion.create(
                             model=self.gpt_model,
                             messages=query,
+                            temperature=self.creativity,
                             max_tokens=self.reply_tokens,
                             stop=[" Human:", f" {self.name}:"])
             

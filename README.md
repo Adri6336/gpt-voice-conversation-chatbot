@@ -117,6 +117,7 @@ Please note that outages or latency problems with the moderation api will preven
 
 - **Say 'please toggle gpt4'**: This will toggle between ChatGPT and GPT-4 models. On start up, your switch will be preserved. In CLI mode, enter '!gpt4()' to toggle the model.
 
+- **Say 'please set creativity to'**: This will set the bot's default randomness to a value you specify between 1 and 15 (used to be 9). In CLI mode, use '!creativity(#)' where the # sign is a value between 0.01 and 1.5.
 
 # Features
 
@@ -135,6 +136,8 @@ Please note that outages or latency problems with the moderation api will preven
 - Save a custom preset to have an experience better suited for you and your needs
 
 - Customize the bot's name
+
+- Customize the bot's creativity
 
 - Chat with GPT via the terminal (Windows and Linux)
 

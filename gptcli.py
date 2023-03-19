@@ -115,15 +115,20 @@ class GPTCli():
             info('='*20, 'plain')
             print('\n')
 
-    def main_loop(self):
-        info('Type "!recycle()" to manually recycle tokens')
-        info('Type "!speak()" to toggle vocalized replies (default off)')
-        info('Type "!robospeak()" to toggle on-device robotic TTS')
-        info('Type "!remember()" to exit and have bot remember')
-        info('Type "!clear()" to clear the terminal window')
-        info('Type "!gpt4()" to toggle GPT-4 (default is ChatGPT)')
-        info('Press Ctrl + C to exit without memory')
+    def show_help(self):
+        info('- Type "!recycle()" to manually recycle tokens')
+        info('- Type "!speak()" to toggle vocalized replies (default off)')
+        info('- Type "!robospeak()" to toggle on-device robotic TTS')
+        info('- Type "!remember()" to exit and have bot remember')
+        info('- Type "!clear()" to clear the terminal window')
+        info('- Type "!gpt4()" to toggle GPT-4 (default is ChatGPT)')
+        info('- Type "!creativity(#)" with a number between 0.01 and 1.5 replacing the # symbol ' + 
+             'to adjust the bot\'s creativity. Legacy value was 0.9, current is 1.2.')
 
+    def main_loop(self):
+        info('Type !help() to show all commands')
+        info('Press Ctrl + C to exit without memory')
+        
         while True:
             info('='*20, 'plain')
             color(f'[bold yellow]   --Message {self.chatbot.turns}--[/bold yellow]')
@@ -309,6 +314,27 @@ class GPTCli():
                         self.chatbot.toggle_gpt4()
                         info('Bot will use ChatGPT model going forward')
                     
+                    self.stop_working()
+                    continue
+
+                elif '!creativity(' in speech:
+                    try:
+                        num = speech.split('!creativity(')[1].replace(')', '')
+                        setting = float(num)
+                        
+                        if setting <= 1.5 and setting > 0:
+                            self.chatbot.creativity = setting
+                            info(f'Creativity set to {setting}')
+                        else:
+                            info('Invalid option: please enter value between 0.01 and 1.5', 'bad')
+                    except:
+                        info('Invalid option: please enter value between 0.01 and 1.5', 'bad')
+                
+                    self.stop_working()
+                    continue
+
+                elif '!help()' in speech:
+                    self.show_help()
                     self.stop_working()
                     continue
                     

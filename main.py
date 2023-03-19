@@ -359,7 +359,35 @@ class GUI:
                     
                     self.stop_working(tag=True)
                     return
+                
+                elif 'please set creativity to' in speech:
+                    # Note to self: put this algo into a function later
+                    words = str(speech)
+                    words = words.replace(',', '')
+                    words = words.replace('$', '')
+                    words = words.split(' ')
+                    words.reverse()
 
+                    for word in words:
+                        try:
+                            num = int(word)
+
+                            if num >= 1 and num <= 15:
+                                old = self.chatbot.creativity
+                                self.chatbot.creativity = num / 10
+                                info(f'Adjusted Creativity To {num}', 'good')
+                                robospeak(f'I have changed my creativity to {num} from {old}')
+                            
+                            else:
+                                info(f'Failed to adjust creativity to {num}. Valid creativity 1 - 15', 'bad')
+                                robospeak(f'I cannot set creativity to {num}. I can only set it between 1 and 15.')
+
+                            break  # Exit for loop
+                        except:
+                            continue
+
+                    self.stop_working(tag=True)
+                    return
 
                 reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 self.color = (255, 25, 25)  # Red indicates not listening
