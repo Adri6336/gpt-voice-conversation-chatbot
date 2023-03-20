@@ -85,7 +85,7 @@ class GPTCli():
         self.chatbot = Chatbot(self.key, self.key_11)
         if args.voice_id is not None:
             self.chatbot.voice_id = args.voice_id
-            info(f'ElevenLabs Voice ID {args.voice_id} Loaded')
+            info(f'ElevenLabs Voice ID {args.voice_id} Loaded', 'good')
             
         info(f'Model Set To {self.chatbot.gpt_model}', 'good')
 
