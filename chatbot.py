@@ -115,7 +115,7 @@ class Chatbot():
     tokens = 0  # This represents the current token consumption
     full_conversation = ''
     creativity = 1.2  # At 1.2, the bot is much more creative and engaging whithout being too rambunctious and random
-    voice_id = ''  # This is the voice id for 11.ai
+    voice_id = 'EXAVITQu4vr4xnSDxMaL'  # This is the voice id for 11.ai
 
     def __init__(self, api_key: str, api_key_11: str = ''):
         
@@ -271,7 +271,8 @@ class Chatbot():
             try:
                 if outloud and not self.robospeak: 
                     self.use11 = talk(self.get_AI_response(reply), f'{self.turns}',
-                                    self.use11, self.api_key_11, show_text=show_text)  # Speak if setting turned on
+                                    self.use11, self.api_key_11, show_text=show_text, 
+                                    eleven_voice_id=self.voice_id)  # Speak if setting turned on
                 
                 elif outloud and self.robospeak:
                     robospeak(self.get_AI_response(reply))
