@@ -81,3 +81,45 @@ def get_files_in_dir(directory: str) -> None:
             filePaths.append(filePath)
 
     return filePaths
+
+def load_keys_from_file() -> tuple:
+    """
+    This checks to see if a key file exists. If so,
+    loads the keys found in file. If not, makes it.
+    :returns: tuple as follows (keys exist bool, openai key, 11.ai key)
+    """
+    
+    openai_key = ''
+    eleven_ai_key = ''
+    key_file_data = ''
+    loaded = False
+
+    # 1. See if keyfile exists 
+    if os.path.exists('keys.txt'):
+        with open('keys.txt', 'r') as file:
+            key_file_data = file.read()
+    
+    else:
+        with open('keys.txt', 'w') as file:
+            file.write('OpenAI_Key=\nElevenLabs_Key=')
+        return (loaded, openai_key, eleven_ai_key)
+
+    # 2. Parse keyfile
+    try:
+        openai = re.search('OpenAI_Key=.*', key_file_data)
+        if not openai is None:
+            openai_key = openai.group().split('=')[1].replace(' ', '')  # Get the text after the =
+        else:
+            info('Please add a key for OpenAI in key file', 'bad')
+            return (loaded, openai_key, eleven_ai_key)
+
+        eleven = re.search('ElevenLabs_Key=.*', key_file_data)
+        if not eleven is None:  # This is optional. If we don't have it, it's not a deal breaker
+            eleven_ai_key = eleven.group().split('=')[1].replace(' ', '')
+    
+    except Exception as e:
+        info(f'Key file formatted incorrectly: {e}', 'bad')
+        return (loaded, openai_key, eleven_ai_key)
+
+    loaded = True
+    return (loaded, openai_key, eleven_ai_key)

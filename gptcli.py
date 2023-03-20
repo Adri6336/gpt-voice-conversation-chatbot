@@ -6,6 +6,8 @@ import os
 from os import system as sysdo
 from random import randint
 import platform
+import argparse
+from general_functions import load_keys_from_file
 
 
 if platform.system() == 'Linux':
@@ -15,48 +17,6 @@ if platform.system() == 'Linux':
     readline.parse_and_bind('"\e[B": history-search-forward')
     readline.parse_and_bind('"\e[C": forward-char')
     readline.parse_and_bind('"\e[D": backward-char')
-
-def load_keys_from_file() -> tuple:
-    """
-    This checks to see if a key file exists. If so,
-    loads the keys found in file. If not, makes it.
-    :returns: tuple as follows (keys exist bool, openai key, 11.ai key)
-    """
-    
-    openai_key = ''
-    eleven_ai_key = ''
-    key_file_data = ''
-    loaded = False
-
-    # 1. See if keyfile exists 
-    if os.path.exists('keys.txt'):
-        with open('keys.txt', 'r') as file:
-            key_file_data = file.read()
-    
-    else:
-        with open('keys.txt', 'w') as file:
-            file.write('OpenAI_Key=\nElevenLabs_Key=')
-        return (loaded, openai_key, eleven_ai_key)
-
-    # 2. Parse keyfile
-    try:
-        openai = re.search('OpenAI_Key=.*', key_file_data)
-        if not openai is None:
-            openai_key = openai.group().split('=')[1].replace(' ', '')  # Get the text after the =
-        else:
-            info('Please add a key for OpenAI in key file', 'bad')
-            return (loaded, openai_key, eleven_ai_key)
-
-        eleven = re.search('ElevenLabs_Key=.*', key_file_data)
-        if not eleven is None:  # This is optional. If we don't have it, it's not a deal breaker
-            eleven_ai_key = eleven.group().split('=')[1].replace(' ', '')
-    
-    except Exception as e:
-        info(f'Key file formatted incorrectly: {e}', 'bad')
-        return (loaded, openai_key, eleven_ai_key)
-
-    loaded = True
-    return (loaded, openai_key, eleven_ai_key)
 
 class GPTCli():
     openai_key = ''
@@ -75,39 +35,58 @@ class GPTCli():
         if platform.system() == 'Linux':  # This will only alter how the input text prompt is printed
             self.linux = True
 
-        num_args = len(sys.argv) 
+        # Setup argparse
+        parser = argparse.ArgumentParser(description='Enter API keys as arguments.')
+        parser.add_argument('api_keys', nargs='*', default=[None, None], help='Enter OpenAI key followed by 11.ai key (if available)')
+        parser.add_argument('--openai_key', help='Your OpenAI API key')
+        parser.add_argument('--key_11', help="Your ElevenLabs API key")
+        parser.add_argument('--voice_id', help='The ElevenLabs ID of a voice that you want to use')
+
+        args = parser.parse_args()
+
+        # Get Keys
         self.key = ''
         self.key_11 = ''
 
-        if num_args < 2:
+        if args.openai_key is not None:
+            self.key = args.openai_key
+
+        elif len(args.api_keys) > 0 and args.api_keys[0] is not None:
+            self.key = args.api_keys[0]
+
+        if args.key_11 is not None:
+            self.key_11 = args.key_11
+
+        elif len(args.api_keys) > 1 and args.api_keys[1] is not None:
+            self.key_11 = args.api_keys[1]
+
+        if not self.key:
             keys = load_keys_from_file()
             if not keys[0]:
                 info('Please enter OpenAI key as argument or fill info into keys.txt file', 'bad')
-                info('Example argument: python main.py <key>')
+                info('Example argument: python main.py <openai_key> [<key_11>] or python main.py --openai_key <key> [--key_11 <key_11>]')
                 sys.exit()
 
             else:
                 # Load OpenAI key if you can
                 if not keys[1] == '':
                     self.key = keys[1]
-                
+
                 else:  # OpenAI key is not optional. Close system if we don't have it
                     info('Please enter OpenAI key as argument or fill info into keys.txt file', 'bad')
-                    info('Example argument: python main.py <key>')
+                    info('Example argument: python main.py <openai_key> [<key_11>] or python main.py --openai_key <key> [--key_11 <key_11>]')
                     sys.exit()
 
                 # Load 11.ai key if you can
                 if not keys[2] == '':
                     self.key_11 = keys[2]
 
-        elif num_args == 2:
-            self.key = argv[1]
-
-        elif num_args > 2:
-            self.key = argv[1]
-            self.key_11 = argv[2]
-
+        # Instantiate bot
         self.chatbot = Chatbot(self.key, self.key_11)
+        if args.voice_id is not None:
+            self.chatbot.voice_id = args.voice_id
+            info(f'ElevenLabs Voice ID {args.voice_id} Loaded')
+            
         info(f'Model Set To {self.chatbot.gpt_model}', 'good')
 
     def stop_working(self, cancel: bool = False, tag=True):

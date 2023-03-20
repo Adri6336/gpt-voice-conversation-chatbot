@@ -16,7 +16,7 @@ def robospeak(text: str):
     engine.say(text)
     engine.runAndWait()
 
-def tts11AI(key: str, text: str, path: str) -> bool:
+def tts11AI(key: str, text: str, path: str, voice_id: str = 'EXAVITQu4vr4xnSDxMaL') -> bool:
     """
     This uses ElevenLab's AI to generate text to speech.
 
@@ -41,7 +41,7 @@ def tts11AI(key: str, text: str, path: str) -> bool:
     }
 
     # make the post request
-    url = "https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL"
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
     try:
         r = s.post(url, data=json.dumps(payload), headers=headers, timeout=60)
         if r.status_code != 200:
@@ -80,7 +80,8 @@ def google_tts(text: str, path: str, show_text:bool = True):
         tts = gTTS(text)
         tts.save(path)
 
-def talk(text: str, name: str, use11: bool = False, key11: str = '', show_text:bool = True) -> bool:
+def talk(text: str, name: str, use11: bool = False, key11: str = '', 
+         show_text:bool = True, eleven_voice_id: str = 'EXAVITQu4vr4xnSDxMaL') -> bool:
     """
     This will provide a sound file for what ever you enter, then 
     play it using playsound. Saves an mp3 file.
@@ -110,7 +111,7 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '', show_text:b
 
     # 2. Have gtts create file
     try:
-        if use11 and tts11AI(key11, text, f'{file}.mpeg'):  
+        if use11 and tts11AI(key11, text, f'{file}.mpeg', voice_id=eleven_voice_id):  
             playsound(file + '.mpeg')
             return True
 
