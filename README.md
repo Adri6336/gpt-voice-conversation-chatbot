@@ -105,7 +105,7 @@ You can now use alternate voices if you wish using an argument passed when start
 
 - **Say 'please set tokens to #'**: When the bot recognizes this phrase, it will try to set the max_tokens of the reply to the value you specified.
 
-- **Say 'speak like a robot'**: This will set all responses from GPT to be spoken with a robotic TTS program that works offline.
+- **Say 'speak like a robot'**: This will set all responses from GPT to be spoken with a robotic TTS program that works offline. In CLI mode, enter '!robospeak()' to toggle this mode.
 
 - **Say 'stop speaking like a robot'**: This will revert bot's TTS to whatever you had before (either Google or ElevenLabs TTS). In CLI mode, enter '!robospeak()' to toggle this mode.
 
