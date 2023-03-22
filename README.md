@@ -158,3 +158,18 @@ You can now use alternate voices if you wish using an argument passed when start
 - Ask bot questions over various things that pop up
 
 - Ask bot to help you with writing cover letters and descriptions
+
+
+# Example Videos of gptcli.py
+
+***ElevenLabs Voice Demonstration***
+
+https://user-images.githubusercontent.com/64619524/226774710-5e49824e-fc64-432c-ba0b-5bbda13398ef.mp4
+
+<br><br>
+
+***Google TTS Spanish Voice Demonstration*** 
+
+https://user-images.githubusercontent.com/64619524/226774795-26987da9-887b-4a33-822c-7c8b737affff.mp4
+
+
