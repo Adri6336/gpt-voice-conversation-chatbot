@@ -114,6 +114,7 @@ class GUI:
                   're-remember. For a full list of commands, say “please list commands”.\n\nThanks for downloading! ' + 
                   'I look forward to speaking with you!\n\n')
         
+        sleep(1)  # Will wait a sec to avoid spooking users
         info('Welcome to GPT-VCC!', 'topic')
         info(script, 'plain')
         playsound('media/intro.mp3')
