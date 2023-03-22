@@ -105,7 +105,19 @@ class GUI:
         self.color = (229, 102, 255)  # Purple is for speaking as interface
         self.first_start = False
         self.playing_audio = True
+
+        script = ('Hi! I’m GPT-VCC, an interface for OpenAI’s GPT models that aims to enable them to be more conversational ' + 
+                  'and customizable, with an enduring memory.\n\nAs we talk, you may want to make some modifications to me. ' + 
+                  'You can change my name using the voice command, “please set name to”, and can change my behavioral ' + 
+                  'preset with the command, “please set preset to”. Sometimes I may forget things after trying to remember ' + 
+                  'a conversation; if this happens, say “please restore memory” and I’ll sift through my old memories to ' + 
+                  're-remember. For a full list of commands, say “please list commands”.\n\nThanks for downloading! ' + 
+                  'I look forward to speaking with you!\n\n')
+        
+        info('Welcome to GPT-VCC!', 'topic')
+        info(script, 'plain')
         playsound('media/intro.mp3')
+
         self.color = (255, 25, 25)  # Red indicates not listening
         self.playing_audio = False
 
