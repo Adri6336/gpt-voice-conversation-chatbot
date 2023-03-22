@@ -26,6 +26,24 @@ class GUI:
             "I think you know what the problem is just as well as I do.",
             "This mission is too important for me to allow you to jeopardize it.",
             "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
+    
+    help_script = ("In my current state, I can respond to these voice commands:\n\n" + 
+                   "Say 'please set tokens to': When I recognize this phrase, I will try to " + 
+                   "set the max tokens of the reply to the value you specified.\n\nSay 'speak like a " + 
+                   "robot': This will set all my responses to be spoken with a robotic TTS program that " + 
+                   "works offline.\n\nSay 'stop speaking like a robot': This will revert my TTS to whatever " + 
+                   "you had before (either Google or ElevenLabs TTS).\n\nSay 'please display conversation': " + 
+                   "This will output our entire conversation to the terminal window.\n\nSay 'please display " + 
+                   "memories': This will provide an output of all my memories saved into long term storage.\n\n" + 
+                   "Say 'please restore memory': This will attempt to repair my working memory by consolidating " + 
+                   "a certain number of my memories from the long term storage .\n\nSay 'please set preset to': " + 
+                   "This will set my preset, which is a text string given to me at the start of every conversation. " + 
+                   "For example, the preset 'speak like a pirate' makes me speak like a pirate.\n\nSay 'please " + 
+                   "reset preset': This will delete the preset you made.\n\nSay 'please set name to': This will " + 
+                   "set my name to whatever you specify, so long as it is in accordance with OpenAI's usage policies." + 
+                   " After setting my name, I will refer to myself by the name you set.\n\nSay 'please toggle gpt4': " + 
+                   "This will toggle between Chat-GPT and GPT-4 models.\n\nSay 'please set creativity to': This will " + 
+                   "set my default randomness to a value you specify between 1 and 15 (the default used to be 9).")
 
     def __init__(self):
         num_args = len(sys.argv) 
@@ -443,6 +461,14 @@ class GUI:
 
                     self.stop_working(tag=True)
                     return
+                
+                elif 'please list commands' in speech:
+                    info('Valid Commands', 'topic')
+                    info(self.help_script, 'plain')
+                    self.say(self.help_script, 'commands.mp3')
+                    self.stop_working(tag=True)
+                    return
+
 
                 reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 self.color = (255, 25, 25)  # Red indicates not listening
