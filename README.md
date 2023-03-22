@@ -136,6 +136,8 @@ To use cloned voices, do the following:
 
 - **Say 'please set creativity to'**: This will set the bot's default randomness to a value you specify between 1 and 15 (used to be 9). In CLI mode, use '!creativity(#)' where the # sign is a value between 0.01 and 1.5.
 
+- **Say 'please list commands': This will have the bot list out the avaliable commands for you.
+
 # Features
 
 - Have a personalized conversation with ChatGPT or GPT-4
