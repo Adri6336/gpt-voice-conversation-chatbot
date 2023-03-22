@@ -126,7 +126,8 @@ class GUI:
         file, it will default to robospeak.
 
         :param script: This is what you want the bot to say if no file
-        :param sound_file: This is the pre-recorded file that will be played
+        :param sound_file: This is the pre-recorded file that will be played. All files
+        must be located in media folder.
         :param old_color: Bot will change color to signify that its interface is speaking.
         Having old color will allow it to properly return to that color.
         '''
@@ -197,7 +198,7 @@ class GUI:
         self.working = False
         if cancel: 
             info('Request Successfully Cancelled', 'good')
-            robospeak('Canceled request.')
+            self.say('Canceled request.', 'cancel.mp3')
 
         if tag:    
             self.color = (255, 25, 25)  # Red indicates not listening
@@ -263,7 +264,7 @@ class GUI:
                     return
 
                 elif 'stop speaking like a robot' in speech:
-                    robospeak('I will stop speaking like a robot going forward')
+                    self.say('I will stop speaking like a robot going forward', 'no-robot.mp3')
                     self.chatbot.robospeak = False
                     self.stop_working(tag=True)
                     return
@@ -307,23 +308,23 @@ class GUI:
                 elif 'please display conversation' in speech:
                     info('Conversation So Far', 'topic')
                     info(f'\n{self.chatbot.conversation}', 'plain')
-                    robospeak('Conversation displayed.')
+                    self.say('Conversation displayed.', 'display-convo.mp3')
                     self.stop_working(tag=True)
                     return
 
                 elif 'please restore memory' in speech:
                     info('Attempting to restore memory')
-                    robospeak('Attempting to restore memory. Please wait a moment.')
+                    self.say('Attempting to restore memory. Please wait a moment.', 'mem-restore.mp3')
                     #self.chatbot.restore_memory()
                     self.chatbot.create_memories(restore=True)
-                    robospeak('Memory restoration attempt completed.')
+                    self.say('Memory restoration attempt completed.', 'mem-restore-done.mp3')
                     self.stop_working(tag=True)
                     return
 
                 elif 'please display memories' in speech:
                     # 0. Identify how many memories exist
                     if not os.path.exists('neocortex'):
-                        robospeak('I do not currently have any memories in my neocortex.')
+                        self.say('I do not currently have any memories in my neocortex.', 'no-mems.mp3')
                         self.stop_working(tag=True)
                         return
 
@@ -341,7 +342,7 @@ class GUI:
                     return
 
                 elif 'please set preset to' in speech:
-                    robospeak('I will now attempt to set a preset.')
+                    self.say('I will now attempt to set a preset.', 'try-preset.mp3')
                     preset = speech.split('please set preset to')[1]
                     success = self.chatbot.set_self(preset, 'preset')
 
@@ -355,29 +356,32 @@ class GUI:
                     return
 
                 elif 'please reset preset' in speech:
-                    robospeak('Resetting preset. Please wait.')
+                    self.say('Resetting preset. Please wait.', 'reset-preset.mp3')
                     if not os.path.exists('neocortex/self_concept/preset.txt'):
-                        robospeak('No preset currently exists, reset unneeded.')
+                        self.say('No preset currently exists, reset unneeded.', 'no-reset.mp3')
                     else:
                         os.remove('neocortex/self_concept/preset.txt')
                         self.chatbot.restore_self()
                         self.chatbot.restore_conversation()
-                        robospeak('Preset reset successfully.')
+                        self.say('Preset reset successfully.', 'yes-reset.mp3')
                     
                     self.stop_working(tag=True)
                     return
 
                 elif 'please set name to' in speech:
                     name = speech.split('please set name to')[1]
-                    robospeak(f'I will now attempt to set name to {name}.')
+                    self.say('I will now attempt to set name to ', 'set-name.mp3')
+                    robospeak(f'{name}.')
                     self.chatbot.restore_self()
                     success = self.chatbot.change_name(name)
 
                     if success:
-                        robospeak(f'I have successfully set name to {name}.')
+                        self.say('I have successfully set name to ', 'yes-name.mp3')
+                        robospeak(f'{name}.')
 
                     else:
-                        robospeak(f'I could not set name to {name}')
+                        self.say('I could not set name to ', 'no-name.mp3')
+                        robospeak(f'{name}')
                     
                     self.stop_working(tag=True)
                     return
@@ -389,12 +393,12 @@ class GUI:
                     if not self.chatbot.gpt_model == 'gpt-4':
                         self.chatbot.toggle_gpt4()
                         info('Bot will use GPT-4 going forward if you have access')
-                        robospeak('Bot will use GPT-4 going forward if you have access')
+                        self.say('I will use GPT-4 going forward if you have access', 'gpt4.mp3')
 
                     else:
                         self.chatbot.toggle_gpt4()
                         info('Bot will use ChatGPT model going forward')
-                        robospeak('Bot will use ChatGPT model going forward')
+                        self.say('I will use the ChatGPT model going forward ', 'chatgpt.mp3')
                     
                     self.stop_working(tag=True)
                     return
