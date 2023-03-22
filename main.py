@@ -117,9 +117,29 @@ class GUI:
         sleep(1)  # Will wait a sec to avoid spooking users
         info('Welcome to GPT-VCC!', 'topic')
         info(script, 'plain')
-        playsound('media/intro.mp3')
+        self.say(script, 'intro.mp3', old_color=(255, 25, 25))
+        self.playing_audio = False
 
-        self.color = (255, 25, 25)  # Red indicates not listening
+    def say(self, script: str, sound_file: str = '', old_color: tuple = (255, 25, 25)):
+        '''
+        This will have the interface say something. If it can't find a 
+        file, it will default to robospeak.
+
+        :param script: This is what you want the bot to say if no file
+        :param sound_file: This is the pre-recorded file that will be played
+        :param old_color: Bot will change color to signify that its interface is speaking.
+        Having old color will allow it to properly return to that color.
+        '''
+        self.color = (229, 102, 255)  # Purple is for speaking as interface
+        self.playing_audio = True
+
+        if not os.path.exists(f'media/{sound_file}'):
+            robospeak(script)
+        
+        else:
+            playsound(f'media/{sound_file}')
+
+        self.color = old_color
         self.playing_audio = False
 
     def main_loop(self):
