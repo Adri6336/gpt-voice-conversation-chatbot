@@ -83,11 +83,22 @@ The moderation uses both OpenAI's moderation tool and NLTK. Combined, they hope 
 Please note that outages or latency problems with the moderation api will prevent you from using this chatbot. If you must talk with the bot while OpenAI is having issues, please edit the chatbot.py file to exclude the "not self.flagged_by_openai(text)" condition. I do not recommend this though.
 
 
-# Custom / Alternate ElevenLabs Voices
+# Cloned / Alternate ElevenLabs Voices
 
 You can now use alternate voices if you wish using an argument passed when starting the program. In the future a more fleshed out way to do this is planned. For now, you'll need to know the ID of the voice you want to use (you can find a list of the base voice ID's [here](https://api.elevenlabs.io/v1/voices)). Once you know that ID, use it as follows with the example ID "21m00Tcm4TlvDq8ikWAM" for Rachel:
 
         python main.py --voice_id 21m00Tcm4TlvDq8ikWAM
+        
+To use cloned voices, do the following:
+
+1. Go to the voice lab at https://beta.elevenlabs.io/voice-lab and create a custom voice.
+
+2. Once you've got a voice cloned, go here https://api.elevenlabs.io/docs#/voices/Get_voices_v1_voices_get . 
+
+3. Press "Try It Out", enter your API key into the box, then press "Execute". 
+
+4. Below the execute button, you'll see a box labeled "Response body". Scroll down in this box until you find the voice you named. Get the "voice_id" that's directly above it, and use it as in the above example. 
+
 
 # Controls
 
