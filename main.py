@@ -280,15 +280,19 @@ class GUI:
                         try:
                             num = int(word)
 
-                            if num > 0 and num < 4000:
+                            if num > 0 and num < self.chatbot.max_tokens:
                                 old = self.chatbot.reply_tokens
                                 self.chatbot.reply_tokens = num
                                 info(f'Adjusted Tokens To {num}', 'good')
-                                robospeak(f'I have changed reply tokens to {num} from {old}')
+                                self.say('I have changed reply tokens to', 'set-tokens.mp3')
+                                robospeak(f'{num} from {old}')
                             
                             else:
-                                info(f'Failed to adjust tokens to {num}. Valid token count: 1-3999.', 'bad')
-                                robospeak(f'I cannot set tokens to {num}. I can only set it between 1 and 3999.')
+                                info(f'Failed to adjust tokens to {num}. Valid token count: 1-{self.chatbot.max_tokens}.', 'bad')
+                                self.say('I cannot set tokens to', 'no-tokens.mp3')
+                                robospeak(f'{num}')
+                                self.say('I can only set it between 1 and', 'max-tokens.mp3')
+                                robospeak(f'{self.chatbot.max_tokens}')
 
                             break  # Exit for loop
                         except:
@@ -332,7 +336,10 @@ class GUI:
                     memory_files = get_files_in_dir('neocortex')
                     num_memories = len(memory_files)
 
-                    robospeak(f'I have {num_memories} memories stored in my neocortex.')
+                    self.say('I have ', 'i-have.mp3')
+                    robospeak(f'{num_memories}')
+                    self.say('memories stored in my neocortex.', 'num-mems.mp3')
+                    
                     for x, memory_path in enumerate(memory_files):
                         with open(memory_path, 'r') as file:
                             info(f'Memory {x}', 'topic')
@@ -347,10 +354,12 @@ class GUI:
                     success = self.chatbot.set_self(preset, 'preset')
 
                     if success:
-                        robospeak(f'I have successfully set preset to {preset}.')
+                        self.say('I have successfully set preset to ', 'yes-preset.mp3')
+                        robospeak(f'{preset}.')
 
                     else:
-                        robospeak(f'I could not set preset to {preset}')
+                        self.say('I could not set preset to ', 'no-preset.mp3')
+                        robospeak(f'{preset}')
                     
                     self.stop_working(tag=True)
                     return
