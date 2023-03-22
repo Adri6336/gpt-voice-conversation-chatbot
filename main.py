@@ -428,11 +428,14 @@ class GUI:
                                 old = self.chatbot.creativity
                                 self.chatbot.creativity = num / 10
                                 info(f'Adjusted Creativity To {num}', 'good')
-                                robospeak(f'I have changed my creativity to {num} from {old}')
+                                self.say('I have changed my creativity to ', 'set-create.mp3')
+                                robospeak(f'{num} from {old}')
                             
                             else:
                                 info(f'Failed to adjust creativity to {num}. Valid creativity 1 - 15', 'bad')
-                                robospeak(f'I cannot set creativity to {num}. I can only set it between 1 and 15.')
+                                self.say('I cannot set creativity to ', 'no-create.mp3')
+                                robospeak(f'{num}')
+                                self.say('I can only set it between 1 and 15.', 'create-range.mp3')
 
                             break  # Exit for loop
                         except:
