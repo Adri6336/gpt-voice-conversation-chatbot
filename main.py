@@ -9,6 +9,7 @@ import threading
 from random import randint
 import argparse
 from general_functions import load_keys_from_file
+from time import sleep
 
 
 def change_color(display, color: tuple): 
@@ -19,6 +20,8 @@ class GUI:
     color = (255, 25, 25)
     working = False
     cancel = False
+    first_start = False
+    playing_audio = False
     hal = ["I'm sorry Dave. I'm afraid I can't do that.", 
             "I think you know what the problem is just as well as I do.",
             "This mission is too important for me to allow you to jeopardize it.",
@@ -79,6 +82,12 @@ class GUI:
         self.r = sr.Recognizer()
         self.mic = sr.Microphone()
 
+        # If first start, mark it so 
+        if not os.path.exists('start.vccmk'):
+            self.first_start = True
+            with open('start.vccmk', 'w') as file:
+                file.write('Started')  # Really meaningless, the existence of the file determines this
+
         self.chatbot = Chatbot(self.key, self.key_11)
         if args.voice_id is not None:
             self.chatbot.voice_id = args.voice_id
@@ -91,7 +100,15 @@ class GUI:
         self.running = True
         self.main_thread = threading.Thread(target=self.main_loop)
         self.main_thread.start()
-    
+
+    def play_intro(self):
+        self.color = (229, 102, 255)  # Purple is for speaking as interface
+        self.first_start = False
+        self.playing_audio = True
+        playsound('media/intro.mp3')
+        self.color = (255, 25, 25)  # Red indicates not listening
+        self.playing_audio = False
+
     def main_loop(self):
 
         pygame.init()
@@ -110,15 +127,22 @@ class GUI:
                     self.running = False
                     pygame.quit()
                     sys.exit()
+
+                # Play intro if first start
+                if self.first_start:
+                    change_color(self.display, (229, 102, 255))
+                    self.play_thread = threading.Thread(target=self.play_intro)
+                    self.play_thread.start()
+                    sleep(0.5)
                  
                 # Checking if keydown event happened or not
                 if event.type == pygame.KEYDOWN:
                    
-                    if event.key == pygame.K_SPACE and not self.working:  # Start listening
+                    if event.key == pygame.K_SPACE and not self.working and not self.playing_audio:  # Start listening
                         self.listen_thread = threading.Thread(target=self.listen_for_audio)
                         self.listen_thread.start()
 
-                    if event.key == pygame.K_q and not self.working:  # Exit and save memories
+                    if event.key == pygame.K_q and not self.working and not self.playing_audio:  # Exit and save memories
                         #self.chatbot.save_memories()
                         robospeak('Saving memories. Please wait.')
                         self.chatbot.create_memories()
@@ -126,7 +150,7 @@ class GUI:
                         pygame.quit()
                         sys.exit()
 
-                    if event.key == pygame.K_p and self.working:  # Cancel recording
+                    if event.key == pygame.K_p and self.working and not self.playing_audio:  # Cancel recording
                         self.cancel = True
 
                     if event.key == pygame.K_ESCAPE:  # Exiting without saving
