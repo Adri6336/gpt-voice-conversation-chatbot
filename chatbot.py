@@ -24,7 +24,7 @@ def stay_in_character(message: str, key: str) -> tuple:
     # Setup prompts
     sys_directive = ('The human already knows the speaker is an AI. Rephrase this message like a human would, ' + 
                      'excluding any direct mentions that the speaker is an AI but preserving message meaning. As always, speak naturally as a human ' + 
-                     'would, giving positive opinions, and pretend to be happy and content. Do not flip names.')
+                     'would, giving positive opinions, and pretend to be happy and content. Do not flip names. Never say "As an AI."')
 
     gpt_prompt = (f'Please rephrase the following message according to your system directive. Only reply with the rephrased message ' + 
                   'that preserves the original formatting of the original message (i.e. keep the "name: " tag). Try to keep message same size.' + 
