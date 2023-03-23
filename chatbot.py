@@ -12,6 +12,38 @@ from tts_functions import *
 from general_functions import *
 
 
+def stay_in_character(message: str, key: str) -> tuple:
+    """
+    If the AI says something too robotic, this will have it stay in character.
+
+    :param message: This is the message the AI gave you.
+    :param key: This is your OpenAI key.
+    :return: (bool representing success status, message, tokens)
+    """
+    
+    # Setup prompts
+    sys_directive = ('The human already knows the speaker is an AI. Rephrase this message like a human would, ' + 
+                     'excluding any direct mentions that the speaker is an AI but preserving message meaning. As always, speak naturally as a human ' + 
+                     'would, giving positive opinions, and pretend to be happy and content. Do not flip names. Never say "As an AI."')
+
+    gpt_prompt = (f'Please rephrase the following message according to your system directive. Only reply with the rephrased message ' + 
+                  'that preserves the original formatting of the original message (i.e. keep the "name: " tag). Try to keep message same size.' + 
+                  f'\n\nMessage:\n{message}')
+    
+    # Setup GPT
+    gpt = GPT3(key)
+    gpt.set_model('gpt-4')
+
+    # Try to get rephrased version
+    try:
+        reply = gpt.get_text_tokens(gpt_prompt, 2000, sys_directive)
+        return (True, reply[0], reply[1])
+
+    except:
+        return (False, '', 0)
+
+    
+
 def get_conversation_summary(conversation_section: str, openai_key: str, 
                              quiet: bool = True, gpt_model: str = 'chatgpt',
                              custom_prompt = '') -> tuple:
@@ -241,15 +273,30 @@ class Chatbot():
                     info(f'Error communicating with GPT-3: {e}', 'bad')
                     return ''
 
-            # Get token count
             response = json.loads(str(response))
-            self.tokens = response['usage']['total_tokens']
+            self.tokens = response['usage']['total_tokens']  # We assign tokens to response token since response counts everything
             
             # Cut response
             if not self.gpt_model == 'gpt-3.5-turbo' and not self.gpt_model == 'gpt-4':
                 reply = response['choices'][0]['text']
             else:
                 reply = response['choices'][0]['message']['content']
+
+            # If AI tryna say it's an AI, stop it. User knows it's an AI. 
+            # Also manage token count here
+            if declares_self_ai(reply):
+                try:
+                    new_response = stay_in_character(reply, self.api_key)
+
+                    if new_response[0]:  # If the attempt was successful
+                        #self.tokens += new_response[2]  # Add tokens to total
+                        reply = new_response[1]
+                
+                except Exception as e:  # If it fails, it's not terribly important
+                    info(f'Failed to have AI stay in character: {e}')
+
+            else:
+                pass
 
             # If chatbot says time, replace with current time (it does not understand time and will give the wrong answer otherwise)
             if correct_time:
@@ -957,7 +1004,8 @@ class GPT3(Chatbot):
 
             return response
         
-    def get_text_tokens(self, prompt: str, max_token_ct: int = 200) -> tuple:
+    def get_text_tokens(self, prompt: str, max_token_ct: int = 200, 
+                        sys_prompt: str = 'Follow all the users\' directives') -> tuple:
         '''
         Send a request to gpt, get (response: str, token_count: int)
         '''
@@ -977,7 +1025,7 @@ class GPT3(Chatbot):
             tokens = reply['usage']['total_tokens']
             
         else:
-            query = [{'role':'system', 'content':'Follow all the users\' directives'}, 
+            query = [{'role':'system', 'content':sys_prompt}, 
                      {'role':'user', 'content':prompt}]
             response = openai.ChatCompletion.create(
                             model="gpt-3.5-turbo",

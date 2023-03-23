@@ -2,6 +2,11 @@ from rich import print as color
 import os
 import re
 
+def declares_self_ai(text) -> bool:
+    pattern = r'As an AI'
+    match = re.search(pattern, text, re.IGNORECASE)
+    return bool(match)
+
 def replace_time(original, time):
     result = re.sub(r'\d+:\d+ [A, P]M', time, original)
     return result
