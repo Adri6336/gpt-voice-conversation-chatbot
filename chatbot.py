@@ -12,6 +12,16 @@ from tts_functions import *
 from general_functions import *
 
 
+def stay_in_character(message: str) -> bool:
+    """
+    If the AI says something too robotic, this will have it stay in character.
+
+    :param message: This is the message the AI gave you.
+    :return: bool representing success status
+    """
+    pass
+
+
 def get_conversation_summary(conversation_section: str, openai_key: str, 
                              quiet: bool = True, gpt_model: str = 'chatgpt',
                              custom_prompt = '') -> tuple:
@@ -957,7 +967,8 @@ class GPT3(Chatbot):
 
             return response
         
-    def get_text_tokens(self, prompt: str, max_token_ct: int = 200) -> tuple:
+    def get_text_tokens(self, prompt: str, max_token_ct: int = 200, 
+                        sys_prompt: str = 'Follow all the users\' directives') -> tuple:
         '''
         Send a request to gpt, get (response: str, token_count: int)
         '''
@@ -977,7 +988,7 @@ class GPT3(Chatbot):
             tokens = reply['usage']['total_tokens']
             
         else:
-            query = [{'role':'system', 'content':'Follow all the users\' directives'}, 
+            query = [{'role':'system', 'content':sys_prompt}, 
                      {'role':'user', 'content':prompt}]
             response = openai.ChatCompletion.create(
                             model="gpt-3.5-turbo",
