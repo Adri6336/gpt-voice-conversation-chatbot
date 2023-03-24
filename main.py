@@ -44,7 +44,8 @@ class GUI:
                    "set my name to whatever you specify, so long as it is in accordance with OpenAI's usage policies." + 
                    " After setting my name, I will refer to myself by the name you set.\n\nSay 'please toggle gpt4': " + 
                    "This will toggle between Chat-GPT and GPT-4 models.\n\nSay 'please set creativity to': This will " + 
-                   "set my default randomness to a value you specify between 1 and 15 (the default used to be 9).")
+                   "set my default randomness to a value you specify between 1 and 15 (the default used to be 9). " + 
+                   "\n\nSay 'please toggle ElevenLabs': this will toggle my use of ElevenLabs TTS on and off.")
 
     def __init__(self):
         num_args = len(sys.argv) 
@@ -470,7 +471,23 @@ class GUI:
                     self.say(self.help_script, 'commands.mp3')
                     self.stop_working(tag=True)
                     return
+                
+                elif ('please toggle eleven labs' in speech or 
+                      'please toggle 11 labs' in speech or 
+                      'please toggle 11 laps' in speech):
+                    
+                    if not self.chatbot.use11:
+                        self.chatbot.use11 = True
+                        info('Bot will use ElevenLabs TTS going forward.')
+                        self.say('I will use 11 labs TTS going forward', 'yes11.mp3')
 
+                    else:
+                        self.chatbot.use11 = False
+                        info('Bot will not use ElevenLabs TTS going forward.')
+                        self.say('I will not use 11 labs TTS going forward', 'no11.mp3')
+
+                    self.stop_working(tag=True)
+                    return
 
                 reply = self.chatbot.say_to_chatbot(speech)  # Send transcribed text to GPT-3
                 self.color = (255, 25, 25)  # Red indicates not listening

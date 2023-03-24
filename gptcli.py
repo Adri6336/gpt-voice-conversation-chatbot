@@ -102,7 +102,8 @@ class GPTCli():
         info('- Type "!clear()" to clear the terminal window')
         info('- Type "!gpt4()" to toggle GPT-4 (default is ChatGPT)')
         info('- Type "!creativity(#)" with a number between 0.01 and 1.5 replacing the # symbol ' + 
-             'to adjust the bot\'s creativity. Legacy value was 0.9, current is 1.2.')
+             'to adjust the bot\'s creativity. Legacy value was 0.9, current is 1.2')
+        info('- Type "!11ai()" to toggle ElevenLabs TTS on and off (default on if you have a key)')
 
     def main_loop(self):
         info('Type !help() to show all commands')
@@ -314,6 +315,18 @@ class GPTCli():
 
                 elif '!help()' in speech:
                     self.show_help()
+                    self.stop_working()
+                    continue
+
+                elif '!11ai()' in speech:
+                    if not self.chatbot.use11:
+                        self.chatbot.use11 = True
+                        info('Bot will use ElevenLabs TTS going forward.')
+
+                    else:
+                        self.chatbot.use11 = False
+                        info('Bot will not use ElevenLabs TTS going forward.')
+
                     self.stop_working()
                     continue
                     

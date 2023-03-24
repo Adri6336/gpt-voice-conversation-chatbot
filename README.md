@@ -138,6 +138,8 @@ To use cloned voices, do the following:
 
 - **Say 'please list commands'**: This will have the bot list out the avaliable commands for you.
 
+- **Say 'please toggle ElevenLabs'**: This will toggle the bot's use of ElevenLabs TTS on and off. In CLI mode, use !11ai() to toggle it.
+
 # Features
 
 - Have a personalized conversation with ChatGPT or GPT-4
