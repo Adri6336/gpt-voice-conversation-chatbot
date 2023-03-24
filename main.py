@@ -9,6 +9,7 @@ import threading
 from random import randint
 import argparse
 from general_functions import load_keys_from_file
+from general_functions import fix_numbers
 from time import sleep
 
 
