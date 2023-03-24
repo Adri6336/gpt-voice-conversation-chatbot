@@ -433,6 +433,7 @@ class GUI:
                 elif 'please set creativity to' in speech:
                     # Note to self: put this algo into a function later
                     words = str(speech)
+                    words = fix_numbers(words)
                     words = words.replace(',', '')
                     words = words.replace('$', '')
                     words = words.split(' ')
