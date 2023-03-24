@@ -136,7 +136,7 @@ To use cloned voices, do the following:
 
 - **Say 'please set creativity to'**: This will set the bot's default randomness to a value you specify between 1 and 15 (used to be 9). In CLI mode, use '!creativity(#)' where the # sign is a value between 0.01 and 1.5.
 
-- **Say 'please list commands'**: This will have the bot list out the avaliable commands for you.
+- **Say 'please list commands'**: This will have the bot list out the available commands for you.
 
 - **Say 'please toggle ElevenLabs'**: This will toggle the bot's use of ElevenLabs TTS on and off. In CLI mode, use !11ai() to toggle it.
 
