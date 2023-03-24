@@ -126,7 +126,7 @@ To use cloned voices, do the following:
 
 - **Say 'please restore memory'**: This will attempt to repair the working memory of the bot by consolidating a certain number of memories from the long term storage .
 
-- **Say 'please set preset to'**: This will set the preset (a text string given to AI at start of every conversation) for the bot. For example, the preset 'speak like a pirate' makes AI speak like a pirate.
+- **Say 'please set preset to'**: This will set the preset (a text string given to AI at start of every conversation) for the bot. For example, the preset 'speak like a pirate' makes AI speak like a pirate. You can find example presets here: https://github.com/Adri6336/gpt-voice-conversation-chatbot/wiki/Example-Presets .
 
 - **Say 'please reset preset'**: This will delete the preset you made.
 
