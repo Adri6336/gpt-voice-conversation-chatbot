@@ -2,6 +2,29 @@ from rich import print as color
 import os
 import re
 
+def fix_numbers(text) -> str:
+    '''
+    This replaces voice command spelled out numbers with ints.
+    Works on numbers 1-9, as Google TTS spells these out for some
+    reason.
+    '''
+    
+    replacements = [('one', '1'), ('two', '2'), ('three', '3'), 
+                    ('four', '4'), ('five', '5'), ('six', '6'),
+                    ('seven', '7'), ('eight', '8'), ('nine', '9'),
+                    ('ten', '10'), ('1:00', '1'), ('2:00', '2'), 
+                    ('3:00', '3'), ('4:00', '4'), ('5:00', '5'),
+                    ('6:00', '6'), ('7:00', '7'), ('8:00', '8'),
+                    ('9:00', '9'), ('10:00', '10'), ('11:00', '11'),
+                    ('12:00', '12')]
+    
+    result = text
+
+    for replacement in replacements:
+        result = result.replace(replacement[0], replacement[1])
+    
+    return result
+
 def declares_self_ai(text) -> bool:
     pattern = r'As an AI'
     match = re.search(pattern, text, re.IGNORECASE)

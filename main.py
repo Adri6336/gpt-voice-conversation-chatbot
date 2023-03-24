@@ -9,6 +9,7 @@ import threading
 from random import randint
 import argparse
 from general_functions import load_keys_from_file
+from general_functions import fix_numbers
 from time import sleep
 
 
@@ -433,6 +434,7 @@ class GUI:
                 elif 'please set creativity to' in speech:
                     # Note to self: put this algo into a function later
                     words = str(speech)
+                    words = fix_numbers(words)
                     words = words.replace(',', '')
                     words = words.replace('$', '')
                     words = words.split(' ')
