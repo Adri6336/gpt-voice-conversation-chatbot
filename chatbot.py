@@ -353,7 +353,7 @@ class Chatbot():
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
-        gpt_model = self.gpt_model
+        gpt_model = self.model_selection
 
         # 1. Collect mini summaries for entire conversation
         info('Loading', 'topic')
@@ -451,7 +451,7 @@ class Chatbot():
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
-        model_placeholder = self.gpt_model
+        model_placeholder = self.model_selection
 
         memory_directive = ("Create a new single memory text dict with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
