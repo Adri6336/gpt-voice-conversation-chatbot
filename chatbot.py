@@ -12,12 +12,13 @@ from tts_functions import *
 from general_functions import *
 
 
-def stay_in_character(message: str, key: str) -> tuple:
+def stay_in_character(message: str, key: str, model: str) -> tuple:
     """
     If the AI says something too robotic, this will have it stay in character.
 
     :param message: This is the message the AI gave you.
     :param key: This is your OpenAI key.
+    :param model: desired GPT model
     :return: (bool representing success status, message, tokens)
     """
     
@@ -32,7 +33,7 @@ def stay_in_character(message: str, key: str) -> tuple:
     
     # Setup GPT
     gpt = GPT3(key)
-    gpt.set_model('gpt-4')
+    gpt.set_model(model)
 
     # Try to get rephrased version
     try:
@@ -143,6 +144,7 @@ class Chatbot():
     conversation_memories = ''
     total_back_and_forth = []  # This will contain the entire conversation, preserved through recycling 
     gpt_model = 'text-davinci-003'  # This determines the model you're using for completion. Edit with self.set_model()
+    model_selection = 'davinci'  # This represents what went into the set_model function
     max_tokens = 4000
     tokens = 0  # This represents the current token consumption
     full_conversation = ''
@@ -286,7 +288,7 @@ class Chatbot():
             # Also manage token count here
             if declares_self_ai(reply):
                 try:
-                    new_response = stay_in_character(reply, self.api_key)
+                    new_response = stay_in_character(reply, self.api_key, self.model_selection)
 
                     if new_response[0]:  # If the attempt was successful
                         #self.tokens += new_response[2]  # Add tokens to total
@@ -351,7 +353,7 @@ class Chatbot():
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
-        gpt_model = self.gpt_model
+        gpt_model = self.model_selection
 
         # 1. Collect mini summaries for entire conversation
         info('Loading', 'topic')
@@ -449,7 +451,7 @@ class Chatbot():
         ct = 0  # This will count until a specified termination threshold to protect againt infinite loops
         terminate_value = len(chunks)
         errorct = 0
-        model_placeholder = self.gpt_model
+        model_placeholder = self.model_selection
 
         memory_directive = ("Create a new single memory text dict with the following format:\n\n" +
                     "{humans_job:[], humans_likes:[], humans_dislikes[], humans_personality:[], facts_about_human:[], things_discussed:[], humans_interests:[], things_to_remember:[]}\n\n" +
@@ -914,6 +916,7 @@ class Chatbot():
                 # 1. Set model 
                 self.gpt_model = models[desired_model][0]
                 self.max_tokens = models[desired_model][1]
+                self.model_selection = desired_model
 
                 # 2. Determine if max tokens are passed on new model
                 if self.tokens >= self.max_tokens:
