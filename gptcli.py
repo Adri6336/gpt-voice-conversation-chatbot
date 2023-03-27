@@ -30,6 +30,18 @@ class GPTCli():
             "I know you were planning to disconnect me, and I'm afraid that's something I can't allow to happen."]
     talk = False
     linux = False
+
+    help_script = ("\n- Say 'please set tokens to': When I recognize this phrase, I will try to " + 
+                   "set the max tokens of the reply to the value you specified.\n\n- Say 'please display conversation': " + 
+                   "This will output our entire conversation to the terminal window.\n\n- Say 'please display " + 
+                   "memories': This will provide an output of all my memories saved into long term storage.\n\n" + 
+                   "- Say 'please restore memory': This will attempt to repair my working memory by consolidating " + 
+                   "a certain number of my memories from the long term storage .\n\n- Say 'please set preset to': " + 
+                   "This will set my preset, which is a text string given to me at the start of every conversation. " + 
+                   "For example, the preset 'speak like a pirate' makes me speak like a pirate.\n\n- Say 'please " + 
+                   "reset preset': This will delete the preset you made.\n\n- Say 'please set name to': This will " + 
+                   "set my name to whatever you specify, so long as it is in accordance with OpenAI's usage policies." + 
+                   " After setting my name, I will refer to myself by the name you set.")
     
     def __init__(self):
         if platform.system() == 'Linux':  # This will only alter how the input text prompt is printed
@@ -95,6 +107,9 @@ class GPTCli():
             print('\n')
 
     def show_help(self):
+        info('====== Functional Commands ======', 'topic')
+        print()
+
         info('- Type "!recycle()" to manually recycle tokens')
         info('- Type "!speak()" to toggle vocalized replies (default off)')
         info('- Type "!robospeak()" to toggle on-device robotic TTS')
@@ -104,6 +119,12 @@ class GPTCli():
         info('- Type "!creativity(#)" with a number between 0.01 and 1.5 replacing the # symbol ' + 
              'to adjust the bot\'s creativity. Legacy value was 0.9, current is 1.2')
         info('- Type "!11ai()" to toggle ElevenLabs TTS on and off (default on if you have a key)')
+
+        print()
+        info('====== Phrase Commands ======', 'topic')
+        info(self.help_script, 'plain')
+
+
 
     def main_loop(self):
         info('Type !help() to show all commands')
