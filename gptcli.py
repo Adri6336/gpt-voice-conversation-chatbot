@@ -174,13 +174,13 @@ class GPTCli():
                         try:
                             num = int(word)
 
-                            if num > 0 and num < 4000:
+                            if num > 0 and num < self.chatbot.max_tokens:
                                 old = self.chatbot.reply_tokens
                                 self.chatbot.reply_tokens = num
                                 info(f'Adjusted Tokens To {num}', 'good')
                             
                             else:
-                                info(f'Failed to adjust tokens to {num}. Valid token count: 1-3999.', 'bad')
+                                info(f'Failed to adjust tokens to {num}. Valid token count: 1-{self.chatbot.max_tokens - 1}.', 'bad')
 
                             break  # Exit for loop
                         except:

@@ -308,11 +308,11 @@ class GUI:
                                 robospeak(f'{num} from {old}')
                             
                             else:
-                                info(f'Failed to adjust tokens to {num}. Valid token count: 1-{self.chatbot.max_tokens}.', 'bad')
+                                info(f'Failed to adjust tokens to {num}. Valid token count: 1-{self.chatbot.max_tokens - 1}.', 'bad')
                                 self.say('I cannot set tokens to', 'no-tokens.mp3')
                                 robospeak(f'{num}')
                                 self.say('I can only set it between 1 and', 'max-tokens.mp3')
-                                robospeak(f'{self.chatbot.max_tokens}')
+                                robospeak(f'{self.chatbot.max_tokens - 1}')
 
                             break  # Exit for loop
                         except:
