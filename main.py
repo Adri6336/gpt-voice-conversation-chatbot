@@ -48,6 +48,8 @@ class GUI:
                    "\n\nSay 'please toggle ElevenLabs': this will toggle my use of ElevenLabs TTS on and off.")
 
     def __init__(self):
+        pygame.init()
+        self.display = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
         num_args = len(sys.argv) 
         self.key = ''
         self.key_11 = ''
@@ -117,6 +119,8 @@ class GUI:
         
         self.listen_for_audio(load_run=True)
 
+        self.display = None
+
         self.running = True
         self.main_thread = threading.Thread(target=self.main_loop)
         self.main_thread.start()
@@ -165,7 +169,8 @@ class GUI:
 
     def main_loop(self):
 
-        pygame.init()
+
+
         self.display = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
         pygame.display.set_caption(f'Chat With {self.chatbot.gpt_model.upper()}')
         change_color(self.display, (255, 25, 25))  # Red indicates not listening
@@ -500,7 +505,8 @@ class GUI:
             self.working = False
             self.color = (255, 25, 25)  # Red indicates not listening
 
+
 # Run main loop 
 if __name__ == '__main__':
     gui = GUI()
-    gui.main_thread.join()
+    gui.main_loop()
