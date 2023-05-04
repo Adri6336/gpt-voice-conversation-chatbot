@@ -1,6 +1,7 @@
 import openai
 import faiss
 import numpy as np
+import pandas as pd
 import os
 from langchain.text_splitter import SpacyTextSplitter
 from general_functions import info
@@ -19,6 +20,7 @@ class Neocortex:
 
     index = None  # This represents the vector database
     operational = False
+    df = None  # This represents the plaintext database
 
     def __init__(self, key):
         """
@@ -29,15 +31,18 @@ class Neocortex:
         openai.api_key = key
         self.operational = self.setup_vector_db()
 
-    def load_memory(self, query: str) -> str:
+    def load_memory(self, query_text: str) -> str:
         """
         This queries the vector db in the neocortex and
         returns the closest string.
 
-        :param query: This is the question you're trying to answer, like user's age.
+        :param query_text: This is the question you're trying to answer, like user's age.
         :return: String containing most related info.
         """
-        pass
+        query = get_embedding(query_text)
+        D, I = self.index.search(np.array([query]), 1)
+        answer = self.df.loc[I[0][0], 'text']
+        return answer
 
     def save_memory(self, memory: str):
         """
@@ -49,10 +54,15 @@ class Neocortex:
         """
 
         # Convert memory to embedding
-        memory_data = get_embedding(memory)
+        memory_data = np.array([get_embedding(memory)])
 
-        # add the embeddings to the index
+        # add the embeddings to the index and df
+        self.df = pd.concat([self.df, pd.DataFrame([memory, memory_data], index=self.df.columns).T], ignore_index=True)
         self.index.add(np.array(memory_data))
+
+        # Save index and csv to disk
+        self.df.to_csv("neocortex.csv", index=False)
+        faiss.write_index(self.index, "neocortex.faiss")
 
     def has_memories(self) -> bool:
         """
@@ -72,12 +82,21 @@ class Neocortex:
             if os.path.exists("neocortex.faiss"):
                 # load the index from the file
                 self.index = faiss.read_index("neocortex.faiss")
+
             else:
                 # create a flat index with L2 distance and 1536 dimension
                 self.index = faiss.IndexFlatL2(1536)
 
                 # save the index to a file
-                self.faiss.write_index(index, "neocortex.faiss")
+                faiss.write_index(self.index, "neocortex.faiss")
+
+            if os.path.exists("neocortex.csv"):
+                self.df = pd.read_csv("neocortex.csv", header=0, names=['text', 'embedding'])
+                self.df = self.df[self.df.embedding.notnull()]
+
+            else:
+                self.df = pd.DataFrame(columns=['text', 'embedding'])
+                self.df.to_csv("neocortex.csv", index=False)
 
             return True
 

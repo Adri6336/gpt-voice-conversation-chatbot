@@ -13,3 +13,4 @@ rich
 numpy
 langchain
 faiss-cpu
+pandas
