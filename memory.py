@@ -39,10 +39,17 @@ class Neocortex:
         :param query_text: This is the question you're trying to answer, like user's age.
         :return: String containing most related info.
         """
+        if self.df.empty:
+            return 'Uncertain'
+
         query = get_embedding(query_text)
         D, I = self.index.search(np.array([query]), 1)
         answer = self.df.loc[I[0][0], 'text']
-        return answer
+
+        if D < 0.35:
+            return answer
+        else:
+            return 'Uncertain'
 
     def save_memory(self, memory: str):
         """
