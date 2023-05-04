@@ -3,6 +3,7 @@ import faiss
 import numpy as np
 import os
 from langchain.text_splitter import SpacyTextSplitter
+from general_functions import info
 
 
 def get_embedding(text, model="text-embedding-ada-002"):
@@ -16,13 +17,17 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 class Neocortex:
 
-    def __init__(self):
+    index = None  # This represents the vector database
+    operational = False
+
+    def __init__(self, key):
         """
         Make sure that a vector db is instantiated and save data
         from neocortex file to object.
 
         """
-        pass
+        openai.api_key = key
+        self.operational = self.setup_vector_db()
 
     def load_memory(self, query: str) -> str:
         """
@@ -42,7 +47,12 @@ class Neocortex:
         :param memory: This is the string text data you want to remember
         :return:
         """
-        pass
+
+        # Convert memory to embedding
+        memory_data = get_embedding(memory)
+
+        # add the embeddings to the index
+        self.index.add(np.array(memory_data))
 
     def has_memories(self) -> bool:
         """
@@ -58,4 +68,21 @@ class Neocortex:
 
         :return: Success state of file creation attempt
         """
-        pass
+        try:
+            if os.path.exists("neocortex.faiss"):
+                # load the index from the file
+                self.index = faiss.read_index("neocortex.faiss")
+            else:
+                # create a flat index with L2 distance and 1536 dimension
+                self.index = faiss.IndexFlatL2(1536)
+
+                # save the index to a file
+                self.faiss.write_index(index, "neocortex.faiss")
+
+            return True
+
+        except Exception as e:
+            info(f'Error: {e}', 'bad')
+            return False
+
+
