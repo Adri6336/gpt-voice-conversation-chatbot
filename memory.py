@@ -3,7 +3,7 @@ import faiss
 import numpy as np
 import pandas as pd
 import os
-from langchain.text_splitter import SpacyTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter as RCTS
 from general_functions import info
 
 
@@ -71,13 +71,18 @@ class Neocortex:
         self.df.to_csv("neocortex.csv", index=False)
         faiss.write_index(self.index, "neocortex.faiss")
 
-    def has_memories(self) -> bool:
+    def split_and_save(self, memory: str):
         """
-        This determines if a vector db file exists.
+        Splits the memory string into chunks
 
-        :return: Bool representing if a vector file exists
+        :param memory: A string you want to recall
+        :return: None
         """
-        pass
+        splitter = RCTS(chunk_size=360, chunk_overlap=0)
+        chunks = splitter.split_text(memory)
+
+        for chunk in chunks:
+            self.save_memory(chunk)
 
     def setup_vector_db(self) -> bool:
         """
