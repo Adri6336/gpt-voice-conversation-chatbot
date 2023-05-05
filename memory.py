@@ -9,11 +9,20 @@ from general_functions import info
 
 def get_embedding(text, model="text-embedding-ada-002"):
     text = text.replace("\n", " ")
-    try:
-        return openai.Embedding.create(input=[text], model=model)['data'][0]['embedding']
-    except Exception as e:
-        print(f"Error getting embedding for {text}: {e}")
-        return None
+
+    ct = 0
+    errors = []
+
+    while ct < 3:
+        try:
+            return openai.Embedding.create(input=[text], model=model)['data'][0]['embedding']
+
+        except Exception as e:
+            errors.append(e)
+            ct += 1
+
+    print(f"Error getting embedding for {text}: {errors}")
+    return None
 
 
 class Neocortex:
