@@ -52,10 +52,18 @@ class Neocortex:
             return 'Uncertain'
 
         query = get_embedding(query_text)
+
+        # normalize the query vector
+        query = query / np.linalg.norm(query)
         D, I = self.index.search(np.array([query]), 1)
         answer = self.df.loc[I[0][0], 'text']
 
-        if D < 0.35:
+        # change the threshold for similarity score
+        info(f'D: {D}')
+        info(f'MEM: {answer}')
+
+
+        if D > 0.8:
             return answer
         else:
             return 'Uncertain'
@@ -70,7 +78,9 @@ class Neocortex:
         """
 
         # Convert memory to embedding
-        memory_data = np.array([get_embedding(memory)])
+        memory_embedding = get_embedding(memory)
+        memory_embedding = memory_embedding / np.linalg.norm(memory_embedding)  # Normalize
+        memory_data = np.array([memory_embedding])
 
         # add the embeddings to the index and df
         self.df = pd.concat([self.df, pd.DataFrame([memory, memory_data], index=self.df.columns).T], ignore_index=True)
@@ -105,8 +115,8 @@ class Neocortex:
                 self.index = faiss.read_index("neocortex.faiss")
 
             else:
-                # create a flat index with L2 distance and 1536 dimension
-                self.index = faiss.IndexFlatL2(1536)
+                # create a flat index with cosine similarity and 1536 dimension
+                self.index = faiss.IndexFlatIP(1536)
 
                 # save the index to a file
                 faiss.write_index(self.index, "neocortex.faiss")
@@ -119,10 +129,12 @@ class Neocortex:
                 self.df = pd.DataFrame(columns=['text', 'embedding'])
                 self.df.to_csv("neocortex.csv", index=False)
 
+            # normalize the vectors in the dataframe
+            self.df['embedding'] = self.df['embedding'].apply(lambda x: x / np.linalg.norm(x))
+
             return True
 
         except Exception as e:
             info(f'Error: {e}', 'bad')
             return False
-
 
