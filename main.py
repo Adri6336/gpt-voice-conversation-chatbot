@@ -11,7 +11,7 @@ import argparse
 from general_functions import load_keys_from_file
 from general_functions import fix_numbers
 from time import sleep
-
+import openai
 
 def change_color(display, color: tuple): 
     display.fill(color)
@@ -88,6 +88,7 @@ class GUI:
                 # Load OpenAI key if you can
                 if not keys[1] == '':
                     self.key = keys[1]
+                    openai.api_key = self.key
 
                 else:  # OpenAI key is not optional. Close system if we don't have it
                     info('Please enter OpenAI key as argument or fill info into keys.txt file', 'bad')
@@ -268,7 +269,7 @@ class GUI:
 
             self.color = (51, 187, 255)  # Blue to show processing reply
             try:
-                speech = self.r.recognize_google(audio) + '\n'  # The added \n should help prevent hallucination of user statement
+                speech = self.r.recognize_whisper_api(audio, api_key=self.key) + '\n'  # The added \n should help prevent hallucination of user statement
                 #color(f'[bold blue]\[Human Message][/bold blue]: [white]{speech[:-1]}[white]')
                 info('Human Message', 'topic')
                 info(speech[:-1], 'plain')
