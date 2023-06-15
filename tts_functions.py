@@ -8,6 +8,7 @@ from datetime import datetime
 from langdetect import detect
 from general_functions import *
 import json
+from elevenlabs import generate, play, save
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
 
@@ -15,6 +16,15 @@ def robospeak(text: str):
     engine = pyttsx3.init()
     engine.say(text)
     engine.runAndWait()
+
+def tts11Multi(key: str, text: str, path: str, voice_id: str = 'EXAVITQu4vr4xnSDxMaL'):
+    audio = generate(
+    text=text,
+    voice=voice_id,
+    model='eleven_multilingual_v1',
+    api_key=key
+)
+    save(audio, filename=path)
 
 def tts11AI(key: str, text: str, path: str, voice_id: str = 'EXAVITQu4vr4xnSDxMaL') -> bool:
     """
@@ -111,8 +121,9 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '',
 
     # 2. Have gtts create file
     try:
-        if use11 and tts11AI(key11, text, f'{file}.mpeg', voice_id=eleven_voice_id):  
-            playsound(file + '.mpeg')
+        if use11:  
+            tts11Multi(text=text, key=key11, voice_id=eleven_voice_id, path=f'{file}.mpeg')
+            playsound(f'{file}.mpeg')
             return True
 
         else:
@@ -120,7 +131,7 @@ def talk(text: str, name: str, use11: bool = False, key11: str = '',
             playsound(file + '.mp3')
             return tts11_okay
 
-    except:
+    except Exception as e:
         google_tts(text, f'{file}.mp3', show_text=show_text)
         playsound(file + '.mp3')
         return tts11_okay

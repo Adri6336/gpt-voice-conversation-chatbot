@@ -11,3 +11,4 @@ langdetect==1.0.9
 pyttsx3==2.90
 rich
 numpy
+elevenlabs
