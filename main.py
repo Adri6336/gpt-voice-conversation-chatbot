@@ -278,19 +278,19 @@ class GUI:
                     self.stop_working(cancel=True, tag=True)
                     return 
 
-                if 'speak like a robot' in speech:  # Set to robospeak if user wants
+                if 'peak like a robot' in speech:  # Set to robospeak if user wants
                     self.chatbot.robospeak = True
                     robospeak('I will now speak like a robot!')
                     self.stop_working(tag=True)
                     return
 
-                elif 'stop speaking like a robot' in speech:
+                elif 'top speaking like a robot' in speech:
                     self.say('I will stop speaking like a robot going forward', 'no-robot.mp3')
                     self.chatbot.robospeak = False
                     self.stop_working(tag=True)
                     return
 
-                elif 'please set tokens to' in speech: # Revise tokens
+                elif 'lease set tokens to' in speech: # Revise tokens
                     words = str(speech)
                     words = words.replace(',', '')
                     words = words.replace('$', '')
@@ -322,7 +322,7 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'open the pod bay door' in speech:
+                elif 'pen the pod bay door' in speech:
                     selection = randint(0, len(self.hal) - 1)
                     info(self.hal[selection], 'bad')
                     robospeak(self.hal[selection])
@@ -330,14 +330,14 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'please display conversation' in speech:
+                elif 'lease display conversation' in speech:
                     info('Conversation So Far', 'topic')
                     info(f'\n{self.chatbot.conversation}', 'plain')
                     self.say('Conversation displayed.', 'display-convo.mp3')
                     self.stop_working(tag=True)
                     return
 
-                elif 'please restore memory' in speech:
+                elif 'lease restore memory' in speech:
                     info('Attempting to restore memory')
                     self.say('Attempting to restore memory. Please wait a moment.', 'mem-restore.mp3')
                     #self.chatbot.restore_memory()
@@ -346,7 +346,7 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'please display memories' in speech:
+                elif 'lease display memories' in speech:
                     # 0. Identify how many memories exist
                     if not os.path.exists('neocortex'):
                         self.say('I do not currently have any memories in my neocortex.', 'no-mems.mp3')
@@ -369,7 +369,7 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'please set preset to' in speech:
+                elif 'lease set preset to' in speech:
                     self.say('I will now attempt to set a preset.', 'try-preset.mp3')
                     preset = speech.split('please set preset to')[1]
                     success = self.chatbot.set_self(preset, 'preset')
@@ -385,7 +385,7 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'please reset preset' in speech:
+                elif 'lease reset preset' in speech:
                     self.say('Resetting preset. Please wait.', 'reset-preset.mp3')
                     if not os.path.exists('neocortex/self_concept/preset.txt'):
                         self.say('No preset currently exists, reset unneeded.', 'no-reset.mp3')
@@ -398,7 +398,7 @@ class GUI:
                     self.stop_working(tag=True)
                     return
 
-                elif 'please set name to' in speech:
+                elif 'lease set name to' in speech:
                     name = speech.split('please set name to')[1]
                     self.say('I will now attempt to set name to ', 'set-name.mp3')
                     robospeak(f'{name}.')
@@ -416,10 +416,10 @@ class GUI:
                     self.stop_working(tag=True)
                     return
                 
-                elif ('please toggle GPT 4' in speech or 
-                      'please toggle GPT-4' in speech or 
-                      'please toggle GPT for' in speech or 
-                      'please toggle gpt4' in speech):
+                elif ('lease toggle GPT 4' in speech or 
+                      'lease toggle GPT-4' in speech or 
+                      'lease toggle GPT for' in speech or 
+                      'lease toggle gpt4' in speech):
                     if not self.chatbot.gpt_model == 'gpt-4':
                         self.chatbot.toggle_gpt4()
                         info('Bot will use GPT-4 going forward if you have access')
@@ -433,7 +433,7 @@ class GUI:
                     self.stop_working(tag=True)
                     return
                 
-                elif 'please set creativity to' in speech:
+                elif 'lease set creativity to' in speech:
                     # Note to self: put this algo into a function later
                     words = str(speech)
                     words = fix_numbers(words)
@@ -466,16 +466,16 @@ class GUI:
                     self.stop_working(tag=True)
                     return
                 
-                elif 'please list commands' in speech:
+                elif 'lease list commands' in speech:
                     info('Valid Commands', 'topic')
                     info(self.help_script, 'plain')
                     self.say(self.help_script, 'commands.mp3')
                     self.stop_working(tag=True)
                     return
                 
-                elif ('please toggle eleven labs' in speech or 
-                      'please toggle 11 labs' in speech or 
-                      'please toggle 11 laps' in speech):
+                elif ('lease toggle eleven labs' in speech or 
+                      'lease toggle 11 labs' in speech or 
+                      'lease toggle 11 laps' in speech):
                     
                     if not self.chatbot.use11:
                         self.chatbot.use11 = True
