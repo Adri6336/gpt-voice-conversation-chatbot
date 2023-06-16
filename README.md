@@ -26,7 +26,7 @@ First off, you'll need an OpenAI API key. You can create an account to get an AP
 
 3. Extract contents, then move into folder with the files.
 
-4. If you have Windows Terminal installed, right click the empty part of the folder and select 'Open in Terminal'. Otherwise, use Win + R and enter powershell. Once you're in a terminal window and at the proper directory, use "pip install -r requirements.txt". If this is done successfully, you should be ready to go as soon as you get yourself an OpenAI API key.
+4. If you have Windows Terminal installed, right click the empty part of the folder and select 'Open in Terminal'. Otherwise, use Win + R and enter powershell. Once you're in a terminal window and at the proper directory, use "pip install -r requirements.txt --upgrade". If this is done successfully, you should be ready to go as soon as you get yourself an OpenAI API key.
 
 5. Follow the steps listed in Using GPT-VCC
 
@@ -51,7 +51,7 @@ First off, you'll need an OpenAI API key. You can create an account to get an AP
         
 6. Download other requirements with pip as follows:
 
-        pip3 install -r requirements.txt
+        pip3 install -r requirements.txt --upgrade
         
 7. Follow the steps listed in Using GPT-VCC
 
@@ -166,7 +166,7 @@ To use cloned voices, do the following:
 
 - Converse with bot recreationally
 
-- Use bot via terminal to practice a language by a setting preset to talk to you in that language like a teacher, and entering '!speak()' with google TTS to pronounce the bot's reponses in that language properly
+- Use bot to practice a language by a setting preset to talk to you in that language like a teacher and hear responses with proper pronounciation using Google's TTS. If you'd prefer, stick with ElevenLabs's multilingual voice
 
 - Have bot help you practice programming by asking you questions and giving feedback on your code
 
