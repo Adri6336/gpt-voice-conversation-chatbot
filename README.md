@@ -166,7 +166,7 @@ To use cloned voices, do the following:
 
 - Converse with bot recreationally
 
-- Use bot to practice a language by a setting preset to talk to you in that language like a teacher and hear responses with proper pronounciation using Google's TTS. If you'd prefer, stick with ElevenLabs's multilingual voice
+- Use bot to practice a language by a setting preset to talk to you in that language like a teacher and hear responses with proper pronounciation using Google's TTS. If you'd prefer, you can also stick with ElevenLabs's multilingual voice
 
 - Have bot help you practice programming by asking you questions and giving feedback on your code
 
