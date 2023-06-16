@@ -294,6 +294,7 @@ class GUI:
                     words = str(speech)
                     words = words.replace(',', '')
                     words = words.replace('$', '')
+                    words = words.replace('.', '')
                     words = words.split(' ')
                     words.reverse()
 
@@ -439,6 +440,7 @@ class GUI:
                     words = fix_numbers(words)
                     words = words.replace(',', '')
                     words = words.replace('$', '')
+                    words = words.replace('.', '')
                     words = words.split(' ')
                     words.reverse()
 
