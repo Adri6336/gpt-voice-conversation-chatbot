@@ -403,7 +403,7 @@ class GUI:
 
                 elif 'lease set preset to' in speech:
                     self.say('I will now attempt to set a preset.', 'try-preset.mp3')
-                    preset = speech.split('please set preset to')[1]
+                    preset = speech.split('lease set preset to')[1]
                     success = self.chatbot.set_self(preset, 'preset')
 
                     if success:
@@ -431,7 +431,7 @@ class GUI:
                     return
 
                 elif 'lease set name to' in speech:
-                    name = speech.split('please set name to')[1]
+                    name = speech.split('lease set name to')[1]
                     self.say('I will now attempt to set name to ', 'set-name.mp3')
                     robospeak(f'{name}.')
                     self.chatbot.restore_self()
