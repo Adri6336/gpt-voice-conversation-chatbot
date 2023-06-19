@@ -2,6 +2,7 @@ import pygame
 import speech_recognition as sr
 import sys
 from sys import argv
+from sys import exit
 import re
 import os
 from chatbot import *
@@ -12,6 +13,8 @@ from general_functions import load_keys_from_file
 from general_functions import fix_numbers
 from time import sleep
 import openai
+import speech_recognition as sr    
+   
 
 def change_color(display, color: tuple): 
     display.fill(color)
@@ -22,6 +25,9 @@ class GUI:
     working = False
     cancel = False
     first_start = False
+    recording = False
+    recorded_audio = []  # This will hold the audio data 
+    recorder = None  # This will house th background recording function
     playing_audio = False
     hal = ["I'm sorry Dave. I'm afraid I can't do that.", 
             "I think you know what the problem is just as well as I do.",
@@ -193,9 +199,13 @@ class GUI:
                 # Checking if keydown event happened or not
                 if event.type == pygame.KEYDOWN:
                    
-                    if event.key == pygame.K_SPACE and not self.working and not self.playing_audio:  # Start listening
+                    if event.key == pygame.K_SPACE and not self.working and not self.playing_audio and not self.recording:  # Start listening
                         self.listen_thread = threading.Thread(target=self.listen_for_audio)
                         self.listen_thread.start()
+
+                    elif event.key == pygame.K_SPACE and self.recording:  # If we were already recording, stop it
+                        info('Stopping Recording ...')
+                        self.recording = False
 
                     if event.key == pygame.K_q and not self.working and not self.playing_audio:  # Exit and save memories
                         #self.chatbot.save_memories()
@@ -250,6 +260,7 @@ class GUI:
         info('='*20, 'plain')
         color(f'[bold yellow]   --Message {self.chatbot.turns}--[/bold yellow]')
 
+        
         with self.mic as source:
             # 1. Listen for audio
             self.color = (255, 255, 77)  # Yellow to show loading
@@ -257,7 +268,20 @@ class GUI:
 
             self.color = (43, 255, 0)  # Green to show listening
             info('Listening!')
-            audio = self.r.listen(source)
+
+            try:
+                self.recording = True  
+                while self.recording:  # This will continue until stopped by user when space pressed
+                    if not self.recording:  # If they pressed the space, stop
+                        break
+                    else:  # Otherwise, keep on recording segments
+                        self.recorded_audio.append(self.r.listen(source))  # Append the recording to a list. They will be transcribed
+
+                    sleep(.1)
+                    
+            except Exception as e:
+                info(f'Error: {e}')
+                exit(1)
 
             self.color = (255, 25, 25)  # Red to show no longer listening
             info('Not listening.')
@@ -269,8 +293,14 @@ class GUI:
 
             self.color = (51, 187, 255)  # Blue to show processing reply
             try:
-                speech = self.r.recognize_whisper_api(audio, api_key=self.key) + '\n'  # The added \n should help prevent hallucination of user statement
-                #color(f'[bold blue]\[Human Message][/bold blue]: [white]{speech[:-1]}[white]')
+                speech = ''
+
+                for soundbyte in self.recorded_audio:  # Transcribe each recording and add to transcript
+                    speech += self.r.recognize_whisper_api(soundbyte, api_key=self.key) + ' ' 
+
+                speech += '\n'  # The added \n should help prevent hallucinations
+                self.recorded_audio = []  # Clear every round
+                
                 info('Human Message', 'topic')
                 info(speech[:-1], 'plain')
 
@@ -418,9 +448,9 @@ class GUI:
                     return
                 
                 elif ('lease toggle GPT 4' in speech or 
-                      'lease toggle GPT-4' in speech or 
-                      'lease toggle GPT for' in speech or 
-                      'lease toggle gpt4' in speech):
+                        'lease toggle GPT-4' in speech or 
+                        'lease toggle GPT for' in speech or 
+                        'lease toggle gpt4' in speech):
                     if not self.chatbot.gpt_model == 'gpt-4':
                         self.chatbot.toggle_gpt4()
                         info('Bot will use GPT-4 going forward if you have access')
@@ -476,8 +506,8 @@ class GUI:
                     return
                 
                 elif ('lease toggle eleven labs' in speech or 
-                      'lease toggle 11 labs' in speech or 
-                      'lease toggle 11 laps' in speech):
+                        'lease toggle 11 labs' in speech or 
+                        'lease toggle 11 laps' in speech):
                     
                     if not self.chatbot.use11:
                         self.chatbot.use11 = True
