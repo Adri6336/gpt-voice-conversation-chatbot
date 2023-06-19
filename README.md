@@ -104,13 +104,13 @@ To use cloned voices, do the following:
 
 #### Keyboard
 
-- **SPACEBAR**: This starts a recording. Whatever you say will be then transcribed and sent to GPT (if it passes filters).
+- **SPACEBAR**: This starts and stops a recording. Whatever you say will be then transcribed and sent to GPT (if it passes filters) once you press space a second time.
 
 - **ESCAPE**: This exits without memorizing.
 
 - **Q**: This quits and has bot remember details about you and your conversations (data is saved in the text file called memories.txt)
 
-- **P**: This attempts to cancel a request to GPT. It will either prevent transcribing of message or will avoid sending it to GPT.
+- **P**: This is a depreciated command to cancel a message. Now just say, "please cancel a message" while recording to cancel.
 
 #### Voice Commands
 
@@ -139,6 +139,8 @@ To use cloned voices, do the following:
 - **Say 'please list commands'**: This will have the bot list out the available commands for you.
 
 - **Say 'please toggle ElevenLabs'**: This will toggle the bot's use of ElevenLabs TTS on and off. In CLI mode, use !11ai() to toggle it.
+
+- **Say 'please cancel message'**: This will cancel the message, preventing it from being sent to GPT.
 
 # Features
 
