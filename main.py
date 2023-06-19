@@ -216,7 +216,8 @@ class GUI:
                         sys.exit()
 
                     if event.key == pygame.K_p and self.working and not self.playing_audio:  # Cancel recording
-                        self.cancel = True
+                        #self.cancel = True
+                        info('Function depreciated: say "cancel message please" and press space to stop', 'bad')
 
                     if event.key == pygame.K_ESCAPE:  # Exiting without saving
                         info('Exiting (Sounds may continue to play until finished)')
@@ -502,6 +503,13 @@ class GUI:
                     info('Valid Commands', 'topic')
                     info(self.help_script, 'plain')
                     self.say(self.help_script, 'commands.mp3')
+                    self.stop_working(tag=True)
+                    return
+                
+                elif any(phrase in speech for phrase in ['ancel message please', 'ancel message, please',
+                                 'lease cancel message', 'ancel message. Please']):
+                    info('Cancelled Message', 'good')
+                    robospeak('Cancelled Message')
                     self.stop_working(tag=True)
                     return
                 
