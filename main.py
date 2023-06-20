@@ -122,7 +122,7 @@ class GUI:
             
         info(f'Model Set To {self.chatbot.gpt_model}', 'good')
         
-        self.listen_for_audio(load_run=True)
+        #self.listen_for_audio(load_run=True)  # This is useless, why did I even add it lol. You'll know if your mic doesn't work
 
         self.running = True
         self.main_thread = threading.Thread(target=self.main_loop)
@@ -179,6 +179,9 @@ class GUI:
 
         info('Main Loop Running', 'good')
         info(f'Session Created With {self.chatbot.name}', 'good')
+        info('Press Space To Start Recording, Then Press Space Again To Stop', 'topic')
+        print('\n')  # This is needed for the newline after the topic, since the topic doesn't have one
+
         while self.running:
             change_color(self.display, self.color)  
             # Creating a loop to check events that
