@@ -136,7 +136,7 @@ class Chatbot():
     turns = 0
     conversation_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
     robospeak = False
-    reply_tokens = 150
+    reply_tokens = 350
     back_and_forth = []  # This will contain human messages and AI replies
     name = 'AI'
     preset = 'nothing'
