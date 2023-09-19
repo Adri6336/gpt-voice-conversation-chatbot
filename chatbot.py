@@ -148,7 +148,7 @@ class Chatbot():
     max_tokens = 4000
     tokens = 0  # This represents the current token consumption
     full_conversation = ''
-    creativity = 1.2  # At 1.2, the bot is much more creative and engaging whithout being too rambunctious and random
+    creativity = 0.95  # At 0.95, the bot is still creative but less likely to have a seizure (spouting random text)
     voice_id = 'EXAVITQu4vr4xnSDxMaL'  # This is the voice id for 11.ai
 
     def __init__(self, api_key: str, api_key_11: str = ''):
