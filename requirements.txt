@@ -1,7 +1,7 @@
 playsound==1.2.2
 gTTS==2.3.1
 SpeechRecognition==3.10.0
-pygame==2.1.2
+pygame
 pyaudio==0.2.13
 gTTS==2.3.1
 nltk==3.8.1
