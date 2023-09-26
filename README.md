@@ -18,6 +18,14 @@ The releases should be stable, as far as previous testing goes, but will not hav
 
 First off, you'll need an OpenAI API key. You can create an account to get an API key here: https://openai.com/api/ .
 
+Once you sign in, press on the circle next to the text "Personal" in the upper right corner. Then press "View API keys". 
+
+Press "Create new secret key", then save that key. That's the key you'll need to run GPT-VCC. Paste it in the keys txt file included in the following way:
+
+    OpenAI_Key={paste here without brackets}
+
+Go to the "Billing" tab towards the left of the screen. Start a payment plan when you run out of free credit to keep using GPT-VCC.
+
 ### Windows
 
 1. Download Python at https://www.python.org/
