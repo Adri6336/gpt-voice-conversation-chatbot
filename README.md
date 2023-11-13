@@ -1,3 +1,5 @@
+***For a similar version for your Android smartwatch, see my other repo [GPT-Assistants-Interlink](https://github.com/Adri6336/GPT-Assistants-Interlink). This project takes advantage of OpenAI's assistants API.***
+
 # gpt-voice-conversation-chatbot (GPT-VCC) (formerly GPT3-STTC)
 
 (Used to be called gpt3-speech-to-text-chatbot, but was changed due to plans to add ability to swap model if desired)
