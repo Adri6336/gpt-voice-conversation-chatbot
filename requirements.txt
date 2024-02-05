@@ -4,7 +4,6 @@ SpeechRecognition==3.10.0
 pygame
 pyaudio==0.2.13
 gTTS==2.3.1
-nltk==3.8.1
 requests>=2.31.0
 openai
 langdetect==1.0.9
