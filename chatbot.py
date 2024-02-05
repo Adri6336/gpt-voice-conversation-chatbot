@@ -169,3 +169,13 @@ def chatbot_save_exists() -> bool:
     a bool of the status (true if it does exist)
     """
     return os.path.exists('brain.pkl')
+
+def load_chatbot() -> Chatbot:
+    try:
+        with open('brain.pkl', 'rb') as file:
+            bot = pickle.loads(file.read())
+            return bot
+        
+    except Exception as e:
+        info(f'Error loading bot: {e}', 'bad')
+        raise e
