@@ -148,3 +148,24 @@ class PlainChatbot(Chatbot):
     def get_text_tokens(self, prompt: str, max_token_ct: int = 200, 
                         sys_prompt: str = 'Follow all the users\' directives') -> tuple:
         info("Function removed.", 'bad')
+
+def save_chatbot(bot: Chatbot) -> bool:
+    """
+    This creates a save for your chatbot.
+    Returns bool of success (true if successful)
+    """
+    try:
+        with open('brain.pkl', 'wb') as file:
+            file.write(pickle.dumps(bot))
+            return True
+        
+    except Exception as e:
+        info(f'Error saving bot: {e}', 'bad')
+        return False
+    
+def chatbot_save_exists() -> bool:
+    """
+    This checks if your bot has been saved and returns
+    a bool of the status (true if it does exist)
+    """
+    return os.path.exists('brain.pkl')
