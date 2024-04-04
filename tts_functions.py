@@ -8,7 +8,7 @@ from datetime import datetime
 from langdetect import detect
 from general_functions import *
 import json
-from elevenlabs import generate, play, save
+from elevenlabs import client, play, save
 gtts_languages = set(gtts.lang.tts_langs().keys())
 
 
@@ -18,7 +18,7 @@ def robospeak(text: str):
     engine.runAndWait()
 
 def tts11Multi(key: str, text: str, path: str, voice_id: str = 'EXAVITQu4vr4xnSDxMaL'):
-    audio = generate(
+    audio = client.generate(
     text=text,
     voice=voice_id,
     model='eleven_multilingual_v1',
