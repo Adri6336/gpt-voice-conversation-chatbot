@@ -65,6 +65,32 @@ Go to the "Billing" tab towards the left of the screen. Start a payment plan whe
         
 7. Follow the steps listed in Using GPT-VCC
 
+### MacOs (Intel chip based)
+
+1. Install pip3
+
+Pip is typically installed with Python on macOS. If you need to install or upgrade pip, you can do so using:
+
+        python3 -m ensurepip --upgrade
+        
+2. Download this repo either via the releases, git cloning the repo, or pressing the code button towards the upper right and pressing "Download ZIP".
+
+3. Extract files, move into directory, open requirements.txt, and delete pyaudio==0.2.13 from file. Make it look like it was never there, preserving the original formatting.
+
+4. Download pyaudio with apt as follows:
+
+        brew install portaudio
+        
+5. Download espeak with apt as follows (needed for interface communication):
+
+        brew install espeak
+        
+6. Download other requirements with pip as follows:
+
+        pip3 install -r requirements.txt --upgrade
+        
+7. Follow the steps listed in Using GPT-VCC
+
 
 # Using GPT-VCC
 
