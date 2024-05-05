@@ -2,7 +2,7 @@
 
 # gpt-voice-conversation-chatbot (GPT-VCC) (formerly GPT3-STTC)
 
-(Used to be called gpt3-speech-to-text-chatbot, but was changed due to plans to add ability to swap model if desired)
+(Made for old completion engine and retrofitted for ChatGPT. Not as good as modern stuff. Keep looking.)
 
 This is a bot that allows you to have an engaging and safely emotive spoken conversation with ChatGPT or GPT-4 using your microphone. If you'd prefer to type rather than speak, you can also converse with the bot via the terminal.
 
